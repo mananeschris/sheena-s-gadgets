@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Sheena's Gadgets & Accessories Shop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #080808;
+      --muted: #666;
+      --line: #dcdcdc;
+      --soft: #f7f7f7;
+      --white: #fff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(8, 8, 8, .04) 1px, transparent 1px),
+        linear-gradient(rgba(8, 8, 8, .04) 1px, transparent 1px),
+        var(--white);
+      background-size: 42px 42px;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .auth-page {
+      min-height: 100vh;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 1180px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .brand {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .shop-link {
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 900;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: var(--white);
+    }
+
+    .auth-stage {
+      width: 100%;
+      max-width: 1180px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(380px, 520px);
+      gap: clamp(28px, 5vw, 72px);
+      align-items: start;
+      padding: 44px 0;
+    }
+
+    .intro {
+      max-width: 620px;
+      position: sticky;
+      top: 42px;
+      padding-top: 34px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: var(--white);
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    .intro h1 {
+      font-size: clamp(44px, 7vw, 82px);
+      line-height: .94;
+      font-weight: 900;
+      margin: 0;
+      text-wrap: balance;
+    }
+
+    .intro p {
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.65;
+      margin: 22px 0 0;
+      max-width: 530px;
+    }
+
+    .promo-panel {
+      margin-top: 34px;
+      max-width: 540px;
+      border: 1px solid var(--ink);
+      border-radius: 8px;
+      background: var(--white);
+      overflow: hidden;
+    }
+
+    .promo-row {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      gap: 18px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
+    }
+
+    .promo-row:last-child {
+      border-bottom: 0;
+    }
+
+    .promo-kicker {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .promo-row strong {
+      display: block;
+      font-size: 17px;
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+
+    .promo-row span:last-child {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .auth-card {
+      background: var(--white);
+      border: 1px solid var(--ink);
+      border-radius: 8px;
+      padding: clamp(22px, 4vw, 34px);
+      box-shadow: 10px 10px 0 var(--ink);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .card-head h2 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .card-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      background: var(--white);
+    }
+
+    .auth-tab {
+      border: 0;
+      background: var(--white);
+      color: var(--ink);
+      padding: 11px;
+      font-weight: 900;
+    }
+
+    .auth-tab.active {
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .form-section {
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 7px;
+    }
+
+    .form-control,
+    .form-select {
+      border-radius: 6px;
+      border-color: #aaa;
+      min-height: 44px;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--ink);
+      box-shadow: 0 0 0 .2rem rgba(8, 8, 8, .12);
+    }
+
+
+    .password-field {
+      position: relative;
+    }
+
+    .password-field .form-control {
+      padding-right: 82px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--white);
+      color: var(--ink);
+      min-height: 30px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .register-only {
+      display: none;
+    }
+
+    body.register-mode .register-only {
+      display: block;
+    }
+
+    .register-grid {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    body.register-mode .register-grid {
+      display: grid;
+    }
+
+    .full-span {
+      grid-column: 1 / -1;
+    }
+
+    .btn {
+      border-radius: 6px;
+      min-height: 46px;
+      font-weight: 900;
+    }
+
+    .btn-dark {
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .message {
+      min-height: 24px;
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 920px) {
+      .auth-page {
+        padding: 20px;
+      }
+
+      .auth-stage {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding-top: 38px;
+      }
+
+      .intro {
+        max-width: none;
+        position: static;
+        padding-top: 0;
+      }
+
+      .intro h1 {
+        font-size: clamp(38px, 12vw, 62px);
+      }
+
+      .auth-card {
+        box-shadow: 6px 6px 0 var(--ink);
+      }
+
+      .promo-panel {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .register-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .promo-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .full-span {
+        grid-column: auto;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/css/ui-polish.css">
+  <link rel="stylesheet" href="/css/auth-polish.css?v=auth-ui-20260804">
+  <link rel="stylesheet" href="/css/ideal-ui.css?v=ideal-ui-20260908f">
+</head>
+<body class="auth-page-shell">
+  <main class="auth-page">
+    <nav class="topbar">
+      <a href="/" class="brand brand-with-logo"><img class="brand-logo" src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a>
+      <a href="/customer/shop.html" class="shop-link">View Shop</a>
+    </nav>
+
+    <section class="auth-stage">
+      <div class="intro">
+        <div class="eyebrow">Gadget Deals</div>
+        <h1>Your next gadget upgrade starts here.</h1>
+        <p>Discover phones, chargers, cases, and audio accessories with fresh deals, flexible ways to pay, and easy order updates from Sheena's Gadgets & Accessories Shop.</p>
+        <div class="access-grid" aria-label="Shopping highlights">
+          <div class="access-card">
+            <span>Featured</span>
+            <strong>Phones, cases, chargers, audio, and daily tech essentials</strong>
+          </div>
+          <div class="access-card">
+            <span>Deals</span>
+            <strong>Vouchers, bundle savings, and flexible payment choices</strong>
+          </div>
+          <div class="access-card">
+            <span>After Sale</span>
+            <strong>Track every order from checkout to completion</strong>
+          </div>
+        </div>
+
+        <div class="promo-panel">
+          <div class="promo-row">
+            <span class="promo-kicker">New Arrivals</span>
+            <span>
+              <strong>Fresh picks for your everyday tech setup.</strong>
+              Explore phones, cases, chargers, audio gear, and accessories made for daily use.
+            </span>
+          </div>
+          <div class="promo-row">
+            <span class="promo-kicker">Promos</span>
+            <span>
+              <strong>Shop smarter with seasonal bundles.</strong>
+              Grab selected gadget deals and accessory pairings made for everyday use.
+            </span>
+          </div>
+          <div class="promo-row">
+            <span class="promo-kicker">Payments</span>
+            <span>
+              <strong>Pay your way, then track your order.</strong>
+              Choose Cash on Delivery, GCash, Maya, card, or installment options where available.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-card">
+        <div class="card-head">
+          <div>
+            <h2 id="formTitle">Welcome Back</h2>
+            <p id="formSubtitle">Sign in to continue shopping.</p>
+          </div>
+          <span class="portal-badge">Shop Deals</span>
+        </div>
+
+        <div class="auth-tabs">
+          <button id="loginTab" class="auth-tab active" onclick="setMode('login')">Sign In</button>
+          <button id="registerTab" class="auth-tab" onclick="setMode('register')">Create Account</button>
+        </div>
+        <div class="auth-note login-only">Sign in to continue shopping, save delivery details, and view your order updates.</div>
+        <div class="auth-note register-only">Create an account to place orders, save delivery details, and return to your cart anytime.</div>
+
+        <form id="authForm" onsubmit="submitAuth(event)">
+          <div class="register-only mb-3">
+            <label class="form-label">Full Name</label>
+            <input id="name" class="form-control" autocomplete="name">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email Address</label>
+            <input id="email" type="email" class="form-control" autocomplete="email" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <div class="password-field">
+              <input id="password" type="password" class="form-control" autocomplete="current-password" required>
+              <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password', this)">Show</button>
+            </div>
+          </div>
+
+          <div class="register-only form-section">
+            <div class="section-label">Delivery Profile</div>
+          </div>
+
+          <div class="register-grid mb-3">
+            <div>
+              <label class="form-label">Birthday</label>
+              <input id="birthday" type="date" class="form-control">
+            </div>
+
+            <div>
+              <label class="form-label">Phone Number</label>
+              <input id="phone" class="form-control" placeholder="09XXXXXXXXX" autocomplete="tel">
+            </div>
+
+            <div>
+              <label class="form-label">Gender</label>
+              <select id="gender" class="form-select">
+                <option value="">Prefer not to say</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label">Postal Code</label>
+              <input id="postal_code" class="form-control" placeholder="Postal code">
+            </div>
+
+            <div class="full-span">
+              <label class="form-label">Complete Address</label>
+              <textarea id="address" class="form-control" rows="2" placeholder="House number, street, barangay"></textarea>
+            </div>
+
+            <div>
+              <label class="form-label">City</label>
+              <input id="city" class="form-control" placeholder="City">
+            </div>
+
+            <div>
+              <label class="form-label">Province</label>
+              <input id="province" class="form-control" placeholder="Province">
+            </div>
+          </div>
+
+          <button id="submitButton" class="btn btn-dark w-100" type="submit">Sign In</button>
+          <div id="message" class="message"></div>
+        </form>
+
+        <div id="helperText" class="helper">
+          Use your customer account to save delivery details, view purchases, and receive order updates.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let mode = "login";
+    const params = new URLSearchParams(window.location.search);
+    const requestedMode = params.get("mode");
+    const returnTo = params.get("returnTo");
+
+
+    function togglePasswordVisibility(inputId, button) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      button.innerText = isHidden ? "Hide" : "Show";
+    }
+    function setMode(nextMode) {
+      mode = nextMode;
+      const isRegister = mode === "register";
+
+      document.body.classList.toggle("register-mode", isRegister);
+      document.body.classList.toggle("login-mode", !isRegister);
+      document.getElementById("loginTab").classList.toggle("active", !isRegister);
+      document.getElementById("registerTab").classList.toggle("active", isRegister);
+      document.getElementById("formTitle").innerText = isRegister ? "Create Account" : "Welcome Back";
+      document.getElementById("formSubtitle").innerText = isRegister
+        ? "Set up your shopping profile."
+        : "Sign in to continue shopping.";
+      document.getElementById("submitButton").innerText = isRegister ? "Create Account" : "Sign In";
+      document.getElementById("message").innerText = "";
+      document.getElementById("message").className = "message";
+      const helperText = document.getElementById("helperText");
+      if (helperText) {
+        helperText.innerText = isRegister
+          ? "Use at least 8 characters with one uppercase letter, one number, and one special character."
+          : "Use your customer account to save delivery details, view purchases, and receive order updates.";
+      }
+      document.getElementById("name").required = isRegister;
+      ["birthday", "phone", "address", "city", "province", "postal_code"].forEach((field) => {
+        document.getElementById(field).required = isRegister;
+      });
+      document.getElementById("password").autocomplete = isRegister ? "new-password" : "current-password";
+    }
+    function redirectByRole(user) {
+      user.role = String(user.role || "customer").toLowerCase();
+      localStorage.setItem("currentUser", JSON.stringify(user));
+
+      if (user.role === "admin") {
+        window.location.href = "/admin/dashboard.html";
+        return;
+      }
+
+      if (user.role === "rider") {
+        window.location.href = "/rider/dashboard.html";
+        return;
+      }
+
+      if (user.role === "staff") {
+        window.location.href = "/staff/dashboard.html";
+        return;
+      }
+
+      window.location.href = returnTo || "/customer/shop.html";
+    }
+
+    async function submitAuth(event) {
+      event.preventDefault();
+
+      const button = document.getElementById("submitButton");
+      const message = document.getElementById("message");
+      const payload = {
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value
+      };
+
+      if (mode === "register") {
+        payload.name = document.getElementById("name").value.trim();
+        payload.birthday = document.getElementById("birthday").value;
+        payload.phone = document.getElementById("phone").value.trim();
+        payload.gender = document.getElementById("gender").value;
+        payload.address = document.getElementById("address").value.trim();
+        payload.city = document.getElementById("city").value.trim();
+        payload.province = document.getElementById("province").value.trim();
+        payload.postal_code = document.getElementById("postal_code").value.trim();
+      }
+
+      button.disabled = true;
+      button.innerText = mode === "register" ? "Creating..." : "Signing in...";
+      message.innerText = "";
+
+      try {
+        const res = await fetch(`/auth/${mode === "register" ? "register" : "login"}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          message.className = "message error";
+          message.innerText = data.message || "Request failed.";
+          return;
+        }
+
+        if (mode === "register") {
+          message.className = "message";
+          message.innerText = "Account created. You can sign in now.";
+          setMode("login");
+          document.getElementById("email").value = payload.email;
+          document.getElementById("password").value = "";
+          return;
+        }
+
+        redirectByRole(data.user);
+      } catch (error) {
+        message.className = "message error";
+        message.innerText = "Unable to connect to the server.";
+      } finally {
+        button.disabled = false;
+        button.innerText = mode === "register" ? "Create Account" : "Sign In";
+      }
+    }
+
+    setMode(requestedMode === "register" ? "register" : "login");
+  </script>
+</body>
+</html>

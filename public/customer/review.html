@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Write Review | Sheena's Gadgets & Accessories Shop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{--ink:#080808;--muted:#666;--line:#ddd;--soft:#f6f6f6;--white:#fff}
+    body{margin:0;background:var(--white);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+    .shell{min-height:100vh;display:grid;place-items:center;padding:28px}
+    .review-card{width:min(860px,100%);border:1px solid var(--ink);border-radius:8px;background:var(--white);padding:22px}
+    .topbar,.order-row,.preview-grid,.actions{display:flex;gap:14px;align-items:center}.topbar{justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px}.brand{font-weight:900;color:var(--ink);text-decoration:none}.muted{color:var(--muted)}
+    .order-box{border:1px solid var(--line);border-radius:8px;background:var(--soft);padding:14px;margin-bottom:18px}.order-row{align-items:flex-start}.order-row img{width:92px;height:92px;border:1px solid var(--line);border-radius:8px;object-fit:cover;background:var(--white)}
+    .stars{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:10px 0 18px}.star-btn{border:1px solid var(--ink);background:var(--white);border-radius:8px;padding:12px;font-size:22px;font-weight:900}.star-btn.active{background:var(--ink);color:var(--white)}
+    textarea,input[type=file]{border:1px solid var(--ink)!important;border-radius:8px!important}.preview-grid{flex-wrap:wrap;margin-top:12px}.preview-grid img{width:86px;height:86px;border:1px solid var(--line);border-radius:8px;object-fit:cover}.actions{justify-content:flex-end;margin-top:18px}.btn{border-radius:8px;font-weight:800}.btn-dark{background:var(--ink);border-color:var(--ink)}
+    @media(max-width:640px){.topbar,.order-row,.actions{align-items:stretch;flex-direction:column}.stars{grid-template-columns:repeat(5,1fr)}.star-btn{padding:10px;font-size:18px}}
+  </style>
+  <link rel="stylesheet" href="/css/ui-polish.css">
+  <link rel="stylesheet" href="/css/ideal-ui.css?v=ideal-ui-20260908f">
+</head>
+<body class="customer-review-page">
+  <main class="shell">
+    <section class="review-card">
+      <div class="topbar">
+        <a class="brand brand-with-logo" href="/customer/profile.html"><img class="brand-logo" src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a>
+        <a class="btn btn-outline-dark" href="/customer/profile.html">Back to Profile</a>
+      </div>
+
+      <h1 class="fw-black">Write Review</h1>
+      <p class="muted">Rate your delivered order and upload photos if you want to show the actual item.</p>
+
+      <div id="orderBox" class="order-box">Loading order...</div>
+
+      <label class="form-label fw-bold">Rating</label>
+      <div id="ratingButtons" class="stars"></div>
+
+      <label class="form-label fw-bold">Review Comment</label>
+      <textarea id="comment" class="form-control" rows="5" placeholder="Share your experience with this product"></textarea>
+
+      <label class="form-label fw-bold mt-3">Photos</label>
+      <input id="images" type="file" class="form-control" accept="image/*" multiple onchange="previewImages()">
+      <small class="muted">Maximum 5 photos.</small>
+      <div id="imagePreview" class="preview-grid"></div>
+
+      <div class="actions">
+        <button class="btn btn-outline-dark" onclick="history.back()">Cancel</button>
+        <button id="submitBtn" class="btn btn-dark" onclick="submitReview()">Submit Review</button>
+      </div>
+    </section>
+  </main>
+
+    <script src="/js/order-reference.js"></script>
+<script>
+    const params = new URLSearchParams(location.search);
+    const orderId = Number(params.get("order_id"));
+    let currentUser = null;
+    let selectedRating = 5;
+    let selectedOrder = null;
+
+    function money(value){return `PHP ${Number(value||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`}
+    function escapeHtml(value){return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+    function parseImages(value){try{const parsed=value?JSON.parse(value):[];return Array.isArray(parsed)?parsed:[]}catch(e){return[]}}
+    function orderImage(order){const item=Array.isArray(order.items)&&order.items[0];return item?.product_image||order.product_image||parseImages(order.product_images)[0]||"https://via.placeholder.com/160x160?text=Product"}
+    function orderName(order){return Array.isArray(order.items)&&order.items.length>1?`${order.items.length} items`:order.product_name||"Product"}
+
+    function readCurrentUser(){try{const user=JSON.parse(localStorage.getItem("currentUser")||"null");if(!user)return null;user.role=String(user.role||"customer").toLowerCase();return user}catch(e){return null}}
+
+    function renderRating(){document.getElementById("ratingButtons").innerHTML=Array.from({length:5},(_,i)=>`<button type="button" class="star-btn ${i<selectedRating?"active":""}" onclick="setRating(${i+1})">${i+1}</button>`).join("")}
+    function setRating(value){selectedRating=value;renderRating()}
+
+    function renderOrder(){document.getElementById("orderBox").innerHTML=`<div class="order-row"><img src="${escapeHtml(orderImage(selectedOrder))}" alt="${escapeHtml(orderName(selectedOrder))}"><div><strong>${orderLabel(selectedOrder)} - ${escapeHtml(orderName(selectedOrder))}</strong><div class="muted">${selectedOrder.variant_name?`Variant: ${escapeHtml(selectedOrder.variant_name)} | `:""}Qty: ${selectedOrder.quantity}</div><div class="muted">Status: ${escapeHtml(selectedOrder.status||"pending")}</div><strong>${money(selectedOrder.total_price)}</strong></div></div>`}
+
+    function previewImages(){const files=[...document.getElementById("images").files].slice(0,5);document.getElementById("imagePreview").innerHTML=files.map(file=>`<img src="${URL.createObjectURL(file)}" alt="Review photo">`).join("")}
+
+    async function loadOrder(){
+      currentUser=readCurrentUser();
+      if(!currentUser||currentUser.role!=="customer"){location.href="/auth.html?returnTo="+encodeURIComponent(location.pathname+location.search);return}
+      if(!orderId){alert("Order is missing.");location.href="/customer/profile.html";return}
+      const res=await fetch(`/orders/customer/${currentUser.id}`);const data=await res.json();
+      if(!res.ok){document.getElementById("orderBox").innerText="Unable to load order.";return}
+      selectedOrder=(Array.isArray(data)?data:[]).find(order=>Number(order.id)===orderId);
+      if(!selectedOrder){alert("Order not found.");location.href="/customer/profile.html";return}
+      if(selectedOrder.status!=="delivered"){alert("Only delivered orders can be reviewed.");location.href="/customer/profile.html";return}
+      renderOrder();renderRating();
+    }
+
+    async function submitReview(){
+      const files=[...document.getElementById("images").files].slice(0,5);
+      const form=new FormData();
+      form.append("order_id",orderId);form.append("user_id",currentUser.id);form.append("rating",selectedRating);form.append("comment",document.getElementById("comment").value.trim());
+      files.forEach(file=>form.append("images",file));
+      const button=document.getElementById("submitBtn");button.disabled=true;button.innerText="Submitting...";
+      const res=await fetch("/reviews",{method:"POST",body:form});const data=await res.json();
+      if(!res.ok){button.disabled=false;button.innerText="Submit Review";alert(data.message||"Unable to submit review.");return}
+      alert("Review submitted. Thank you!");location.href="/customer/profile.html";
+    }
+
+    document.addEventListener("DOMContentLoaded",loadOrder);
+  </script>
+</body>
+</html>

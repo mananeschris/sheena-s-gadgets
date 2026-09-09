@@ -1,0 +1,3294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile | Sheena's Gadgets & Accessories Shop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #080808;
+      --muted: #666;
+      --line: #ddd;
+      --soft: #f6f6f6;
+      --white: #fff;
+    }
+
+    body {
+      margin: 0;
+      background: var(--white);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .profile-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+    }
+
+    .side {
+      background: var(--ink);
+      color: var(--white);
+      padding: 26px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.2;
+      display: block;
+      margin-bottom: 36px;
+    }
+
+    .customer-card {
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #111;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .customer-card h2 {
+      font-size: 24px;
+      font-weight: 900;
+      margin: 0 0 6px;
+    }
+
+    .customer-card p {
+      color: #ccc;
+      margin: 0;
+      word-break: break-word;
+    }
+
+    .side-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .btn {
+      border-radius: 6px;
+      font-weight: 900;
+    }
+
+    .main {
+      padding: clamp(22px, 4vw, 46px);
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .page-head h1 {
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: .95;
+      font-weight: 900;
+      margin: 0;
+    }
+
+    .page-head p {
+      color: var(--muted);
+      margin: 10px 0 0;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      border: 1px solid var(--ink);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .tab {
+      border: 0;
+      border-right: 1px solid var(--ink);
+      background: var(--white);
+      color: var(--ink);
+      padding: 12px;
+      font-weight: 900;
+    }
+
+    .tab:last-child {
+      border-right: 0;
+    }
+
+    .tab.active {
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .orders-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      margin: -4px 0 18px;
+    }
+
+    .orders-toolbar .form-control {
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      min-height: 44px;
+      font-weight: 800;
+    }
+
+    .orders-toolbar-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .orders-result-count {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .summary {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--soft);
+    }
+
+    .summary span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .summary strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .account-settings-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .account-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--white);
+    }
+
+    .account-panel h2 {
+      font-size: 20px;
+      font-weight: 900;
+      margin: 0 0 14px;
+    }
+
+    .account-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .account-form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .account-form-grid label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .account-form-grid .form-control,
+    .account-form-grid .form-select {
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      min-height: 44px;
+      font-weight: 800;
+    }
+
+    .profile-password-field {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .profile-password-field .form-control {
+      min-width: 0;
+    }
+
+    .account-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .account-status {
+      min-height: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      margin: 8px 0 0;
+    }
+
+    .account-status.success {
+      color: var(--ink);
+    }
+
+    .account-status.error {
+      color: #8a0000;
+    }
+    .address-book-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, .9fr) minmax(0, 1.1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .address-form-panel,
+    .address-list-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--white);
+    }
+
+    .address-form-panel h2,
+    .address-list-panel h2 {
+      font-size: 20px;
+      font-weight: 900;
+      margin: 0 0 14px;
+    }
+
+    .address-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .address-form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .address-form-grid label,
+    .address-default-row span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .address-form-grid .form-control {
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      min-height: 44px;
+      font-weight: 800;
+    }
+
+    .address-default-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0 0;
+    }
+
+    .address-actions,
+    .address-card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .address-actions {
+      justify-content: flex-end;
+    }
+
+    .address-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .address-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .address-card.default {
+      border-color: var(--ink);
+      background: var(--white);
+    }
+
+    .address-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .address-card h3 {
+      font-size: 18px;
+      font-weight: 900;
+      margin: 0 0 4px;
+    }
+
+    .address-card p {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .address-badge {
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .address-card-actions {
+      justify-content: flex-end;
+    }
+    .orders-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .notification-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .notification-card {
+      border: 1px solid var(--ink);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--soft);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .notification-card strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .notification-card.unread {
+      background: var(--white);
+    }
+
+    .installment-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: var(--white);
+      margin-bottom: 18px;
+    }
+
+    .installment-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .installment-head h2 {
+      font-size: 22px;
+      font-weight: 900;
+      margin: 0 0 6px;
+    }
+
+    .installment-head p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .application-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .application-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .application-status {
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .application-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .application-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: var(--soft);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .repair-list {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .repair-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--white);
+      display: grid;
+      grid-template-columns: 86px 1fr auto;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .repair-card img {
+      width: 86px;
+      height: 86px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      object-fit: cover;
+      background: var(--soft);
+    }
+
+    .repair-card h3 {
+      font-size: 18px;
+      font-weight: 900;
+      margin: 0 0 8px;
+    }
+
+    .repair-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .repair-step {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .repair-step.active {
+      border-color: var(--ink);
+      background: var(--soft);
+      color: var(--ink);
+    }
+    .installment-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .installment-row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--soft);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .installment-row h3 {
+      font-size: 16px;
+      font-weight: 900;
+      margin: 0 0 6px;
+    }
+
+    .installment-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .installment-actions .form-select {
+      width: 132px;
+    }
+
+    .installment-payment-note {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .orders-section {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 18px;
+      background: var(--white);
+    }
+
+    .orders-section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .orders-section-head h2 {
+      font-size: 20px;
+      font-weight: 900;
+      margin: 0;
+    }
+
+    .order-card.has-image {
+      grid-template-columns: 86px 1fr auto;
+      align-items: start;
+    }
+
+    .order-image {
+      width: 86px;
+      height: 86px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      object-fit: cover;
+      background: var(--soft);
+    }
+
+    .order-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .order-items-preview {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .order-item-mini {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .order-item-mini img {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      object-fit: cover;
+    }
+
+    .order-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 1000;
+    }
+
+    .order-modal-backdrop.show {
+      display: flex;
+    }
+
+    .order-modal {
+      width: min(760px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: var(--white);
+      border-radius: 8px;
+      border: 1px solid var(--ink);
+      padding: 18px;
+    }
+
+    .order-modal-head,
+    .order-modal-total {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .order-detail-items {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .order-detail-item {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--soft);
+    }
+
+    .order-detail-item img {
+      width: 64px;
+      height: 64px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: var(--white);
+    }
+    .order-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+    }
+
+    .order-card h3 {
+      font-size: 18px;
+      font-weight: 900;
+      margin: 0 0 8px;
+    }
+
+    .order-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      color: var(--muted);
+    }
+
+    .order-image {
+      width: 86px;
+      height: 86px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      object-fit: cover;
+      background: var(--soft);
+    }
+
+    .order-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .order-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .order-items-preview {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .order-item-mini {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .order-item-mini img {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      object-fit: cover;
+    }
+
+    .order-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 1000;
+    }
+
+    .order-modal-backdrop.show {
+      display: flex;
+    }
+
+    .order-modal {
+      width: min(760px, 100%);
+      max-height: 90vh;
+      overflow: auto;
+      background: var(--white);
+      border-radius: 8px;
+      border: 1px solid var(--ink);
+      padding: 18px;
+    }
+
+    .order-modal-head,
+    .order-modal-total {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .order-detail-items {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .order-detail-item {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--soft);
+    }
+
+    .order-detail-item img {
+      width: 64px;
+      height: 64px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: var(--white);
+    }
+    .status-pill {
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      align-self: start;
+    }
+
+    .status-delivered {
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .tracking-timeline {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .tracking-step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 76px;
+      background: var(--white);
+      color: var(--muted);
+    }
+
+    .tracking-step.done {
+      border-color: var(--ink);
+      color: var(--ink);
+      background: var(--soft);
+    }
+
+    .tracking-step.current {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--white);
+    }
+
+    .tracking-dot {
+      width: 10px;
+      height: 10px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      display: block;
+      margin-bottom: 8px;
+      background: currentColor;
+    }
+
+    .tracking-step strong,
+    .tracking-step span {
+      display: block;
+      line-height: 1.25;
+    }
+
+    .tracking-step strong {
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .tracking-step span {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .tracking-cancelled {
+      border: 1px solid var(--ink);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 14px;
+      background: var(--soft);
+      font-weight: 900;
+    }
+
+    .tracking-history {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 14px;
+      background: var(--white);
+    }
+
+    .tracking-history-title {
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .tracking-history-item {
+      display: grid;
+      grid-template-columns: 124px minmax(0, 1fr);
+      gap: 10px;
+      padding: 9px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .tracking-history-item:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .tracking-history-item strong,
+    .tracking-history-item span {
+      display: block;
+      line-height: 1.35;
+    }
+
+    .tracking-history-item span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .empty-state {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 42px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .notification-toolbar{display:flex}
+    .notification-toolbar{align-items:center}
+    .notification-toolbar{justify-content:space-between}
+    .notification-toolbar{gap:12px}
+    .notification-toolbar{flex-wrap:wrap}
+    .notification-toolbar{margin:0 0 12px}
+    .notification-summary{display:flex}
+    .notification-summary{align-items:center}
+    .notification-summary{gap:8px}
+    .notification-summary{flex-wrap:wrap}
+    .notification-summary{color:var(--muted)}
+    .notification-summary{font-size:13px}
+    .notification-summary{font-weight:800}
+    .notification-badge{display:inline-flex}
+    .notification-badge{align-items:center}
+    .notification-badge{justify-content:center}
+    .notification-badge{min-width:28px}
+    .notification-badge{height:28px}
+    .notification-badge{border-radius:999px}
+    .notification-badge{background:var(--ink)}
+    .notification-badge{color:var(--white)}
+    .notification-badge{font-size:12px}
+    .notification-badge{font-weight:900}
+    .notification-badge{padding:0 8px}
+    .notification-actions,.notification-tabs{display:flex}
+    .notification-actions,.notification-tabs{gap:8px}
+    .notification-actions,.notification-tabs{flex-wrap:wrap}
+    .notification-tabs{margin-bottom:12px}
+    .notification-filter{border:1px solid var(--ink)}
+    .notification-filter{border-radius:999px}
+    .notification-filter{background:var(--white)}
+    .notification-filter{color:var(--ink)}
+    .notification-filter{padding:7px 12px}
+    .notification-filter{font-size:12px}
+    .notification-filter{font-weight:900}
+    .notification-filter{text-transform:uppercase}
+    .notification-filter.active{background:var(--ink)}
+    .notification-filter.active{color:var(--white)}
+    .notification-card{display:grid}
+    .notification-card{grid-template-columns:minmax(0,1fr) auto}
+    .notification-card{align-items:start}
+    .notification-card.unread{box-shadow:inset 4px 0 0 var(--ink)}
+    .notification-content{display:grid}
+    .notification-content{gap:6px}
+    .notification-content{min-width:0}
+    .notification-meta{display:flex}
+    .notification-meta{gap:8px}
+    .notification-meta{flex-wrap:wrap}
+    .notification-meta{align-items:center}
+    .notification-meta{color:var(--muted)}
+    .notification-meta{font-size:12px}
+    .notification-meta{font-weight:800}
+    .notification-type{border:1px solid var(--ink)}
+    .notification-type{border-radius:999px}
+    .notification-type{padding:3px 8px}
+    .notification-type{color:var(--ink)}
+    .notification-type{background:var(--white)}
+    .notification-type{text-transform:uppercase}
+    .notification-type{font-size:11px}
+    .notification-type{font-weight:900}
+    .notification-message{color:var(--muted)}
+    .notification-message{font-size:13px}
+    .notification-message{margin:0}
+    .notification-message{line-height:1.4}
+    .notification-card-actions{display:flex}
+    .notification-card-actions{gap:8px}
+    .notification-card-actions{flex-wrap:wrap}
+    .notification-card-actions{justify-content:flex-end}
+    @media (max-width: 920px) {
+      .profile-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        position: static;
+        height: auto;
+      }
+
+      .orders-toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .orders-toolbar-actions {
+        justify-content: space-between;
+      }
+
+      .tabs,
+      .summary-grid,
+      .account-settings-grid,
+      .account-form-grid,
+      .address-book-grid,
+      .address-form-grid,
+      .application-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tracking-timeline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tracking-history-item {
+        grid-template-columns: 1fr;
+      }
+
+      .application-grid .full {
+        grid-column: auto;
+      }
+
+      .tab {
+        border-right: 0;
+        border-bottom: 1px solid var(--ink);
+      }
+
+      .tab:last-child {
+        border-bottom: 0;
+      }
+
+      .order-card.has-image,
+      .order-detail-item {
+        grid-template-columns: 1fr;
+      }
+
+      .order-image,
+      .order-detail-item img {
+        width: 100%;
+        height: 180px;
+      }    }
+
+    .statement-overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .statement-card {
+      border: 1px solid var(--ink);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .statement-card.light {
+      background: var(--white);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .statement-card span {
+      display: block;
+      color: #cfcfcf;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .statement-card.light span {
+      color: var(--muted);
+    }
+
+    .statement-card strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .statement-orders {
+      display: grid;
+      gap: 10px;
+    }
+
+    .statement-order-row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--white);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .statement-order-row strong,
+    .statement-order-row span {
+      display: block;
+    }
+
+    .statement-order-row span {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    /* statement-mobile-fix */
+    @media (max-width: 920px) {
+      .statement-overview-grid,
+      .statement-order-row,
+      .due-alert-card {
+        grid-template-columns: 1fr;
+      }
+
+      .statement-order-row .text-end,
+      .due-alert-actions {
+        text-align: left !important;
+      }
+    }
+
+    .due-alert-grid {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .due-alert-card {
+      border: 1px solid var(--ink);
+      border-radius: 8px;
+      background: var(--ink);
+      color: var(--white);
+      padding: 16px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .due-alert-card.light {
+      background: var(--white);
+      color: var(--ink);
+      border-color: var(--line);
+    }
+
+    .due-alert-card h3 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .due-alert-card p {
+      margin: 0;
+      color: #d8d8d8;
+      line-height: 1.4;
+    }
+
+    .due-alert-card.light p {
+      color: var(--muted);
+    }
+
+    .due-alert-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .due-alert-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 220px;
+    }
+
+    .due-alert-actions .form-select {
+      width: auto;
+      min-width: 96px;
+      border-color: var(--ink);
+      font-weight: 900;
+    }
+
+    .due-alert-card:not(.light) .btn-outline-dark {
+      border-color: var(--white);
+      color: var(--white);
+    }
+
+    .due-alert-card:not(.light) .btn-light {
+      color: var(--ink);
+    }
+
+    /* due-alert-final-mobile */
+    @media (max-width: 920px) {
+      .due-alert-card {
+        grid-template-columns: 1fr;
+      }
+
+      .due-alert-actions {
+        justify-content: flex-start;
+        min-width: 0;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/css/ui-polish.css">
+  <link rel="stylesheet" href="/css/ideal-ui.css?v=ideal-ui-20260908f">
+</head>
+<body class="customer-profile-page">
+  <div class="profile-shell">
+    <aside class="side">
+      <a href="/" class="brand brand-with-logo"><img class="brand-logo" src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a>
+      <div class="customer-card">
+        <h2 id="customerName">Customer</h2>
+        <p id="customerEmail">customer@email.com</p>
+      </div>
+      <div class="side-actions">
+        <a href="/" class="btn btn-light">Back to Shop</a>
+        <button id="notificationButton" class="btn btn-outline-light" onclick="scrollToProfileNotifications()">Updates <span id="notificationCount" class="badge text-bg-light d-none">0</span></button>
+        <button class="btn btn-outline-light" onclick="logout()">Logout</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="page-head">
+        <div>
+          <h1>My Profile</h1>
+          <p>Track your order activities and checkout progress.</p>
+        </div>
+        <button class="btn btn-outline-dark" onclick="refreshProfile()">Refresh</button>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary"><span>Total Orders</span><strong id="totalOrders">0</strong></div>
+        <div class="summary"><span>To Pay</span><strong id="toPayCount">0</strong></div>
+        <div class="summary"><span>Processing</span><strong id="toShipCount">0</strong></div>
+        <div class="summary"><span>Ready</span><strong id="toReceiveCount">0</strong></div>
+      </div>
+
+      <section id="accountSettingsSection">
+        <div class="page-head">
+          <div>
+            <h1 style="font-size:32px;">Account Settings</h1>
+            <p>Keep your customer details updated for smoother checkout and order updates.</p>
+          </div>
+        </div>
+        <div class="account-settings-grid">
+          <div class="account-panel">
+            <h2>Customer Details</h2>
+            <div class="account-form-grid">
+              <div class="full">
+                <label for="profileName">Full Name</label>
+                <input id="profileName" class="form-control" placeholder="Full name">
+              </div>
+              <div>
+                <label for="profileEmail">Email</label>
+                <input id="profileEmail" type="email" class="form-control" placeholder="email@example.com">
+              </div>
+              <div>
+                <label for="profilePhone">Contact Number</label>
+                <input id="profilePhone" class="form-control" placeholder="09XXXXXXXXX">
+              </div>
+              <div>
+                <label for="profileBirthday">Birthday</label>
+                <input id="profileBirthday" type="date" class="form-control">
+              </div>
+              <div>
+                <label for="profileGender">Gender</label>
+                <select id="profileGender" class="form-select">
+                  <option value="">Prefer not to say</option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Non-binary">Non-binary</option>
+                </select>
+              </div>
+            </div>
+            <div class="account-actions">
+              <button class="btn btn-dark" type="button" onclick="saveAccountProfile()">Save Changes</button>
+            </div>
+            <p id="accountProfileStatus" class="account-status"></p>
+          </div>
+          <div class="account-panel">
+            <h2>Password</h2>
+            <div class="account-form-grid">
+              <div class="full">
+                <label for="currentProfilePassword">Current Password</label>
+                <div class="profile-password-field">
+                  <input id="currentProfilePassword" type="password" class="form-control" autocomplete="current-password">
+                  <button class="btn btn-outline-dark" type="button" onclick="toggleProfilePassword('currentProfilePassword', this)">Show</button>
+                </div>
+              </div>
+              <div class="full">
+                <label for="newProfilePassword">New Password</label>
+                <div class="profile-password-field">
+                  <input id="newProfilePassword" type="password" class="form-control" autocomplete="new-password">
+                  <button class="btn btn-outline-dark" type="button" onclick="toggleProfilePassword('newProfilePassword', this)">Show</button>
+                </div>
+              </div>
+              <div class="full">
+                <label for="confirmProfilePassword">Confirm New Password</label>
+                <div class="profile-password-field">
+                  <input id="confirmProfilePassword" type="password" class="form-control" autocomplete="new-password">
+                  <button class="btn btn-outline-dark" type="button" onclick="toggleProfilePassword('confirmProfilePassword', this)">Show</button>
+                </div>
+              </div>
+            </div>
+            <div class="account-actions">
+              <button class="btn btn-dark" type="button" onclick="updateAccountPassword()">Update Password</button>
+            </div>
+            <p id="accountPasswordStatus" class="account-status">Use at least 8 characters with uppercase letter, number, and special character.</p>
+          </div>
+        </div>
+      </section>
+      <section id="addressBookSection">
+        <div class="page-head">
+          <div>
+            <h1 style="font-size:32px;">Address Book</h1>
+            <p>Saved delivery details para mas mabilis ang checkout.</p>
+          </div>
+        </div>
+        <div class="address-book-grid">
+          <div class="address-form-panel">
+            <h2 id="addressFormTitle">Save Delivery Address</h2>
+            <div class="address-form-grid">
+              <div>
+                <label for="addressLabel">Label</label>
+                <input id="addressLabel" class="form-control" placeholder="Home, Office, Dorm">
+              </div>
+              <div>
+                <label for="addressPhone">Contact Number</label>
+                <input id="addressPhone" class="form-control" placeholder="09XXXXXXXXX">
+              </div>
+              <div class="full">
+                <label for="addressRecipient">Recipient Name</label>
+                <input id="addressRecipient" class="form-control" placeholder="Full name">
+              </div>
+              <div class="full">
+                <label for="addressLine">Complete Address</label>
+                <textarea id="addressLine" class="form-control" rows="3" placeholder="House/Unit, street, barangay"></textarea>
+              </div>
+              <div>
+                <label for="addressCity">City</label>
+                <input id="addressCity" class="form-control" placeholder="City">
+              </div>
+              <div>
+                <label for="addressProvince">Province</label>
+                <input id="addressProvince" class="form-control" placeholder="Province">
+              </div>
+              <div>
+                <label for="addressPostal">Postal Code</label>
+                <input id="addressPostal" class="form-control" placeholder="Postal code">
+              </div>
+              <label class="address-default-row full">
+                <input id="addressDefault" class="form-check-input" type="checkbox">
+                <span>Set as default address</span>
+              </label>
+              <div class="address-actions full">
+                <button class="btn btn-outline-dark" type="button" onclick="clearAddressForm()">Clear</button>
+                <button class="btn btn-dark" type="button" onclick="saveCustomerAddress()">Save Address</button>
+              </div>
+            </div>
+          </div>
+          <div class="address-list-panel">
+            <h2>Saved Addresses</h2>
+            <div id="addressList" class="address-list"></div>
+          </div>
+        </div>
+      </section>
+      <div id="paymentNotifications" class="notification-list"></div>
+      <section id="installmentDueSection" class="d-none">
+        <div class="page-head">
+          <div>
+            <h1 style="font-size:32px;">Payment Alerts</h1>
+            <p>Important reminders for installments that need attention.</p>
+          </div>
+        </div>
+        <div id="installmentDueAlerts" class="due-alert-grid"></div>
+      </section>
+      <section id="statementSection">
+        <div class="page-head">
+          <div>
+            <h1 style="font-size:32px;">Payment Statement</h1>
+            <p>Summary ng paid amount, remaining balance, due dates, at overdue installments.</p>
+          </div>
+        </div>
+        <div id="statementOverview"></div>
+      </section>
+      <section>
+        <div class="page-head">
+          <div>
+            <h1 style="font-size:32px;">Repair & Warranty Center</h1>
+            <p>Track warranty coverage, repair requests, and service progress.</p>
+          </div>
+        </div>
+        <div id="repairWarrantyList" class="repair-list"></div>
+      </section>
+
+      <section>
+        <div class="page-head">
+          <div>
+            <h1 style="font-size:32px;">Wishlist</h1>
+            <p>Saved products you may want to buy later.</p>
+          </div>
+        </div>
+        <div id="wishlistList" class="orders-list"></div>
+      </section>
+
+      <section id="notificationsSection">
+        <div class="page-head">
+          <div>
+            <h1 style="font-size:32px;">Notifications</h1>
+            <p>Updates about installments, payments, and orders.</p>
+          </div>
+          <div class="notification-actions">
+            <button class="btn btn-outline-dark" onclick="loadNotifications()">Refresh</button>
+            <button class="btn btn-outline-dark" onclick="markAllNotificationsRead()">Mark All Read</button>
+            <button class="btn btn-dark" onclick="clearReadNotifications()">Clear Read</button>
+          </div>
+        </div>
+        <div class="notification-toolbar">
+          <div class="notification-summary">
+            <span id="notificationUnreadBadge" class="notification-badge">0</span>
+            <span id="notificationSummaryText">No unread updates</span>
+          </div>
+        </div>
+        <div class="notification-tabs">
+          <button class="notification-filter active" data-notification-filter="all" onclick="setNotificationFilter('all')">All</button>
+          <button class="notification-filter" data-notification-filter="unread" onclick="setNotificationFilter('unread')">Unread</button>
+          <button class="notification-filter" data-notification-filter="order" onclick="setNotificationFilter('order')">Orders</button>
+          <button class="notification-filter" data-notification-filter="payment" onclick="setNotificationFilter('payment')">Payments</button>
+          <button class="notification-filter" data-notification-filter="installment" onclick="setNotificationFilter('installment')">Installments</button>
+          <button class="notification-filter" data-notification-filter="repair" onclick="setNotificationFilter('repair')">Repair</button>
+        </div>
+        <div id="profileNotifications" class="notification-list"></div>
+      </section>
+
+      <section>
+        <div class="page-head">
+          <div>
+            <h1 style="font-size:32px;">My Installments</h1>
+            <p>Track monthly dues, paid schedules, and overdue balances.</p>
+          </div>
+        </div>
+        <div id="installmentScheduleList" class="installment-list"></div>
+      </section>
+
+      <section>
+        <div class="page-head">
+          <div>
+            <h1 style="font-size:32px;">My Orders</h1>
+            <p>Grouped by status para mabilis makita ang activity ng bawat order.</p>
+          </div>
+        </div>
+        <div class="tabs">
+          <button class="tab active" data-filter="all" onclick="setFilter('all')">All Orders</button>
+          <button class="tab" data-filter="to-pay" onclick="setFilter('to-pay')">To Pay</button>
+          <button class="tab" data-filter="to-ship" onclick="setFilter('to-ship')">Processing</button>
+          <button class="tab" data-filter="to-receive" onclick="setFilter('to-receive')">Ready</button>
+          <button class="tab" data-filter="completed" onclick="setFilter('completed')">Completed</button>
+          <button class="tab" data-filter="cancelled" onclick="setFilter('cancelled')">Cancelled</button>
+        </div>
+        <div class="orders-toolbar">
+          <input id="customerOrderSearch" class="form-control" placeholder="Search Order ID, product, status, or payment" oninput="renderOrders()">
+          <div class="orders-toolbar-actions">
+            <span id="customerOrderSearchCount" class="orders-result-count">Showing 0 of 0</span>
+            <button class="btn btn-outline-dark" onclick="clearOrderSearch()">Clear</button>
+          </div>
+        </div>
+        <div id="ordersList" class="orders-list"></div>
+      </section>
+    </main>
+  </div>
+
+
+  <div id="orderModalBackdrop" class="order-modal-backdrop" onclick="closeOrderDetails(event)">
+    <div class="order-modal" onclick="event.stopPropagation()">
+      <div class="order-modal-head">
+        <div>
+          <h2 id="orderModalTitle" class="m-0">Order Details</h2>
+          <p id="orderModalSubtitle" class="text-muted m-0"></p>
+        </div>
+        <button class="btn btn-outline-dark" onclick="closeOrderDetails()">Close</button>
+      </div>
+      <div id="orderModalBody"></div>
+    </div>
+  </div>
+    <script src="/js/order-reference.js"></script>
+<script>
+    let currentUser = null;
+    let customerAccount = null;
+    let currentViewingOrderId = null;
+    let orders = [];
+    let installmentSchedules = [];
+    let customerStatement = null;
+    let notifications = [];
+    let wishlistProducts = [];
+    let activeFilter = "all";
+    let orderLinkHandled = false;
+
+    function money(value) {
+      return `PHP ${Number(value || 0).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })}`;
+    }
+
+    function orderDate(value) {
+      return new Date(value).toLocaleString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function getBucket(order) {
+      const status = order.status || "pending";
+      if (status === "pending") return "to-pay";
+      if (status === "processing") return "to-ship";
+      if (status === "shipped") return "to-receive";
+      if (status === "delivered") return "completed";
+      if (status === "cancelled") return "cancelled";
+      return "to-pay";
+    }
+
+    const CUSTOMER_ORDER_STATUS_LABELS = {
+      pending: "Order Placed",
+      processing: "Processing",
+      shipped: "Ready",
+      delivered: "Completed",
+      cancelled: "Cancelled"
+    };
+
+    const ORDER_TRACKING_STEPS = [
+      { key: "pending", label: "Order Placed", dateField: "created_at" },
+      { key: "processing", label: "Processing", dateField: "processing_at" },
+      { key: "shipped", label: "Ready", dateField: "shipped_at" },
+      { key: "delivered", label: "Completed", dateField: "delivered_at" }
+    ];
+
+    function orderStatusIndex(status) {
+      const index = ORDER_TRACKING_STEPS.findIndex(step => step.key === (status || "pending"));
+      return index >= 0 ? index : 0;
+    }
+
+    function trackingDate(order, step, isDone) {
+      const value = order[step.dateField] || (step.key === "pending" ? order.created_at : null);
+      if (!value || !isDone) return "Waiting";
+      return orderDate(value);
+    }
+
+    function orderTrackingHtml(order, compact = false) {
+      const status = order.status || "pending";
+      if (status === "cancelled") {
+        return `<div class="tracking-cancelled">Order cancelled${order.cancellation_admin_note ? `: ${escapeHtml(order.cancellation_admin_note)}` : ""}</div>`;
+      }
+
+      const activeIndex = orderStatusIndex(status);
+      return `
+        <div class="tracking-timeline ${compact ? "compact" : ""}">
+          ${ORDER_TRACKING_STEPS.map((step, index) => {
+            const isDone = index <= activeIndex;
+            const isCurrent = index === activeIndex;
+            return `
+              <div class="tracking-step ${isDone ? "done" : ""} ${isCurrent ? "current" : ""}">
+                <span class="tracking-dot"></span>
+                <strong>${escapeHtml(step.label)}</strong>
+                <span>${escapeHtml(trackingDate(order, step, isDone))}</span>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+    function statusHistoryHtml(order) {
+      const history = Array.isArray(order.status_history) ? order.status_history : [];
+      if (!history.length) return "";
+
+      return `
+        <div class="tracking-history">
+          <div class="tracking-history-title">Tracking History</div>
+          ${history.map(item => `
+            <div class="tracking-history-item">
+              <div>
+                <strong>${escapeHtml(CUSTOMER_ORDER_STATUS_LABELS[item.status] || item.status)}</strong>
+                <span>${escapeHtml(orderDate(item.created_at))}</span>
+              </div>
+              <div>
+                <strong>${escapeHtml(item.note || "Status updated.")}</strong>
+                <span>${escapeHtml(item.actor_name || "System")}</span>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function deliveryLine(order) {
+      if (!order.delivery_address) return "";
+      return `<span>Deliver to: ${escapeHtml(order.delivery_address)}</span>`;
+    }
+
+    function deliveryNoteLine(order) {
+      if (!order.delivery_note) return "";
+      return `<span>Note: ${escapeHtml(order.delivery_note)}</span>`;
+    }
+
+    function shippingRegionLabel(order) {
+      const labels = {
+        local: "Local / Nearby Sogod-Bacacay",
+        luzon: "Luzon",
+        visayas: "Visayas"
+      };
+      const key = String(order.shipping_region || "").toLowerCase();
+      return labels[key] || order.shipping_region || "";
+    }
+
+    function shippingLine(order) {
+      const label = shippingRegionLabel(order);
+      const fee = Number(order.shipping_fee || 0);
+      if (!label && !fee) return "";
+      return `<span>Shipping: ${escapeHtml(label || "Delivery")} - ${money(fee)}</span>`;
+    }
+
+    function paymentStatusLabel(order) {
+      const labels = {
+        to_collect: "To Collect",
+        installment_application_pending: "Installment Application Pending",
+        installment_downpayment_pending: "Installment Downpayment Pending",
+        installment_downpayment_paid: "Installment Downpayment Paid",
+        installment_downpayment_expired: "Installment Downpayment Expired",
+        installment_approved_downpayment_pending: "Approved, Waiting Downpayment",
+        installment_active: "Installment Active",
+        installment_rejected: "Installment Rejected",
+        installment_downpayment_failed: "Installment Downpayment Failed",
+        installment_completed: "Installment Completed",
+        pending_verification: "Pending Verification",
+        awaiting_gateway_setup: "Gateway Setup Needed",
+        payment_setup_failed: "Gateway Failed",
+        paid: "Paid",
+        failed: "Failed",
+        expired: "Expired",
+        cancelled: "Cancelled"
+      };
+      const status = order.payment_status || (String(order.payment_method || "cod") === "cod" ? "to_collect" : "pending_verification");
+      return labels[status] || status;
+    }
+
+    function canPayOrder(order) {
+      if (!order.payment_checkout_url) return false;
+      if (order.payment_method === "installment") {
+        return order.payment_status === "installment_downpayment_pending" &&
+          order.installment_application_status === "approved";
+      }
+      return order.payment_status === "pending_verification";
+    }
+
+    function canRefreshPayment(order) {
+      return Boolean(order.payment_checkout_id) || String(order.payment_provider || "").includes("paymongo");
+    }
+
+    function canRetryPayment(order) {
+      const status = order.payment_status || "";
+      if ((order.status || "") === "cancelled") return false;
+      if (["paid", "installment_active", "installment_completed", "installment_rejected"].includes(status)) return false;
+      if (order.payment_method === "installment") {
+        return order.installment_application_status === "approved" &&
+          ["installment_downpayment_pending", "installment_downpayment_failed", "installment_downpayment_expired", "payment_setup_failed"].includes(status);
+      }
+      return ["gcash", "maya", "card"].includes(String(order.payment_method || "").toLowerCase()) &&
+        (!order.payment_checkout_url || ["payment_setup_failed", "failed", "expired", "cancelled"].includes(status));
+    }
+    function cancellationStatusLabel(status) {
+      const labels = {
+        pending: "Cancellation Pending",
+        approved: "Cancellation Approved",
+        rejected: "Cancellation Rejected"
+      };
+      return labels[status] || status || "";
+    }
+
+    function canRequestCancellation(order) {
+      const status = order.status || "pending";
+      return ["pending", "processing"].includes(status) && order.cancellation_request_status !== "pending";
+    }
+
+    function cancellationLine(order) {
+      if (!order.cancellation_request_status) return "";
+      return `
+        <span>Cancel Status: ${escapeHtml(cancellationStatusLabel(order.cancellation_request_status))}</span>
+        ${order.cancellation_reason ? `<span>Cancel Reason: ${escapeHtml(order.cancellation_reason)}</span>` : ""}
+        ${order.cancellation_admin_note ? `<span>Admin Note: ${escapeHtml(order.cancellation_admin_note)}</span>` : ""}
+      `;
+    }
+
+    function repairStatusLabel(status) {
+      const labels = {
+        pending: "Repair Pending",
+        approved: "Repair Approved",
+        rejected: "Repair Rejected"
+      };
+      return labels[status] || status || "";
+    }
+
+    function repairServiceStatusLabel(status) {
+      const labels = {
+        approved: "Approved",
+        item_received: "Item Received",
+        diagnosing: "Diagnosing",
+        repairing: "Repairing",
+        ready_for_pickup: "Ready for Pickup",
+        completed: "Completed"
+      };
+      return labels[status] || status || "Not Started";
+    }
+
+    function isWarrantyActive(order) {
+      if ((order.status || "") !== "delivered") return false;
+      if (!order.warranty_expires_at) return true;
+      return new Date(order.warranty_expires_at).getTime() >= Date.now();
+    }
+
+    function warrantyLine(order) {
+      if ((order.status || "") !== "delivered") return "";
+      const label = order.warranty_expires_at
+        ? `Warranty until: ${formatDate(order.warranty_expires_at)}`
+        : "Warranty: Active";
+      const status = isWarrantyActive(order) ? "Active" : "Expired";
+      return `<span>${escapeHtml(label)} (${status})</span>`;
+    }
+
+    function canRequestRepair(order) {
+      return isWarrantyActive(order) && !["pending", "approved"].includes(order.repair_request_status || "");
+    }
+
+    function repairLine(order) {
+      if (!order.repair_request_status) return "";
+      return `
+        <span>Repair Status: ${escapeHtml(repairStatusLabel(order.repair_request_status))}</span>
+        ${order.repair_request_status === "approved" ? `<span>Repair Progress: ${escapeHtml(repairServiceStatusLabel(order.repair_service_status))}</span>` : ""}
+        ${order.repair_issue ? `<span>Repair Issue: ${escapeHtml(order.repair_issue)}</span>` : ""}
+        ${order.repair_admin_note ? `<span>Repair Instructions: ${escapeHtml(order.repair_admin_note)}</span>` : ""}
+      `;
+    }
+
+
+    function repairStepHtml(order) {
+      if (order.repair_request_status !== "approved") return "";
+      const steps = ["approved", "item_received", "diagnosing", "repairing", "ready_for_pickup", "completed"];
+      const current = order.repair_service_status || "approved";
+      return `
+        <div class="repair-steps">
+          ${steps.map(step => `<span class="repair-step ${step === current ? "active" : ""}">${escapeHtml(repairServiceStatusLabel(step))}</span>`).join("")}
+        </div>
+      `;
+    }
+    function applicationStatusLabel(status) {
+      const labels = {
+        pending: "Pending Review",
+        approved: "Approved",
+        rejected: "Rejected"
+      };
+      return labels[status] || "Not Applied";
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+      return new Date(value).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    function scheduleStatusLabel(status) {
+      const labels = {
+        unpaid: "Unpaid",
+        partial: "Partial",
+        overdue: "Overdue",
+        due_today: "Due Today",
+        due_soon: "Due Soon",
+        current: "Current",
+        paid: "Paid"
+      };
+      return labels[status] || status;
+    }
+
+    function schedulePaymentLabel(schedule) {
+      if ((schedule.status || "") === "paid") return "Paid";
+      const status = schedule.payment_status || "not_started";
+      const labels = {
+        not_started: "No payment link yet",
+        pending_verification: "Waiting for online payment",
+        paid: "Paid",
+        failed: "Payment failed",
+        expired: "Payment expired",
+        cancelled: "Payment cancelled"
+      };
+      return labels[status] || paymentStatusLabel({ payment_status: status, payment_method: "online" });
+    }
+
+    function canPaySchedule(schedule) {
+      const status = schedule.status || "unpaid";
+      const remaining = Math.max(Number(schedule.amount_due || 0) - Number(schedule.amount_paid || 0), 0);
+      return status !== "paid" && remaining > 0;
+    }
+
+
+    function dateOnly(value) {
+      if (!value) return null;
+      const raw = String(value);
+      const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      const date = match
+        ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+        : new Date(value);
+      if (Number.isNaN(date.getTime())) return null;
+      date.setHours(0, 0, 0, 0);
+      return date;
+    }
+
+    function daysUntilDate(value) {
+      const due = dateOnly(value);
+      if (!due) return null;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return Math.round((due.getTime() - today.getTime()) / 86400000);
+    }
+
+    function computedScheduleStatus(schedule) {
+      const remaining = Math.max(Number(schedule.amount_due || 0) - Number(schedule.amount_paid || 0), 0);
+      if ((schedule.status || "") === "paid" || remaining <= 0) return "paid";
+      const days = daysUntilDate(schedule.due_date);
+      if (days !== null && days < 0) return "overdue";
+      if (days === 0) return "due_today";
+      if (days !== null && days <= 7) return "due_soon";
+      if ((schedule.status || "") === "partial") return "partial";
+      return schedule.status || "current";
+    }
+
+    function scheduleAttentionRank(status) {
+      const ranks = { overdue: 1, due_today: 2, due_soon: 3, partial: 4, current: 5, unpaid: 6, paid: 9 };
+      return ranks[status] || 8;
+    }
+
+    function scheduleDueMessage(schedule, status) {
+      const remaining = Math.max(Number(schedule.amount_due || 0) - Number(schedule.amount_paid || 0), 0);
+      const days = daysUntilDate(schedule.due_date);
+      if (status === "overdue") return `Overdue by ${Math.abs(days || 0)} day${Math.abs(days || 0) === 1 ? "" : "s"}. Balance: ${money(remaining)}.`;
+      if (status === "due_today") return `Due today. Amount to pay: ${money(remaining)}.`;
+      if (status === "due_soon") return `Due in ${days} day${days === 1 ? "" : "s"}. Amount to pay: ${money(remaining)}.`;
+      return `Next due on ${formatDate(schedule.due_date)}. Balance: ${money(remaining)}.`;
+    }
+
+    function scheduleActionControls(schedule, idPrefix, buttonClass = "btn-dark") {
+      const pendingOnline = schedule.payment_checkout_url && schedule.payment_status === "pending_verification";
+      if (!canPaySchedule(schedule)) return "";
+      return `
+        <select id="${idPrefix}${schedule.id}" class="form-select form-select-sm" aria-label="Payment method">
+          <option value="gcash" ${(schedule.payment_method || "gcash") === "gcash" ? "selected" : ""}>GCash</option>
+          <option value="maya" ${schedule.payment_method === "maya" ? "selected" : ""}>Maya</option>
+          <option value="card" ${schedule.payment_method === "card" ? "selected" : ""}>Card</option>
+        </select>
+        ${pendingOnline
+          ? `<a class="btn btn-sm ${buttonClass}" href="${escapeHtml(schedule.payment_checkout_url)}">Continue Payment</a>`
+          : `<button class="btn btn-sm ${buttonClass}" onclick="startInstallmentSchedulePayment(${schedule.id})">Pay Now</button>`}
+        ${schedule.payment_checkout_id ? `<button class="btn btn-sm btn-outline-dark" onclick="refreshInstallmentSchedulePayment(${schedule.id})">Refresh</button>` : ""}
+      `;
+    }
+
+    function renderInstallmentDueAlerts() {
+      const section = document.getElementById("installmentDueSection");
+      const container = document.getElementById("installmentDueAlerts");
+      if (!section || !container) return;
+
+      const actionable = installmentSchedules
+        .map(schedule => ({ ...schedule, computed_status: computedScheduleStatus(schedule) }))
+        .filter(schedule => ["overdue", "due_today", "due_soon"].includes(schedule.computed_status))
+        .sort((a, b) => {
+          const rank = scheduleAttentionRank(a.computed_status) - scheduleAttentionRank(b.computed_status);
+          if (rank) return rank;
+          return String(a.due_date || "").localeCompare(String(b.due_date || ""));
+        });
+
+      section.classList.toggle("d-none", actionable.length === 0);
+      if (!actionable.length) {
+        container.innerHTML = "";
+        return;
+      }
+
+      container.innerHTML = actionable.slice(0, 4).map(schedule => {
+        const status = schedule.computed_status;
+        const light = status === "due_soon";
+        const buttonClass = light ? "btn-dark" : "btn-light";
+        return `
+          <article class="due-alert-card ${light ? "light" : ""}">
+            <div>
+              <h3>${escapeHtml(scheduleStatusLabel(status))} - ${orderLabel(schedule.order_id)}</h3>
+              <p>${escapeHtml(scheduleDueMessage(schedule, status))}</p>
+              <div class="due-alert-meta">
+                <span>${escapeHtml(schedule.product_name || "Installment order")}</span>
+                <span>Installment ${escapeHtml(schedule.installment_no || "-")}</span>
+                <span>Due ${escapeHtml(formatDate(schedule.due_date))}</span>
+              </div>
+            </div>
+            <div class="due-alert-actions">
+              ${scheduleActionControls(schedule, "alertScheduleMethod", buttonClass)}
+              <button class="btn btn-sm ${light ? "btn-outline-dark" : "btn-outline-dark"}" onclick="openOrderTracking(${schedule.order_id})">View Statement</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+    function profileFieldValue(id) {
+      return document.getElementById(id)?.value.trim() || "";
+    }
+
+    function dateInputValue(value) {
+      if (!value) return "";
+      const raw = String(value);
+      const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (match) return `${match[1]}-${match[2]}-${match[3]}`;
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
+    }
+
+    function setAccountStatus(id, message, type = "") {
+      const element = document.getElementById(id);
+      if (!element) return;
+      element.className = `account-status ${type}`.trim();
+      element.innerText = message || "";
+    }
+
+    function fillAccountForm(user) {
+      if (!user) return;
+      document.getElementById("profileName").value = user.name || "";
+      document.getElementById("profileEmail").value = user.email || "";
+      document.getElementById("profilePhone").value = user.phone || "";
+      document.getElementById("profileBirthday").value = dateInputValue(user.birthday);
+      document.getElementById("profileGender").value = user.gender || "";
+      document.getElementById("customerName").innerText = user.name || "Customer";
+      document.getElementById("customerEmail").innerText = user.email || "";
+    }
+
+    function syncCurrentUser(user) {
+      currentUser = { ...currentUser, ...user, role: String(user.role || currentUser.role || "customer").toLowerCase() };
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+      customerAccount = currentUser;
+      fillAccountForm(currentUser);
+    }
+
+    function accountPayload() {
+      return {
+        name: profileFieldValue("profileName"),
+        email: profileFieldValue("profileEmail"),
+        phone: profileFieldValue("profilePhone"),
+        birthday: profileFieldValue("profileBirthday"),
+        gender: profileFieldValue("profileGender")
+      };
+    }
+
+    async function loadCustomerAccount() {
+      if (!currentUser?.id) return;
+      try {
+        const res = await fetch(`/auth/profile/${currentUser.id}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Unable to load account details.");
+        syncCurrentUser(data.user);
+      } catch (error) {
+        fillAccountForm(currentUser);
+        setAccountStatus("accountProfileStatus", "Account details are unavailable right now.", "error");
+      }
+    }
+
+    async function saveAccountProfile() {
+      const payload = accountPayload();
+      if (!payload.name || !payload.email || !payload.phone || !payload.birthday) {
+        setAccountStatus("accountProfileStatus", "Please complete name, email, birthday, and contact number.", "error");
+        return;
+      }
+
+      setAccountStatus("accountProfileStatus", "Saving account details...");
+      try {
+        const res = await fetch(`/auth/profile/${currentUser.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Unable to update profile.");
+        syncCurrentUser(data.user);
+        setAccountStatus("accountProfileStatus", data.message || "Profile updated.", "success");
+      } catch (error) {
+        setAccountStatus("accountProfileStatus", error.message || "Unable to update profile.", "error");
+      }
+    }
+
+    function toggleProfilePassword(id, button) {
+      const input = document.getElementById(id);
+      if (!input) return;
+      const hidden = input.type === "password";
+      input.type = hidden ? "text" : "password";
+      if (button) button.innerText = hidden ? "Hide" : "Show";
+    }
+
+    function clearPasswordFields() {
+      ["currentProfilePassword", "newProfilePassword", "confirmProfilePassword"].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.value = "";
+      });
+    }
+
+    async function updateAccountPassword() {
+      const payload = {
+        current_password: profileFieldValue("currentProfilePassword"),
+        new_password: profileFieldValue("newProfilePassword"),
+        confirm_password: profileFieldValue("confirmProfilePassword")
+      };
+
+      if (!payload.current_password || !payload.new_password || !payload.confirm_password) {
+        setAccountStatus("accountPasswordStatus", "Please complete all password fields.", "error");
+        return;
+      }
+
+      if (payload.new_password !== payload.confirm_password) {
+        setAccountStatus("accountPasswordStatus", "New password and confirmation do not match.", "error");
+        return;
+      }
+
+      setAccountStatus("accountPasswordStatus", "Updating password...");
+      try {
+        const res = await fetch(`/auth/profile/${currentUser.id}/password`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Unable to update password.");
+        clearPasswordFields();
+        setAccountStatus("accountPasswordStatus", data.message || "Password updated.", "success");
+      } catch (error) {
+        setAccountStatus("accountPasswordStatus", error.message || "Unable to update password.", "error");
+      }
+    }
+    function addressValue(id) {
+      return document.getElementById(id)?.value.trim() || "";
+    }
+
+    function fullAddressLine(address) {
+      return [address.address, address.city, address.province, address.postal_code]
+        .filter(Boolean)
+        .join(", ");
+    }
+
+    function clearAddressForm() {
+      editingAddressId = null;
+      document.getElementById("addressFormTitle").innerText = "Save Delivery Address";
+      ["addressLabel", "addressRecipient", "addressPhone", "addressLine", "addressCity", "addressProvince", "addressPostal"].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.value = "";
+      });
+      const defaultInput = document.getElementById("addressDefault");
+      if (defaultInput) defaultInput.checked = customerAddresses.length === 0;
+    }
+
+    function renderAddressBook() {
+      const container = document.getElementById("addressList");
+      if (!container) return;
+
+      if (!customerAddresses.length) {
+        container.innerHTML = `<div class="empty-state">No saved address yet. Add one para mabilis na sa next checkout.</div>`;
+        clearAddressForm();
+        return;
+      }
+
+      container.innerHTML = customerAddresses.map(address => `
+        <article class="address-card ${Number(address.is_default || 0) ? "default" : ""}">
+          <div class="address-card-head">
+            <div>
+              <h3>${escapeHtml(address.label || "Address")}</h3>
+              <p>${escapeHtml(address.recipient_name || "Customer")} - ${escapeHtml(address.phone || "No contact")}</p>
+            </div>
+            ${Number(address.is_default || 0) ? `<span class="address-badge">Default</span>` : ""}
+          </div>
+          <p>${escapeHtml(fullAddressLine(address) || "No address line")}</p>
+          <div class="address-card-actions">
+            ${Number(address.is_default || 0) ? "" : `<button class="btn btn-sm btn-outline-dark" onclick="setDefaultAddress(${address.id})">Set Default</button>`}
+            <button class="btn btn-sm btn-outline-dark" onclick="editCustomerAddress(${address.id})">Edit</button>
+            <button class="btn btn-sm btn-dark" onclick="deleteCustomerAddress(${address.id})">Delete</button>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function editCustomerAddress(id) {
+      const address = customerAddresses.find(item => Number(item.id) === Number(id));
+      if (!address) return;
+      editingAddressId = Number(address.id);
+      document.getElementById("addressFormTitle").innerText = "Edit Delivery Address";
+      document.getElementById("addressLabel").value = address.label || "";
+      document.getElementById("addressRecipient").value = address.recipient_name || "";
+      document.getElementById("addressPhone").value = address.phone || "";
+      document.getElementById("addressLine").value = address.address || "";
+      document.getElementById("addressCity").value = address.city || "";
+      document.getElementById("addressProvince").value = address.province || "";
+      document.getElementById("addressPostal").value = address.postal_code || "";
+      document.getElementById("addressDefault").checked = Number(address.is_default || 0) === 1;
+      document.getElementById("addressBookSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function loadCustomerAddresses() {
+      const container = document.getElementById("addressList");
+      if (container) container.innerHTML = `<div class="empty-state">Loading saved addresses...</div>`;
+
+      try {
+        const res = await fetch(`/customer/addresses/${currentUser.id}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Unable to load addresses.");
+        customerAddresses = Array.isArray(data) ? data : [];
+      } catch (error) {
+        customerAddresses = [];
+        if (container) container.innerHTML = `<div class="empty-state">Saved addresses are unavailable right now.</div>`;
+        return;
+      }
+
+      renderAddressBook();
+    }
+
+    async function saveCustomerAddress() {
+      const payload = {
+        user_id: currentUser.id,
+        label: addressValue("addressLabel") || "Home",
+        recipient_name: addressValue("addressRecipient"),
+        phone: addressValue("addressPhone"),
+        address: addressValue("addressLine"),
+        city: addressValue("addressCity"),
+        province: addressValue("addressProvince"),
+        postal_code: addressValue("addressPostal"),
+        is_default: document.getElementById("addressDefault")?.checked ? 1 : 0
+      };
+
+      if (!payload.recipient_name || !payload.phone || !payload.address) {
+        alert("Please complete recipient name, contact number, and complete address.");
+        return;
+      }
+
+      const url = editingAddressId ? `/customer/addresses/${editingAddressId}` : "/customer/addresses";
+      const method = editingAddressId ? "PUT" : "POST";
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Unable to save address.");
+        customerAddresses = Array.isArray(data.addresses) ? data.addresses : customerAddresses;
+        clearAddressForm();
+        renderAddressBook();
+        alert(data.message || "Address saved.");
+      } catch (error) {
+        alert(error.message || "Unable to save address.");
+      }
+    }
+
+    async function setDefaultAddress(id) {
+      try {
+        const res = await fetch(`/customer/addresses/${id}/default`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: currentUser.id })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Unable to update default address.");
+        customerAddresses = Array.isArray(data.addresses) ? data.addresses : customerAddresses;
+        renderAddressBook();
+      } catch (error) {
+        alert(error.message || "Unable to update default address.");
+      }
+    }
+
+    async function deleteCustomerAddress(id) {
+      const address = customerAddresses.find(item => Number(item.id) === Number(id));
+      if (!confirm(`Delete ${address?.label || "this address"}?`)) return;
+
+      try {
+        const res = await fetch(`/customer/addresses/${id}?user_id=${currentUser.id}`, { method: "DELETE" });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Unable to delete address.");
+        customerAddresses = Array.isArray(data.addresses) ? data.addresses : customerAddresses.filter(item => Number(item.id) !== Number(id));
+        clearAddressForm();
+        renderAddressBook();
+      } catch (error) {
+        alert(error.message || "Unable to delete address.");
+      }
+    }
+    function setFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.classList.toggle("active", tab.dataset.filter === filter);
+      });
+      renderOrders();
+    }
+
+    function renderSummary() {
+      document.getElementById("totalOrders").innerText = orders.length;
+      document.getElementById("toPayCount").innerText = orders.filter(order => getBucket(order) === "to-pay").length;
+      document.getElementById("toShipCount").innerText = orders.filter(order => getBucket(order) === "to-ship").length;
+      document.getElementById("toReceiveCount").innerText = orders.filter(order => getBucket(order) === "to-receive").length;
+    }
+
+
+    function statementDueLabel(statement) {
+      if (Number(statement.overdue_count || 0) > 0) return "Overdue";
+      if (Number(statement.balance || 0) <= 0) return "Paid";
+      if (statement.next_due_date) return "Current";
+      return "Pending";
+    }
+
+    function renderCustomerStatementOverview() {
+      const container = document.getElementById("statementOverview");
+      if (!container) return;
+      if (!customerStatement) {
+        container.innerHTML = `<div class="empty-state">Loading payment statement...</div>`;
+        return;
+      }
+
+      const summary = customerStatement.summary || {};
+      const statements = Array.isArray(customerStatement.soa) ? customerStatement.soa : [];
+      const installmentStatements = statements.filter(statement =>
+        statement.payment_method === "installment" || Number(statement.installment_terms || 0) > 0 || (statement.schedules || []).length
+      );
+
+      if (!statements.length) {
+        container.innerHTML = `<div class="empty-state">No payment statement yet.</div>`;
+        return;
+      }
+
+      const rows = installmentStatements.slice(0, 4).map(statement => `
+        <article class="statement-order-row">
+          <div>
+            <strong>${escapeHtml(orderLabel(statement.order_id))}</strong>
+            <span>${escapeHtml(statement.product_name || "Installment order")}</span>
+            <span>Next due: ${statement.next_due_date ? `${formatDate(statement.next_due_date)} / ${money(statement.next_due_amount)}` : "None"}</span>
+          </div>
+          <div class="text-end">
+            <strong>${money(statement.balance)}</strong>
+            <span>${escapeHtml(statementDueLabel(statement))}</span>
+            <button class="btn btn-sm btn-outline-dark mt-2" onclick="openOrderTracking(${statement.order_id})">View Statement</button>
+          </div>
+        </article>
+      `).join("");
+
+      container.innerHTML = `
+        <div class="statement-overview-grid">
+          <div class="statement-card"><span>Total Paid</span><strong>${money(summary.total_paid)}</strong></div>
+          <div class="statement-card light"><span>Remaining Balance</span><strong>${money(summary.total_balance)}</strong></div>
+          <div class="statement-card light"><span>Overdue</span><strong>${money(summary.overdue_amount)}</strong></div>
+          <div class="statement-card"><span>Next Due</span><strong>${summary.next_due_date ? `${formatDate(summary.next_due_date)} / ${money(summary.next_due_amount)}` : "None"}</strong></div>
+        </div>
+        <div class="statement-orders">
+          ${rows || `<div class="empty-state">No active installment ledger yet.</div>`}
+        </div>
+      `;
+    }
+
+    async function loadCustomerStatement() {
+      const container = document.getElementById("statementOverview");
+      if (container) container.innerHTML = `<div class="empty-state">Loading payment statement...</div>`;
+      try {
+        const res = await fetch(`/soa/${currentUser.id}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Unable to load statement.");
+        customerStatement = data;
+      } catch (error) {
+        customerStatement = { summary: {}, soa: [] };
+      }
+      renderCustomerStatementOverview();
+    }
+
+    async function refreshProfile() {
+      await Promise.all([
+        loadCustomerAccount(),
+        loadOrders(),
+        loadInstallmentSchedules(),
+        loadCustomerStatement(),
+        loadNotifications(),
+        loadCustomerAddresses()
+      ]);
+    }
+    function renderPaymentNotifications() {
+      const container = document.getElementById("paymentNotifications");
+      const approvedInstallments = orders.filter(order =>
+        order.payment_method === "installment" &&
+        order.payment_status === "installment_downpayment_pending" &&
+        order.installment_application_status === "approved" &&
+        order.payment_checkout_url
+      );
+      const pendingInstallments = orders.filter(order =>
+        order.payment_method === "installment" &&
+        order.payment_status === "installment_application_pending" &&
+        order.installment_application_status === "pending"
+      );
+
+      if (!approvedInstallments.length && !pendingInstallments.length) {
+        container.innerHTML = "";
+        return;
+      }
+
+      container.innerHTML = [
+        ...approvedInstallments.map(order => `
+          <div class="notification-card">
+            <div>
+              <strong>Installment approved for ${orderLabel(order)}</strong>
+              <span class="text-muted">You can now pay your downpayment to activate the installment schedule.</span>
+            </div>
+            <a class="btn btn-dark" href="${escapeHtml(order.payment_checkout_url)}">Pay Downpayment</a>
+          </div>
+        `),
+        ...pendingInstallments.map(order => `
+          <div class="notification-card">
+            <div>
+              <strong>Installment application pending for ${orderLabel(order)}</strong>
+              <span class="text-muted">Admin is still reviewing your National ID verification. Downpayment will be available after approval.</span>
+            </div>
+            <span class="status-pill">Pending</span>
+          </div>
+        `)
+      ].join("");
+    }
+
+    function orderItemsTitle(order) {
+      const items = Array.isArray(order.items) ? order.items : [];
+      if (items.length <= 1) return order.product_name || "Product";
+      return `${items.length} items`;
+    }
+
+    function orderItemsMeta(order) {
+      const items = Array.isArray(order.items) ? order.items : [];
+      if (items.length <= 1) {
+        return `
+              <span>Qty: ${order.quantity}</span>
+              ${order.variant_name ? `<span>Variant: ${escapeHtml(order.variant_name)}</span>` : ""}
+        `;
+      }
+
+      return `<span>${items.map(item => `${escapeHtml(item.product_name || "Product")} x${item.quantity}`).join(" | ")}</span>`;
+    }
+
+    function parseImages(value) {
+      try {
+        const parsed = value ? JSON.parse(value) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function orderItems(order) {
+      const items = Array.isArray(order.items) && order.items.length
+        ? order.items
+        : [{
+            product_id: order.product_id,
+            product_name: order.product_name || "Product",
+            variant_name: order.variant_name || "Default",
+            quantity: order.quantity || 1,
+            unit_price: order.variant_price || Number(order.total_price || 0) / Math.max(Number(order.quantity || 1), 1),
+            subtotal: order.total_price || 0,
+            product_image: order.product_image
+          }];
+
+      return items.map(item => ({
+        ...item,
+        product_image: item.product_image || order.product_image || parseImages(order.product_images)[0] || "https://via.placeholder.com/160x160?text=Product"
+      }));
+    }
+
+    function orderImage(order) {
+      return orderItems(order)[0]?.product_image || "https://via.placeholder.com/160x160?text=Product";
+    }
+
+    function bucketLabel(bucket) {
+      const labels = {
+        "to-pay": "To Pay",
+        "to-ship": "Processing",
+        "to-receive": "Ready",
+        completed: "Completed",
+        cancelled: "Cancelled"
+      };
+      return labels[bucket] || bucket;
+    }
+
+    function customerOrderLink(orderId) {
+      const url = new URL("/customer/order.html", window.location.origin);
+      url.searchParams.set("order_id", orderId);
+      return url.toString();
+    }
+
+    function openOrderTracking(orderId) {
+      window.location.href = `/customer/order.html?order_id=${orderId}`;
+    }
+
+    function setCustomerOrderUrl(orderId) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("order", orderId);
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    function clearCustomerOrderUrl() {
+      const url = new URL(window.location.href);
+      if (!url.searchParams.has("order")) return;
+      url.searchParams.delete("order");
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    async function copyTextToClipboard(text, successMessage) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const input = document.createElement("textarea");
+          input.value = text;
+          input.setAttribute("readonly", "readonly");
+          input.style.position = "fixed";
+          input.style.opacity = "0";
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand("copy");
+          input.remove();
+        }
+        alert(successMessage);
+      } catch (error) {
+        prompt("Copy this:", text);
+      }
+    }
+
+    function copyOrderId(orderId) {
+      copyTextToClipboard(orderReference(orderId), `Copied ${orderLabel(orderId)}.`);
+    }
+
+    function copyOrderLink(orderId) {
+      copyTextToClipboard(customerOrderLink(orderId), `Copied link for ${orderLabel(orderId)}.`);
+    }
+
+    async function refreshPaymentStatus(orderId) {
+      try {
+        const res = await fetch(`/payments/paymongo/status/${orderId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || "Unable to refresh payment status.");
+          await loadOrders();
+          return;
+        }
+
+        await loadOrders();
+        if (currentViewingOrderId && Number(currentViewingOrderId) === Number(orderId)) {
+          viewOrderDetails(orderId);
+        }
+        alert(`Payment status: ${paymentStatusLabel({ payment_status: data.payment_status, payment_method: "online" })}`);
+      } catch (error) {
+        alert(error.message || "Unable to refresh payment status.");
+      }
+    }
+
+    function getProfileCart() {
+      try {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        return Array.isArray(cart) ? cart : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveProfileCart(cart) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    function productVariantsFromProfile(product) {
+      try {
+        const variants = product?.variants ? JSON.parse(product.variants) : [];
+        return Array.isArray(variants) ? variants : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function findReorderVariantIndex(item, product) {
+      const variants = productVariantsFromProfile(product);
+      const rawIndex = item.variant_index;
+      if (rawIndex !== undefined && rawIndex !== null && rawIndex !== "") {
+        const index = Number(rawIndex);
+        if (Number.isInteger(index) && variants[index]) return index;
+      }
+
+      const orderedVariant = String(item.variant_name || "").trim().toLowerCase();
+      if (!orderedVariant || orderedVariant === "default") return "";
+      const matchedIndex = variants.findIndex(variant => String(variant.name || "").trim().toLowerCase() === orderedVariant);
+      return matchedIndex >= 0 ? matchedIndex : "";
+    }
+
+    function reorderCartKey(productId, variantIndex) {
+      return `${productId}_${variantIndex === null || variantIndex === undefined ? "" : variantIndex}`;
+    }
+
+    function reorderItemSummary(items) {
+      if (items.length === 1) return items[0].product_name || "1 item";
+      return `${items.length} items`;
+    }
+
+    async function buyAgain(orderId) {
+      const order = orders.find(item => Number(item.id) === Number(orderId));
+      if (!order) return alert("Order not found.");
+
+      const sourceItems = orderItems(order).filter(item => Number(item.product_id));
+      if (!sourceItems.length) return alert("This order has no product details available for reorder.");
+
+      try {
+        const res = await fetch("/products");
+        const products = await res.json();
+        if (!res.ok || !Array.isArray(products)) throw new Error("Unable to check latest product stock.");
+
+        const cart = getProfileCart();
+        const skipped = [];
+        let addedCount = 0;
+
+        sourceItems.forEach(item => {
+          const product = products.find(entry => Number(entry.id) === Number(item.product_id));
+          if (!product) {
+            skipped.push(`${item.product_name || "Product"} is no longer available`);
+            return;
+          }
+
+          const variantIndex = findReorderVariantIndex(item, product);
+          const variants = productVariantsFromProfile(product);
+          if (variants.length && variantIndex === "") {
+            skipped.push(`${product.name || item.product_name || "Product"} needs variant selection again`);
+            return;
+          }
+          const variant = variantIndex !== "" ? variants[Number(variantIndex)] : null;
+          const stock = Number(variant ? variant.stock : product.stock || 0);
+          if (stock <= 0) {
+            skipped.push(`${product.name || item.product_name || "Product"} is out of stock`);
+            return;
+          }
+
+          const key = reorderCartKey(product.id, variantIndex);
+          const existing = cart.find(entry => entry.key === key);
+          const requestedQty = Math.max(Number(item.quantity || 1), 1);
+          const existingQty = existing ? Number(existing.quantity || 0) : 0;
+          const addQty = Math.min(requestedQty, Math.max(stock - existingQty, 0));
+
+          if (addQty <= 0) {
+            skipped.push(`${product.name || item.product_name || "Product"} already reached available stock in cart`);
+            return;
+          }
+
+          if (existing) {
+            existing.quantity = existingQty + addQty;
+            existing.stock = stock;
+            existing.price = Number(variant ? variant.price : product.price || item.unit_price || 0);
+            existing.selected = true;
+          } else {
+            cart.push({
+              key,
+              product_id: Number(product.id),
+              variant_index: variantIndex,
+              name: product.name || item.product_name || "Product",
+              variant_name: variant ? variant.name : (item.variant_name || "Default"),
+              price: Number(variant ? variant.price : product.price || item.unit_price || 0),
+              stock,
+              quantity: addQty,
+              selected: true
+            });
+          }
+
+          addedCount += addQty;
+        });
+
+        if (!addedCount) {
+          alert(skipped.join("\n") || "No items were added to cart.");
+          return;
+        }
+
+        saveProfileCart(cart);
+        localStorage.setItem("openCartOnShop", "1");
+        const note = skipped.length ? `\n\nSome items were skipped:\n${skipped.join("\n")}` : "";
+        alert(`Added ${addedCount} item(s) from ${orderLabel(order)} to cart.${note}`);
+        window.location.href = "/customer/shop.html?cart=open";
+      } catch (error) {
+        alert(error.message || "Unable to add this order to cart.");
+      }
+    }
+    async function retryPayment(orderId) {
+      try {
+        const res = await fetch(`/payments/paymongo/retry/${orderId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: currentUser.id })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || "Unable to regenerate payment link.");
+          await loadOrders();
+          return;
+        }
+
+        if (data.payment_checkout_url) {
+          window.location.href = data.payment_checkout_url;
+          return;
+        }
+
+        await loadOrders();
+        alert(data.message || "New payment link generated.");
+      } catch (error) {
+        alert(error.message || "Unable to regenerate payment link.");
+      }
+    }
+    function customerOrderSearchText(order) {
+      const items = orderItems(order);
+      return [
+        orderReference(order),
+        orderLabel(order),
+        order.id,
+        orderItemsTitle(order),
+        order.status,
+        paymentStatusLabel(order),
+        order.payment_method,
+        order.payment_status,
+        order.repair_request_status,
+        ...items.flatMap(item => [item.product_name, item.variant_name, item.quantity])
+      ].join(" ").toLowerCase();
+    }
+
+    function clearOrderSearch() {
+      const input = document.getElementById("customerOrderSearch");
+      if (input) input.value = "";
+      renderOrders();
+    }
+    function orderCard(order) {
+      const items = orderItems(order);
+      const previewItems = items.slice(0, 3);
+      return `
+        <article class="order-card has-image">
+          <img class="order-image" src="${escapeHtml(orderImage(order))}" alt="${escapeHtml(orderItemsTitle(order))}">
+          <div>
+            <h3>${orderLabel(order)} - ${escapeHtml(orderItemsTitle(order))}</h3>
+            <div class="order-meta">
+              <span>${orderDate(order.created_at)}</span>
+              ${orderItemsMeta(order)}
+              <span>Payment: ${String(order.payment_method || "cod").toUpperCase()}</span>
+              <span>Payment Status: ${paymentStatusLabel(order)}</span>
+              ${order.payment_last_checked_at ? `<span>Payment Checked: ${orderDate(order.payment_last_checked_at)}</span>` : ""}
+              ${deliveryLine(order)}
+              ${deliveryNoteLine(order)}
+              ${shippingLine(order)}
+              ${cancellationLine(order)}
+              ${warrantyLine(order)}
+              ${repairLine(order)}
+              <strong>${money(order.total_price)}</strong>
+            </div>
+            ${orderTrackingHtml(order, true)}
+            ${items.length > 1 ? `
+              <div class="order-items-preview">
+                ${previewItems.map(item => `
+                  <div class="order-item-mini">
+                    <img src="${escapeHtml(item.product_image)}" alt="${escapeHtml(item.product_name || "Product")}">
+                    <span>${escapeHtml(item.product_name || "Product")} x${item.quantity}</span>
+                  </div>
+                `).join("")}
+                ${items.length > previewItems.length ? `<span class="text-muted">+${items.length - previewItems.length} more item(s)</span>` : ""}
+              </div>
+            ` : ""}
+            <div class="order-actions">
+              <button class="btn btn-dark" onclick="openOrderTracking(${order.id})">View Order</button>
+              <button class="btn btn-outline-dark" onclick="copyOrderId(${order.id})">Copy ID</button>
+              <button class="btn btn-outline-dark" onclick="buyAgain(${order.id})">Buy Again</button>
+              ${canPayOrder(order) ? `<a class="btn btn-outline-dark" href="${escapeHtml(order.payment_checkout_url)}">Pay Now</a>` : ""}
+              ${canRetryPayment(order) ? `<button class="btn btn-dark" onclick="retryPayment(${order.id})">${order.payment_method === "installment" ? "Retry Downpayment" : "Retry Payment"}</button>` : ""}
+              ${canRefreshPayment(order) ? `<button class="btn btn-outline-dark" onclick="refreshPaymentStatus(${order.id})">Refresh Payment</button>` : ""}
+              ${canRequestCancellation(order) ? `<button class="btn btn-outline-dark" onclick="requestCancellation(${order.id})">Request Cancel</button>` : ""}
+              ${canRequestRepair(order) ? `<button class="btn btn-outline-dark" onclick="requestRepair(${order.id})">Request Repair</button>` : ""}
+              ${canReviewOrder(order) ? `<button class="btn btn-outline-dark" onclick="goToReview(${order.id})">Write Review</button>` : ""}
+            </div>
+          </div>
+          <span class="status-pill status-${order.status || "pending"}">${order.status || "pending"}</span>
+        </article>
+      `;
+    }    function renderOrders() {
+      const container = document.getElementById("ordersList");
+      const buckets = ["to-pay", "to-ship", "to-receive", "completed", "cancelled"];
+      const visibleBuckets = activeFilter === "all" ? buckets : [activeFilter];
+      const search = document.getElementById("customerOrderSearch")?.value.trim().toLowerCase() || "";
+      const matchingOrders = search ? orders.filter(order => customerOrderSearchText(order).includes(search)) : orders;
+      const searchCount = document.getElementById("customerOrderSearchCount");
+      if (searchCount) searchCount.innerText = `Showing ${matchingOrders.length} of ${orders.length}`;
+      const sections = visibleBuckets.map(bucket => {
+        const list = matchingOrders.filter(order => getBucket(order) === bucket);
+        if (!list.length && activeFilter !== "all") {
+          return `
+            <div class="empty-state">
+              <h4>${search ? "No matching orders" : "No orders here"}</h4>
+              <p class="mb-0">${search ? "Try another Order ID, product, status, or payment keyword." : "Orders will appear here once their status matches this tag."}</p>
+            </div>
+          `;
+        }
+        if (!list.length) return "";
+
+        return `
+          <section class="orders-section">
+            <div class="orders-section-head">
+              <h2>${bucketLabel(bucket)}</h2>
+              <span class="status-pill">${list.length}</span>
+            </div>
+            <div class="orders-list">
+              ${list.map(orderCard).join("")}
+            </div>
+          </section>
+        `;
+      }).join("");
+
+      container.innerHTML = sections || `
+        <div class="empty-state">
+          <h4>${search ? "No matching orders" : "No orders yet"}</h4>
+          <p class="mb-0">${search ? "Try another Order ID, product, status, or payment keyword." : "Your orders will appear here after checkout."}</p>
+        </div>
+      `;
+    }
+
+
+    function renderRepairWarrantyCenter() {
+      const container = document.getElementById("repairWarrantyList");
+      if (!container) return;
+
+      const trackedOrders = orders.filter(order => {
+        return (order.status || "") === "delivered" || Boolean(order.repair_request_status);
+      });
+
+      if (!trackedOrders.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h4>No warranty or repair activity yet</h4>
+            <p class="mb-0">Completed orders with warranty coverage will appear here.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = trackedOrders.map(order => {
+        const warrantyActive = isWarrantyActive(order);
+        const warrantyText = order.warranty_expires_at
+          ? `Warranty until ${formatDate(order.warranty_expires_at)}`
+          : ((order.status || "") === "delivered" ? "Warranty active" : "Warranty not active yet");
+        const repairText = order.repair_request_status
+          ? repairStatusLabel(order.repair_request_status)
+          : "No repair request";
+
+        return `
+          <article class="repair-card">
+            <img src="${escapeHtml(orderImage(order))}" alt="${escapeHtml(orderItemsTitle(order))}">
+            <div>
+              <h3>${orderLabel(order)} - ${escapeHtml(orderItemsTitle(order))}</h3>
+              <div class="order-meta">
+                <span>${orderDate(order.created_at)}</span>
+                <span>${escapeHtml(warrantyText)}</span>
+                <span>${warrantyActive ? "Warranty Active" : "Warranty Expired"}</span>
+                <span>${escapeHtml(repairText)}</span>
+                ${order.repair_issue ? `<span>Issue: ${escapeHtml(order.repair_issue)}</span>` : ""}
+                ${order.repair_admin_note ? `<span>Admin Note: ${escapeHtml(order.repair_admin_note)}</span>` : ""}
+              </div>
+              ${repairStepHtml(order)}
+              <div class="order-actions">
+                <button class="btn btn-dark" onclick="openOrderTracking(${order.id})">View Order</button>
+              <button class="btn btn-outline-dark" onclick="copyOrderId(${order.id})">Copy ID</button>
+              <button class="btn btn-outline-dark" onclick="buyAgain(${order.id})">Buy Again</button>
+                ${canRequestRepair(order) ? `<button class="btn btn-outline-dark" onclick="requestRepair(${order.id})">Request Repair</button>` : ""}
+              </div>
+            </div>
+            <span class="status-pill status-${order.repair_request_status || (warrantyActive ? "delivered" : "cancelled")}">
+              ${order.repair_request_status ? escapeHtml(repairStatusLabel(order.repair_request_status)) : (warrantyActive ? "Covered" : "Expired")}
+            </span>
+          </article>
+        `;
+      }).join("");
+    }
+    function viewOrderDetails(orderId) {
+      currentViewingOrderId = orderId;
+      const order = orders.find(item => Number(item.id) === Number(orderId));
+      if (!order) return;
+      const items = orderItems(order);
+      setCustomerOrderUrl(orderId);
+      document.getElementById("orderModalTitle").innerText = orderLabel(order);
+      document.getElementById("orderModalSubtitle").innerText = `${bucketLabel(getBucket(order))} | ${orderDate(order.created_at)}`;
+      document.getElementById("orderModalBody").innerHTML = `
+        <div class="order-detail-items">
+          ${items.map(item => `
+            <div class="order-detail-item">
+              <img src="${escapeHtml(item.product_image)}" alt="${escapeHtml(item.product_name || "Product")}">
+              <div>
+                <strong>${escapeHtml(item.product_name || "Product")}</strong>
+                <div class="text-muted">Variant: ${escapeHtml(item.variant_name || "Default")}</div>
+                <div class="text-muted">Qty: ${item.quantity}</div>
+              </div>
+              <strong>${money(item.subtotal || Number(item.unit_price || 0) * Number(item.quantity || 1))}</strong>
+            </div>
+          `).join("")}
+        </div>
+        ${orderTrackingHtml(order)}
+        ${statusHistoryHtml(order)}
+        <div class="order-meta mt-3">
+          <span>Status: ${escapeHtml(order.status || "pending")}</span>
+          <span>Payment: ${String(order.payment_method || "cod").toUpperCase()}</span>
+          <span>Payment Status: ${paymentStatusLabel(order)}</span>
+              ${order.payment_last_checked_at ? `<span>Payment Checked: ${orderDate(order.payment_last_checked_at)}</span>` : ""}
+          ${deliveryLine(order)}
+          ${deliveryNoteLine(order)}
+          ${shippingLine(order)}
+          ${cancellationLine(order)}
+          ${warrantyLine(order)}
+          ${repairLine(order)}
+        </div>
+        <div class="order-modal-total mt-3">
+          <span>Total</span>
+          <strong>${money(order.total_price)}</strong>
+        </div>
+        <div class="order-actions">
+          <button class="btn btn-dark" onclick="printCustomerOrderReceipt()">Print Receipt</button>
+          <button class="btn btn-outline-dark" onclick="copyOrderId(${order.id})">Copy ID</button>
+          <button class="btn btn-outline-dark" onclick="copyOrderLink(${order.id})">Copy Link</button>
+          <button class="btn btn-outline-dark" onclick="closeOrderDetails(); buyAgain(${order.id})">Buy Again</button>
+          ${canPayOrder(order) ? `<a class="btn btn-dark" href="${escapeHtml(order.payment_checkout_url)}">Pay Now</a>` : ""}
+          ${canRetryPayment(order) ? `<button class="btn btn-dark" onclick="retryPayment(${order.id})">${order.payment_method === "installment" ? "Retry Downpayment" : "Retry Payment"}</button>` : ""}
+          ${canRefreshPayment(order) ? `<button class="btn btn-outline-dark" onclick="refreshPaymentStatus(${order.id})">Refresh Payment</button>` : ""}
+          ${canRequestCancellation(order) ? `<button class="btn btn-outline-dark" onclick="closeOrderDetails(); requestCancellation(${order.id})">Request Cancel</button>` : ""}
+          ${canRequestRepair(order) ? `<button class="btn btn-outline-dark" onclick="closeOrderDetails(); requestRepair(${order.id})">Request Repair</button>` : ""}
+          ${canReviewOrder(order) ? `<button class="btn btn-outline-dark" onclick="closeOrderDetails(); goToReview(${order.id})">Write Review</button>` : ""}
+        </div>
+      `;
+      document.getElementById("orderModalBackdrop").classList.add("show");
+    }
+
+    function printableCustomerOrderHtml(order) {
+      const items = orderItems(order)
+      const lt = String.fromCharCode(60)
+      const gt = String.fromCharCode(62)
+      function openTag(name) { return lt + name + gt }
+      function closeTag(name) { return lt + "/" + name + gt }
+      function tag(name, content) { return openTag(name) + content + closeTag(name) }
+      const rows = items.map(function (item) {
+        const product = escapeHtml(item.product_name ? item.product_name : "Product")
+        const variant = escapeHtml(item.variant_name ? item.variant_name : "Default")
+        const qty = item.quantity ? item.quantity : 1
+        const subtotal = money(item.subtotal ? item.subtotal : Number(item.unit_price ? item.unit_price : 0) * Number(qty))
+        return tag("tr", tag("td", product) + tag("td", variant) + tag("td", String(qty)) + tag("td", subtotal))
+      }).join("")
+      const orderTitle = orderLabel(order)
+      return lt + "!doctype html" + gt +
+        openTag("html") +
+        openTag("head") + tag("title", orderTitle) + closeTag("head") +
+        openTag("body") +
+        tag("h1", "Sheena's Gadgets & Accessories Shop") +
+        tag("h2", orderTitle) +
+        tag("p", "Customer order receipt") +
+        tag("p", "Date: " + escapeHtml(orderDate(order.created_at))) +
+        tag("p", "Payment: " + escapeHtml(String(order.payment_method ? order.payment_method : "cod").toUpperCase())) +
+        openTag("table") +
+        tag("thead", tag("tr", tag("th", "Product") + tag("th", "Variant") + tag("th", "Qty") + tag("th", "Subtotal"))) +
+        tag("tbody", rows) +
+        closeTag("table") +
+        tag("h2", "Shipping: " + (shippingRegionLabel(order) || "Delivery") + " / " + money(order.shipping_fee || 0)) +
+        tag("h2", "Total: " + money(order.total_price)) +
+        closeTag("body") +
+        closeTag("html")
+    }
+    function printCustomerOrderReceipt() {
+      const order = orders.find(item => Number(item.id) === Number(currentViewingOrderId));
+      if (!order) return;
+      const printWindow = window.open("", "_blank", "width=900,height=720");
+      if (!printWindow) return alert("Please allow pop-ups to print this receipt.");
+      printWindow.document.open();
+      printWindow.document.write(printableCustomerOrderHtml(order));
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => printWindow.print(), 300);
+    }
+    function closeOrderDetails(event) {
+      if (event && event.target.id !== "orderModalBackdrop") return;
+      document.getElementById("orderModalBackdrop")?.classList.remove("show");
+      currentViewingOrderId = null;
+      clearCustomerOrderUrl();
+    }
+
+    function canReviewOrder(order) {
+      return (order.status || "") === "delivered";
+    }
+    async function requestCancellation(orderId) {
+      const reason = prompt("Why do you want to cancel this order?");
+      if (reason === null) return;
+      if (!reason.trim()) {
+        alert("Please enter a cancellation reason.");
+        return;
+      }
+
+      const res = await fetch(`/orders/${orderId}/cancellation-request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: currentUser.id, reason })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Unable to request cancellation.");
+        return;
+      }
+
+      alert("Cancellation request submitted. Admin will review it.");
+      await loadOrders();
+    }
+
+    async function requestRepair(orderId) {
+      const issue = prompt("Describe the issue that needs repair.");
+      if (issue === null) return;
+      if (!issue.trim()) {
+        alert("Please describe the repair issue.");
+        return;
+      }
+
+      const res = await fetch(`/orders/${orderId}/repair-request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: currentUser.id, issue })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Unable to request repair.");
+        return;
+      }
+
+      alert("Repair request submitted. Admin will review it.");
+      await loadOrders();
+    }
+
+
+    function goToReview(orderId) {
+      window.location.href = `/customer/review.html?order_id=${orderId}`;
+    }
+
+    async function submitReview(orderId) {
+      const ratingInput = prompt("Rate this product from 1 to 5");
+      if (ratingInput === null) return;
+
+      const rating = Number(ratingInput);
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+        alert("Please enter a rating from 1 to 5.");
+        return;
+      }
+
+      const comment = prompt("Write a short review", "");
+      if (comment === null) return;
+
+      const res = await fetch("/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order_id: orderId, user_id: currentUser.id, rating, comment })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Unable to submit review.");
+        return;
+      }
+
+      alert("Review submitted. Thank you!");
+      await loadOrders();
+    }
+    function wishlistIds() {
+      try { return JSON.parse(localStorage.getItem("wishlist") || "[]").map(Number); } catch (error) { return []; }
+    }
+
+    function removeWishlist(productId) {
+      const next = wishlistIds().filter(id => id !== Number(productId));
+      localStorage.setItem("wishlist", JSON.stringify(next));
+      renderWishlist();
+    }
+
+    function productImage(product) {
+      try {
+        const images = product.images ? JSON.parse(product.images) : [];
+        if (Array.isArray(images) && images.length) return images[0];
+      } catch (error) {}
+      return product.image || "https://via.placeholder.com/220x220?text=Product";
+    }
+
+    function renderWishlist() {
+      const container = document.getElementById("wishlistList");
+      if (!container) return;
+      const ids = wishlistIds();
+      const saved = wishlistProducts.filter(product => ids.includes(Number(product.id)));
+      if (!saved.length) {
+        container.innerHTML = `<div class="empty-state">No saved products yet.</div>`;
+        return;
+      }
+      container.innerHTML = saved.map(product => `
+        <article class="order-card has-image">
+          <img class="order-image" src="${escapeHtml(productImage(product))}" alt="${escapeHtml(product.name)}">
+          <div>
+            <h3>${escapeHtml(product.name)}</h3>
+            <div class="order-meta">
+              <strong>${money(product.price)}</strong>
+              <span>Stock: ${product.stock || 0}</span>
+            </div>
+            <div class="order-actions">
+              <a class="btn btn-dark" href="/customer/product.html?id=${product.id}">View Product</a>
+              <button class="btn btn-outline-dark" onclick="removeWishlist(${product.id})">Remove</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    async function loadWishlist() {
+      const res = await fetch("/products");
+      const data = await res.json();
+      wishlistProducts = Array.isArray(data) ? data : [];
+      renderWishlist();
+    }
+    function openLinkedOrderIfNeeded() {
+      if (orderLinkHandled) return;
+      const orderId = Number(new URLSearchParams(window.location.search).get("order"));
+      if (!orderId) return;
+
+      orderLinkHandled = true;
+      window.location.href = `/customer/order.html?order_id=${orderId}`;
+    }
+    async function loadOrders() {
+      const container = document.getElementById("ordersList");
+      container.innerHTML = `<div class="empty-state">Loading orders...</div>`;
+
+      const res = await fetch(`/orders/customer/${currentUser.id}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        container.innerHTML = `<div class="empty-state">Unable to load orders.</div>`;
+        return;
+      }
+
+      orders = Array.isArray(data) ? data : [];
+      renderSummary();
+      renderPaymentNotifications();
+      renderRepairWarrantyCenter();
+      renderOrders();
+      openLinkedOrderIfNeeded();
+    }
+
+    async function loadInstallmentSchedules() {
+      const container = document.getElementById("installmentScheduleList");
+      container.innerHTML = `<div class="empty-state">Loading installment schedules...</div>`;
+
+      const res = await fetch(`/installments/customer/${currentUser.id}/schedules`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        container.innerHTML = `<div class="empty-state">Unable to load installment schedules.</div>`;
+        installmentSchedules = [];
+        renderInstallmentDueAlerts();
+        return;
+      }
+
+      installmentSchedules = Array.isArray(data) ? data : [];
+      renderInstallmentDueAlerts();
+      renderInstallmentSchedules();
+    }
+
+    async function loadNotifications() {
+      const container = document.getElementById("profileNotifications");
+      container.innerHTML = `<div class="empty-state">Loading notifications...</div>`;
+
+      const res = await fetch(`/notifications/customer/${currentUser.id}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        container.innerHTML = `<div class="empty-state">Unable to load notifications.</div>`;
+        return;
+      }
+
+      notifications = Array.isArray(data) ? data : [];
+      renderNotifications();
+    }
+
+    function renderNotifications() {
+      const container = document.getElementById("profileNotifications");
+
+      if (!notifications.length) {
+        container.innerHTML = `<div class="empty-state">No notifications yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = notifications.map(item => `
+        <div class="notification-card ${Number(item.is_read) ? "" : "unread"}">
+          <div>
+            <strong>${escapeHtml(item.title)}</strong>
+            <span class="text-muted">${escapeHtml(item.message)}</span>
+          </div>
+          ${item.action_url ? `<a class="btn btn-dark" href="${escapeHtml(item.action_url)}" onclick="markNotificationRead(${item.id})">Open</a>` : ""}
+        </div>
+      `).join("");
+    }
+
+    async function markNotificationRead(id) {
+      await fetch(`/notifications/${id}/read`, { method: "PUT" });
+    }
+
+    async function markAllNotificationsRead() {
+      await fetch(`/notifications/customer/${currentUser.id}/read-all`, { method: "PUT" });
+      await loadNotifications();
+    }
+
+    function renderInstallmentSchedules() {
+      const container = document.getElementById("installmentScheduleList");
+
+      if (!installmentSchedules.length) {
+        container.innerHTML = `<div class="empty-state">No active installment schedule yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = installmentSchedules.map(schedule => {
+        const remaining = Math.max(Number(schedule.amount_due || 0) - Number(schedule.amount_paid || 0), 0);
+        const status = computedScheduleStatus(schedule);
+        return `
+          <article class="installment-row">
+            <div>
+              <h3>Order ID ${orderReference(schedule.order_id)} - ${escapeHtml(schedule.product_name || "Product")}</h3>
+              <div class="order-meta">
+                <span>Installment ${schedule.installment_no}</span>
+                <span>Due: ${formatDate(schedule.due_date)}</span>
+                <span>Amount: ${money(schedule.amount_due)}</span>
+                <span>Paid: ${money(schedule.amount_paid)}</span>
+                <strong>Balance: ${money(remaining)}</strong>
+              </div>
+              <span class="installment-payment-note">${escapeHtml(schedulePaymentLabel(schedule))}</span>
+            </div>
+            <div class="installment-actions">
+              <span class="status-pill">${scheduleStatusLabel(status)}</span>
+              ${scheduleActionControls(schedule, "scheduleMethod", "btn-dark")}
+              <button class="btn btn-sm btn-outline-dark" onclick="openOrderTracking(${schedule.order_id})">View Order</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function startInstallmentSchedulePayment(scheduleId) {
+      const method = document.getElementById(`scheduleMethod${scheduleId}`)?.value || document.getElementById(`alertScheduleMethod${scheduleId}`)?.value || "gcash";
+      try {
+        const res = await fetch(`/installments/schedules/${scheduleId}/checkout`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: currentUser.id, method })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.message || "Unable to create installment payment link.");
+          await loadInstallmentSchedules();
+          await loadCustomerStatement();
+          return;
+        }
+        if (data.payment_checkout_url) {
+          window.location.href = data.payment_checkout_url;
+          return;
+        }
+        alert(data.message || "Installment payment link created.");
+        await loadInstallmentSchedules();
+        await loadCustomerStatement();
+      } catch (error) {
+        alert(error.message || "Unable to create installment payment link.");
+      }
+    }
+
+    async function refreshInstallmentSchedulePayment(scheduleId) {
+      try {
+        const res = await fetch(`/installments/schedules/${scheduleId}/status?user_id=${currentUser.id}`);
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.message || "Unable to refresh installment payment.");
+          await loadInstallmentSchedules();
+          await loadCustomerStatement();
+          return;
+        }
+        await loadInstallmentSchedules();
+        await loadCustomerStatement();
+        await loadOrders();
+        alert(`Installment payment status: ${schedulePaymentLabel(data)}`);
+      } catch (error) {
+        alert(error.message || "Unable to refresh installment payment.");
+      }
+    }
+
+    function scrollToProfileNotifications() {
+      if (typeof setNotificationFilter === "function") setNotificationFilter("unread");
+      document.getElementById("notificationsSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function logout() {
+      localStorage.removeItem("currentUser");
+      window.location.href = "/";
+    }
+
+    function readCurrentUser() {
+      try {
+        const user = JSON.parse(localStorage.getItem("currentUser") || "null");
+        if (!user) return null;
+        user.role = String(user.role || "customer").toLowerCase();
+        return user;
+      } catch (error) {
+        localStorage.removeItem("currentUser");
+        return null;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      currentUser = readCurrentUser();
+
+      if (!currentUser || currentUser.role !== "customer") {
+        window.location.href = `/auth.html?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+        return;
+      }
+
+      document.getElementById("customerName").innerText = currentUser.name || "Customer";
+      document.getElementById("customerEmail").innerText = currentUser.email || "";
+      loadWishlist();
+      refreshProfile();
+    });
+  </script>
+  <script src="/js/profile-notifications.js"></script>
+</body>
+</html>

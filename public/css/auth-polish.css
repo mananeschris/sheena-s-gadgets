@@ -1,0 +1,665 @@
+html,
+body {
+  background: #000;
+}
+
+body {
+  color: #fff;
+}
+
+.auth-page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000 !important;
+  color: #fff !important;
+}
+
+.auth-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, .055) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, .055) 1px, transparent 1px),
+    #000;
+  background-size: 44px 44px;
+}
+
+.auth-page::after {
+  content: "";
+  position: fixed;
+  right: -120px;
+  bottom: -120px;
+  width: min(760px, 58vw);
+  aspect-ratio: 1 / 1;
+  z-index: -1;
+  pointer-events: none;
+  background: url("/assets/catalog-phone-bg.png") center / contain no-repeat;
+  filter: grayscale(1) contrast(1.05);
+  opacity: .24;
+}
+
+.topbar {
+  min-height: 62px;
+  padding: 8px 0;
+}
+
+.brand,
+.auth-page .brand,
+.auth-page .intro h1,
+.auth-page .card-head h2,
+.auth-page .form-label,
+.auth-page .section-label,
+.auth-page .helper {
+  color: #fff !important;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(100%, 520px);
+}
+
+.brand::before {
+  content: "SG";
+  width: 40px;
+  height: 40px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid #fff !important;
+  border-radius: 8px;
+  background: #fff !important;
+  color: #000 !important;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.shop-link {
+  border-radius: 6px !important;
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, .9) !important;
+  color: #fff !important;
+  transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+
+.shop-link:hover,
+.shop-link:focus {
+  background: #fff !important;
+  color: #000 !important;
+  transform: translateY(-1px);
+}
+
+.auth-stage {
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 500px);
+  gap: 56px;
+  padding: 42px 0;
+}
+
+body.register-mode .auth-stage {
+  align-items: start;
+}
+
+.intro {
+  max-width: 660px;
+  padding-top: 0;
+  position: sticky;
+  top: 34px;
+}
+
+.eyebrow,
+.portal-badge,
+.auth-tab.active {
+  background: #fff !important;
+  border-color: #fff !important;
+  color: #000 !important;
+}
+
+.eyebrow {
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  margin-bottom: 18px;
+}
+
+.intro h1 {
+  max-width: 720px;
+  font-size: 58px !important;
+  line-height: .96 !important;
+  letter-spacing: 0 !important;
+}
+
+.intro p {
+  max-width: 620px;
+  color: #d5d5d5 !important;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.access-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 28px;
+  max-width: 660px;
+}
+
+.access-card,
+.promo-panel,
+.auth-card {
+  background: rgba(8, 8, 8, .96) !important;
+  border: 1px solid rgba(255, 255, 255, .22) !important;
+  color: #fff !important;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .08) !important;
+}
+
+.access-card {
+  min-height: 118px;
+  border-radius: 8px;
+  padding: 15px;
+  display: grid;
+  align-content: space-between;
+}
+
+.access-card span,
+.promo-kicker,
+.auth-note,
+.card-head p,
+.promo-row span:last-child,
+.helper {
+  color: #c9c9c9 !important;
+}
+
+.access-card strong,
+.promo-row strong {
+  color: #fff !important;
+  font-size: 15px;
+  line-height: 1.28;
+}
+
+.promo-panel {
+  margin-top: 28px;
+  max-width: 620px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.promo-row {
+  grid-template-columns: 118px 1fr;
+  border-color: rgba(255, 255, 255, .16) !important;
+  padding: 17px 18px;
+}
+
+.auth-card {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  padding: 34px;
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 0;
+  height: 4px;
+  background: #fff !important;
+  border-radius: 0 0 8px 8px;
+}
+
+body.register-mode .auth-card {
+  max-height: calc(100vh - 128px);
+  overflow: auto;
+}
+
+.card-head {
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.card-head h2 {
+  font-size: 32px;
+  letter-spacing: 0;
+}
+
+.portal-badge {
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.auth-tabs {
+  background: #111 !important;
+  border-color: rgba(255, 255, 255, .22) !important;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.auth-tab {
+  min-height: 44px;
+  border-radius: 6px;
+  background: transparent !important;
+  color: #fff !important;
+}
+
+.auth-tab:not(.active):hover,
+.auth-tab:not(.active):focus {
+  background: #1e1e1e !important;
+}
+
+.auth-note {
+  margin: -4px 0 18px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, .16) !important;
+  border-radius: 8px;
+  background: #050505 !important;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.form-section {
+  border-color: rgba(255, 255, 255, .16) !important;
+}
+
+.register-grid {
+  gap: 13px;
+}
+
+.form-control,
+.form-select,
+textarea.form-control {
+  min-height: 46px;
+  border-radius: 6px !important;
+  border-color: #fff !important;
+  background: #fff !important;
+  color: #000 !important;
+  box-shadow: none !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea.form-control:focus {
+  border-color: #fff !important;
+  box-shadow: 0 0 0 .18rem rgba(255, 255, 255, .18) !important;
+}
+
+.form-control::placeholder,
+textarea.form-control::placeholder {
+  color: #777 !important;
+}
+
+.password-field .form-control {
+  padding-right: 86px;
+}
+
+.password-toggle {
+  min-width: 64px;
+  min-height: 32px;
+  border-radius: 6px;
+  border-color: #111 !important;
+  background: #111 !important;
+  color: #fff !important;
+}
+
+.btn,
+.auth-page .btn {
+  border-radius: 6px !important;
+  min-height: 46px;
+  font-weight: 900;
+}
+
+.auth-page .btn-dark {
+  background: #fff !important;
+  border-color: #fff !important;
+  color: #000 !important;
+}
+
+.auth-page .btn-dark:hover,
+.auth-page .btn-dark:focus {
+  background: #dcdcdc !important;
+  border-color: #dcdcdc !important;
+  color: #000 !important;
+}
+
+.message {
+  min-height: 0;
+  margin-top: 12px;
+  border-radius: 8px;
+}
+
+.message:not(:empty) {
+  border: 1px solid rgba(255, 255, 255, .22) !important;
+  background: #090909 !important;
+  color: #fff !important;
+  padding: 10px 12px;
+}
+
+.message.error:not(:empty) {
+  background: #fff !important;
+  color: #000 !important;
+}
+
+.helper {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, .16) !important;
+}
+
+@media (max-width: 980px) {
+  .auth-page {
+    overflow: auto;
+  }
+
+  .auth-page::after {
+    width: 740px;
+    right: -260px;
+    top: 60px;
+    bottom: auto;
+    opacity: .14;
+  }
+
+  .auth-stage {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 34px 0;
+  }
+
+  .intro {
+    position: static;
+    max-width: none;
+  }
+
+  .intro h1 {
+    font-size: 46px !important;
+  }
+
+  .access-grid {
+    max-width: none;
+  }
+
+  .promo-panel {
+    max-width: none;
+  }
+
+  body.register-mode .auth-card {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-page {
+    padding: 16px;
+  }
+
+  .topbar {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .brand {
+    font-size: 16px;
+  }
+
+  .shop-link {
+    text-align: center;
+  }
+
+  .intro h1 {
+    font-size: 38px !important;
+  }
+
+  .intro p {
+    font-size: 15px;
+  }
+
+  .access-grid,
+  .register-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .promo-row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .auth-card {
+    padding: 24px;
+  }
+
+  .card-head {
+    flex-direction: column;
+  }
+
+  .portal-badge {
+    white-space: normal;
+    text-align: left;
+  }
+}
+/* Auth final polish - black dominant ecommerce login */
+.auth-page {
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+    #000 !important;
+  background-size: 42px 42px !important;
+}
+
+.auth-stage {
+  max-width: 1240px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(390px, 500px);
+}
+
+.intro h1 {
+  max-width: 760px;
+  font-size: clamp(44px, 6.4vw, 84px) !important;
+}
+
+.promo-panel,
+.access-card,
+.auth-card {
+  border-color: rgba(255,255,255,.28) !important;
+  box-shadow: 0 26px 80px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+
+.auth-card {
+  background: rgba(0,0,0,.94) !important;
+}
+
+.card-head h2 {
+  font-size: clamp(28px, 4vw, 38px) !important;
+  line-height: 1.05;
+}
+
+.promo-row {
+  background: rgba(255,255,255,.025);
+}
+
+.auth-tabs {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.auth-tab.active {
+  box-shadow: 0 10px 28px rgba(255,255,255,.09);
+}
+
+.auth-page .form-control,
+.auth-page .form-select {
+  min-height: 48px;
+}
+
+.auth-page .btn-dark {
+  min-height: 50px;
+  box-shadow: 0 12px 30px rgba(255,255,255,.08);
+}
+
+@media (max-width: 980px) {
+  .auth-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .intro {
+    padding-top: 0;
+  }
+}
+/* White-dominant auth rebalance - 2026-09-06 */
+html,
+body {
+  background: #f7f7f7 !important;
+  color: #080808 !important;
+}
+
+.auth-page {
+  background:
+    linear-gradient(90deg, rgba(8,8,8,.028) 1px, transparent 1px),
+    linear-gradient(rgba(8,8,8,.028) 1px, transparent 1px),
+    #f7f7f7 !important;
+  background-size: 44px 44px !important;
+  color: #080808 !important;
+  overflow: auto;
+}
+
+.auth-page::before {
+  background: transparent !important;
+}
+
+.auth-page::after {
+  opacity: .08;
+  filter: grayscale(1) contrast(1.08);
+}
+
+.brand,
+.auth-page .brand,
+.auth-page .intro h1,
+.auth-page .card-head h2,
+.auth-page .form-label,
+.auth-page .section-label,
+.auth-page .helper {
+  color: #080808 !important;
+}
+
+.brand::before {
+  background: #080808 !important;
+  border-color: #080808 !important;
+  color: #fff !important;
+}
+
+.shop-link {
+  background: #fff !important;
+  border-color: #080808 !important;
+  color: #080808 !important;
+}
+
+.shop-link:hover,
+.shop-link:focus {
+  background: #080808 !important;
+  color: #fff !important;
+}
+
+.intro p,
+.access-card span,
+.promo-kicker,
+.auth-note,
+.card-head p,
+.promo-row span:last-child,
+.helper {
+  color: #666 !important;
+}
+
+.access-card,
+.promo-panel,
+.auth-card {
+  background: #fff !important;
+  border-color: #d8d8d8 !important;
+  color: #080808 !important;
+  box-shadow: 0 18px 52px rgba(0,0,0,.10) !important;
+}
+
+.auth-card::before {
+  background: #080808 !important;
+}
+
+.access-card strong,
+.promo-row strong {
+  color: #080808 !important;
+}
+
+.eyebrow,
+.portal-badge,
+.auth-tab.active {
+  background: #080808 !important;
+  border-color: #080808 !important;
+  color: #fff !important;
+}
+
+.auth-tabs {
+  background: #f3f3f3 !important;
+  border-color: #d8d8d8 !important;
+}
+
+.auth-tab {
+  background: transparent !important;
+  color: #080808 !important;
+}
+
+.auth-tab:not(.active):hover,
+.auth-tab:not(.active):focus {
+  background: #fff !important;
+}
+
+.auth-note,
+.message:not(:empty) {
+  background: #f7f7f7 !important;
+  border-color: #d8d8d8 !important;
+  color: #080808 !important;
+}
+
+.form-section,
+.helper {
+  border-color: #d8d8d8 !important;
+}
+
+.form-control,
+.form-select,
+textarea.form-control {
+  background: #fff !important;
+  border-color: #b8b8b8 !important;
+  color: #080808 !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea.form-control:focus {
+  border-color: #080808 !important;
+  box-shadow: 0 0 0 .18rem rgba(8,8,8,.12) !important;
+}
+
+.password-toggle,
+.auth-page .btn-dark {
+  background: #080808 !important;
+  border-color: #080808 !important;
+  color: #fff !important;
+}
+
+.auth-page .btn-dark:hover,
+.auth-page .btn-dark:focus {
+  background: #242424 !important;
+  border-color: #242424 !important;
+  color: #fff !important;
+}
+
+/* Balanced monochrome refinement - login and registration */
+.auth-page{background:radial-gradient(circle at 18% 12%,rgba(0,0,0,.06),transparent 28%),linear-gradient(90deg,rgba(0,0,0,.018) 1px,transparent 1px),linear-gradient(rgba(0,0,0,.018) 1px,transparent 1px),#f7f7f7!important;color:#080808!important}.auth-page::before{opacity:.04!important}.auth-page::after{opacity:.07!important;filter:grayscale(1) contrast(1.08)!important}.auth-stage,.intro,.auth-card,.promo-panel,.access-card{color:#080808!important}.auth-card,.promo-panel,.access-card{background:rgba(255,255,255,.96)!important;border:1px solid #dedede!important;box-shadow:0 16px 38px rgba(0,0,0,.08)!important}.auth-card::before{height:5px;background:#080808!important}.brand,.intro h1,.card-head h2,.form-label,.section-label,.access-card strong,.promo-row strong{color:#080808!important}.intro p,.access-card span,.promo-kicker,.auth-note,.card-head p,.promo-row span:last-child,.helper{color:#666!important}.auth-tabs,.auth-note,.message:not(:empty),.helper{background:#f5f5f5!important;border-color:#dedede!important;color:#080808!important}.form-control,.form-select,textarea.form-control{background:#fff!important;border-color:#bdbdbd!important;color:#080808!important}.form-control:focus,.form-select:focus,textarea.form-control:focus{border-color:#080808!important;box-shadow:0 0 0 .18rem rgba(8,8,8,.12)!important}.shop-link,.auth-tab{background:#fff!important;border-color:#dedede!important;color:#080808!important}.portal-badge,.auth-tab.active,.password-toggle,.auth-page .btn-dark{background:#080808!important;border-color:#080808!important;color:#fff!important}.shop-link:hover,.shop-link:focus,.auth-tab:not(.active):hover,.auth-tab:not(.active):focus,.auth-page .btn-dark:hover,.auth-page .btn-dark:focus{background:#222!important;border-color:#222!important;color:#fff!important}
+
+/* Reference inspired auth polish - 2026-09-07 */
+body.auth-page{background:#e9e9e9!important;color:#050505!important}.auth-page .topbar{width:min(1560px,calc(100% - 42px));margin:28px auto 0;padding:18px 22px!important;background:#fff!important;border:1px solid #eee!important;border-radius:8px!important;box-shadow:0 18px 45px rgba(0,0,0,.07)!important}.auth-stage{width:min(1560px,calc(100% - 42px))!important;min-height:calc(100vh - 140px)!important;margin:14px auto 28px!important;background:#fff!important;border:1px solid rgba(255,255,255,.82)!important;border-radius:8px!important;box-shadow:0 24px 55px rgba(0,0,0,.10)!important;padding:clamp(24px,5vw,68px)!important;grid-template-columns:minmax(0,1fr) minmax(360px,480px)!important}.intro{padding:clamp(18px,3vw,36px)!important;border-radius:8px!important;background:linear-gradient(180deg,#f8f8f8,#f2f2f2)!important;border:1px solid #ededed!important;align-self:stretch;display:grid;align-content:center;overflow:hidden;position:relative}.intro::after{content:"Tech";position:absolute;left:18px;bottom:-22px;font-size:clamp(84px,14vw,190px);font-weight:900;color:rgba(0,0,0,.045);line-height:1;pointer-events:none}.intro h1{font-size:clamp(40px,5vw,72px)!important;line-height:1.02!important;max-width:760px}.intro p{max-width:560px!important;color:#444!important}.promo-panel,.access-card{background:rgba(255,255,255,.72)!important}.auth-card{align-self:center;border-radius:8px!important;background:#fff!important;border:1px solid #e4e4e4!important;box-shadow:0 18px 42px rgba(0,0,0,.08)!important}.auth-tabs{border-radius:8px!important}.auth-tab{border-radius:8px!important}.form-control,.form-select,textarea.form-control{border-radius:8px!important;min-height:44px!important}.auth-page .btn,.shop-link{border-radius:8px!important;min-height:42px!important}@media(max-width:980px){.auth-page .topbar,.auth-stage{width:min(100% - 20px,100%)!important;margin-left:auto!important;margin-right:auto!important}.auth-stage{grid-template-columns:1fr!important;padding:16px!important}.intro{min-height:330px}}

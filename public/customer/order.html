@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Tracking | Sheena's Gadgets & Accessories Shop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/ui-polish.css">
+  <link rel="stylesheet" href="/css/order-tracking.css">
+  <link rel="stylesheet" href="/css/ideal-ui.css?v=ideal-ui-20260908f">
+</head>
+<body class="customer-order-page">
+  <header class="order-topbar">
+    <a class="order-brand brand-with-logo" href="/"><img class="brand-logo" src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a>
+    <nav class="order-nav">
+      <a href="/" class="btn btn-outline-light btn-sm">Shop</a>
+      <a href="/customer/profile.html" class="btn btn-light btn-sm">Profile</a>
+      <button id="notificationButton" class="btn btn-outline-light btn-sm d-none" onclick="toggleNotifications()">Updates <span id="notificationCount" class="badge text-bg-light d-none">0</span></button>
+      <button class="btn btn-outline-light btn-sm" onclick="logoutCustomer()">Logout</button>
+    </nav>
+  </header>
+
+  <div id="notificationPanel" class="customer-notification-panel d-none">
+    <div class="notification-head">
+      <strong>Notifications</strong>
+      <div class="notification-actions">
+        <button class="btn btn-sm btn-outline-dark" onclick="markAllNotificationsRead()">Mark all read</button>
+        <button class="btn btn-sm btn-dark" onclick="clearReadNotifications()">Clear read</button>
+      </div>
+    </div>
+    <div id="notificationList" class="notification-list">No notifications yet.</div>
+  </div>
+  <main class="order-page">
+    <section id="loadingState" class="order-state">
+      <p class="eyebrow dark">Order Tracking</p>
+      <h1>Loading order...</h1>
+      <p>Checking your order activity.</p>
+    </section>
+
+    <section id="errorState" class="order-state d-none">
+      <p class="eyebrow dark">Order Tracking</p>
+      <h1 id="errorTitle">Order not found</h1>
+      <p id="errorMessage">Please open the order from your profile page.</p>
+      <div class="order-actions-row">
+        <a href="/customer/profile.html" class="btn btn-dark">Back to Profile</a>
+        <a href="/" class="btn btn-outline-dark">Continue Shopping</a>
+      </div>
+    </section>
+
+    <section id="orderShell" class="order-shell d-none">
+      <div class="order-hero">
+        <div>
+          <p class="eyebrow">Order Tracking</p>
+          <h1 id="orderTitle">Order ID 000000</h1>
+          <p id="orderSubtitle">Track status, payment, repair, and receipt in one place.</p>
+        </div>
+        <div class="order-hero-total">
+          <span>Total</span>
+          <strong id="orderTotal">PHP 0.00</strong>
+        </div>
+      </div>
+
+      <div id="paymentNotice" class="order-notice d-none"></div>
+
+      <div class="order-grid">
+        <section class="order-panel order-panel-main">
+          <div class="panel-head">
+            <div>
+              <span class="panel-kicker">Timeline</span>
+              <h2>Order Progress</h2>
+            </div>
+            <span id="orderStatusPill" class="status-pill">pending</span>
+          </div>
+          <div id="trackingTimeline" class="tracking-timeline-large"></div>
+          <div id="statusHistory" class="history-list"></div>
+        </section>
+
+        <aside class="order-panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="panel-kicker">Payment</span>
+              <h2>Payment Status</h2>
+            </div>
+          </div>
+          <div id="paymentCard" class="detail-list"></div>
+        </aside>
+      </div>
+
+      <section class="order-panel">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">Items</span>
+            <h2>Products Ordered</h2>
+          </div>
+          <button class="btn btn-outline-dark btn-sm" onclick="copyOrderId()">Copy Order ID</button>
+        </div>
+        <div id="orderItems" class="order-items"></div>
+      </section>
+
+      <div class="order-grid">
+        <section class="order-panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="panel-kicker">Customer</span>
+              <h2>Order Details</h2>
+            </div>
+          </div>
+          <div id="customerDetails" class="detail-list"></div>
+        </section>
+
+        <section id="installmentPanel" class="order-panel d-none">
+          <div class="panel-head compact">
+            <div>
+              <span class="panel-kicker">Installment</span>
+              <h2>Installment Plan</h2>
+            </div>
+          </div>
+          <div id="installmentDetails" class="detail-list"></div>
+        </section>
+
+        <section id="repairPanel" class="order-panel d-none">
+          <div class="panel-head compact">
+            <div>
+              <span class="panel-kicker">Warranty</span>
+              <h2>Repair Tracking</h2>
+            </div>
+          </div>
+          <div id="repairDetails" class="detail-list"></div>
+          <div id="repairSteps" class="repair-steps-large"></div>
+        </section>
+      </div>
+
+
+      <section id="installmentStatementPanel" class="order-panel d-none">
+        <div class="panel-head">
+          <div>
+            <span class="panel-kicker">Statement</span>
+            <h2>Installment Statement</h2>
+          </div>
+          <div class="soa-actions-bar">
+            <button class="btn btn-outline-dark btn-sm" onclick="downloadStatement()">Download</button>
+            <button class="btn btn-dark btn-sm" onclick="printStatement()">Print</button>
+          </div>
+        </div>
+        <div id="installmentStatementBody"></div>
+      </section>
+      <section class="order-action-panel">
+        <div>
+          <span class="panel-kicker">Actions</span>
+          <h2>Manage This Order</h2>
+        </div>
+        <div id="orderActions" class="order-actions-row"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="/js/order-reference.js"></script>
+  <script src="/js/customer-notifications.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const orderId = Number(params.get("order_id") || params.get("order"));
+    let currentUser = null;
+    let selectedOrder = null;
+    let installmentStatement = null;
+
+    const STATUS_LABELS = { pending:"Order Placed", processing:"Processing", shipped:"Ready", delivered:"Completed", cancelled:"Cancelled" };
+    const PAYMENT_STATUS_LABELS = { to_collect:"To Collect", installment_application_pending:"Installment Application Pending", installment_downpayment_pending:"Installment Downpayment Pending", installment_downpayment_paid:"Installment Downpayment Paid", installment_downpayment_expired:"Installment Downpayment Expired", installment_approved_downpayment_pending:"Approved, Waiting Downpayment", installment_active:"Installment Active", installment_rejected:"Installment Rejected", installment_downpayment_failed:"Installment Downpayment Failed", installment_completed:"Installment Completed", pending_verification:"Pending Verification", awaiting_gateway_setup:"Gateway Setup Needed", payment_setup_failed:"Gateway Failed", paid:"Paid", failed:"Failed", expired:"Expired", cancelled:"Cancelled" };
+    const INSTALLMENT_STATUS_LABELS = { pending:"Pending Admin Review", approved:"Approved", rejected:"Rejected" };
+    const DOWNPAYMENT_STATUS_LABELS = { pending:"Pending", paid:"Paid", failed:"Failed", expired:"Expired" };
+    const REPAIR_STATUS_LABELS = { pending:"Repair Pending", approved:"Repair Approved", rejected:"Repair Rejected" };
+    const REPAIR_SERVICE_LABELS = { approved:"Approved", item_received:"Item Received", diagnosing:"Diagnosing", repairing:"Repairing", ready_for_pickup:"Ready for Pickup", completed:"Completed" };
+    const TRACKING_STEPS = [
+      { key:"pending", label:"Order Placed", dateField:"created_at" },
+      { key:"processing", label:"Processing", dateField:"processing_at" },
+      { key:"shipped", label:"Ready", dateField:"shipped_at" },
+      { key:"delivered", label:"Completed", dateField:"delivered_at" }
+    ];
+
+    function money(value){return `PHP ${Number(value||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`}
+    function escapeHtml(value){return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+    function formatDate(value){if(!value)return"Waiting";const date=new Date(value);if(Number.isNaN(date.getTime()))return"Waiting";return date.toLocaleString(undefined,{year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}
+    function readCurrentUser(){try{const user=JSON.parse(localStorage.getItem("currentUser")||"null");if(!user)return null;user.role=String(user.role||"customer").toLowerCase();return user}catch(error){localStorage.removeItem("currentUser");return null}}
+    function logoutCustomer(){localStorage.removeItem("currentUser");location.href="/"}
+    function parseImages(value){try{const parsed=value?JSON.parse(value):[];return Array.isArray(parsed)?parsed:[]}catch(error){return[]}}
+    function orderItems(order){const items=Array.isArray(order.items)&&order.items.length?order.items:[{product_id:order.product_id,product_name:order.product_name||"Product",variant_name:order.variant_name||"Default",quantity:order.quantity||1,unit_price:order.variant_price||Number(order.total_price||0)/Math.max(Number(order.quantity||1),1),subtotal:order.total_price||0,product_image:order.product_image}];return items.map(item=>({...item,product_image:item.product_image||order.product_image||parseImages(order.product_images)[0]||"https://via.placeholder.com/160x160?text=Product"}))}
+    function orderItemsTitle(order){const items=orderItems(order);if(items.length<=1)return items[0]?.product_name||order.product_name||"Product";return `${items.length} products`}
+    function orderStatusLabel(order){const status=order.status||"pending";return STATUS_LABELS[status]||status}
+    function paymentStatusLabel(order){const status=order.payment_status||(String(order.payment_method||"cod")==="cod"?"to_collect":"pending_verification");return PAYMENT_STATUS_LABELS[status]||status}
+    function installmentStatusLabel(status){return INSTALLMENT_STATUS_LABELS[status]||status||"Not Submitted"}
+    function downpaymentStatusLabel(status){return DOWNPAYMENT_STATUS_LABELS[status]||PAYMENT_STATUS_LABELS[status]||status||"Pending"}
+    function repairStatusLabel(status){return REPAIR_STATUS_LABELS[status]||status||"No request"}
+    function repairServiceStatusLabel(status){return REPAIR_SERVICE_LABELS[status]||status||"Not Started"}
+    function historyForStatus(order,status){const history=Array.isArray(order.status_history)?order.status_history:[];return history.find(item=>item.status===status)}
+    function orderStatusIndex(status){const index=TRACKING_STEPS.findIndex(step=>step.key===(status||"pending"));return index>=0?index:0}
+    function trackingDate(order,step,isDone){if(!isDone)return"Waiting";const historyItem=historyForStatus(order,step.key);return formatDate(historyItem?.created_at||order[step.dateField]||(step.key==="pending"?order.created_at:null))}
+
+    function renderTimeline(order){const container=document.getElementById("trackingTimeline");const status=order.status||"pending";if(status==="cancelled"){container.innerHTML=`<div class="cancelled-state"><strong>Order Cancelled</strong><span>${escapeHtml(order.cancellation_admin_note||"This order is no longer active.")}</span></div>`;return}const activeIndex=orderStatusIndex(status);container.innerHTML=TRACKING_STEPS.map((step,index)=>{const isDone=index<=activeIndex;const isCurrent=index===activeIndex;return `<div class="tracking-step-large ${isDone?"done":""} ${isCurrent?"current":""}"><span class="tracking-node"></span><div><strong>${escapeHtml(step.label)}</strong><span>${escapeHtml(trackingDate(order,step,isDone))}</span></div></div>`}).join("")}
+    function renderHistory(order){const history=Array.isArray(order.status_history)?order.status_history:[];const container=document.getElementById("statusHistory");if(!history.length){container.innerHTML=`<div class="history-empty">No extra tracking notes yet.</div>`;return}container.innerHTML=history.map(item=>`<article class="history-item"><div><strong>${escapeHtml(STATUS_LABELS[item.status]||item.status||"Status updated")}</strong><span>${escapeHtml(formatDate(item.created_at))}</span></div><div><strong>${escapeHtml(item.note||"Status updated.")}</strong><span>${escapeHtml(item.actor_name||"System")}</span></div></article>`).join("")}
+    function canPayOrder(order){if(!order.payment_checkout_url)return false;if(order.payment_method==="installment")return order.payment_status==="installment_downpayment_pending"&&order.installment_application_status==="approved";return order.payment_status==="pending_verification"}
+    function canRefreshPayment(order){return Boolean(order.payment_checkout_id)||String(order.payment_provider||"").includes("paymongo")}
+    function canRetryPayment(order){const status=order.payment_status||"";if((order.status||"")==="cancelled")return false;if(["paid","installment_active","installment_completed","installment_rejected"].includes(status))return false;if(order.payment_method==="installment")return order.installment_application_status==="approved"&&["installment_downpayment_pending","installment_downpayment_failed","installment_downpayment_expired","payment_setup_failed"].includes(status);return ["gcash","maya","card"].includes(String(order.payment_method||"").toLowerCase())&&(!order.payment_checkout_url||["payment_setup_failed","failed","expired","cancelled"].includes(status))}
+    function canRequestCancellation(order){const status=order.status||"pending";return["pending","processing"].includes(status)&&order.cancellation_request_status!=="pending"}
+    function isWarrantyActive(order){if((order.status||"")!=="delivered")return false;if(!order.warranty_expires_at)return true;return new Date(order.warranty_expires_at).getTime()>=Date.now()}
+    function canRequestRepair(order){return isWarrantyActive(order)&&!["pending","approved"].includes(order.repair_request_status||"")}
+    function canReviewOrder(order){return(order.status||"")==="delivered"}
+    function detailRow(label,value){if(value===undefined||value===null||value==="")return"";return `<div class="detail-row"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`}
+    function shippingRegionLabel(order){const labels={local:"Local / Nearby Sogod-Bacacay",luzon:"Luzon",visayas:"Visayas"};const key=String(order.shipping_region||"").toLowerCase();return labels[key]||order.shipping_region||""}
+    function orderShippingFee(order){return Number(order.shipping_fee||0)}
+    function orderProductSubtotal(order){return orderItems(order).reduce((sum,item)=>{const qty=Number(item.quantity||1);const subtotal=Number(item.subtotal||Number(item.unit_price||0)*qty);return sum+subtotal},0)}
+    function shippingDetailRows(order){const label=shippingRegionLabel(order);const fee=orderShippingFee(order);if(!label&&!fee)return"";return detailRow("Delivery Area",label||"Delivery")+detailRow("Shipping Fee",money(fee))}
+    function receiptShippingLines(order){const label=shippingRegionLabel(order);const fee=orderShippingFee(order);const lines=[`Product Subtotal: ${money(orderProductSubtotal(order))}`];if(label||fee)lines.push(`Shipping: ${label||"Delivery"} / ${money(fee)}`);return lines.join("\n")}
+    function printableShippingRows(order){const label=shippingRegionLabel(order);const fee=orderShippingFee(order);return `<div>Product Subtotal: ${money(orderProductSubtotal(order))}</div>${label||fee?`<div>Shipping (${escapeHtml(label||"Delivery")}): ${money(fee)}</div>`:""}`}
+
+    function renderPayment(order){const rows=[detailRow("Method",String(order.payment_method||"cod").toUpperCase()),detailRow("Status",paymentStatusLabel(order)),detailRow("Provider",order.payment_provider||""),detailRow("Reference",order.payment_reference||""),detailRow("Last Checked",order.payment_last_checked_at?formatDate(order.payment_last_checked_at):""),detailRow("Completed",order.payment_completed_at?formatDate(order.payment_completed_at):""),detailRow("Payment Issue",order.payment_error||"")].join("");document.getElementById("paymentCard").innerHTML=rows||`<div class="history-empty">No payment details yet.</div>`;const notice=document.getElementById("paymentNotice");if(order.payment_method==="installment"&&order.payment_status==="installment_application_pending"){notice.classList.remove("d-none");notice.innerHTML=`<strong>Installment under review.</strong><span>Admin needs to approve the application before the downpayment button appears.</span>`}else if(canPayOrder(order)){notice.classList.remove("d-none");notice.innerHTML=`<strong>Payment available.</strong><span>You can continue the secure payment for this order.</span>`}else if(canRefreshPayment(order)&&["pending_verification","installment_downpayment_pending"].includes(order.payment_status||"")){notice.classList.remove("d-none");notice.innerHTML=`<strong>Waiting for payment confirmation.</strong><span>Use Refresh Payment after paying if the status has not updated yet.</span>`}else{notice.classList.add("d-none")}}
+    function renderItems(order){document.getElementById("orderItems").innerHTML=orderItems(order).map(item=>{const qty=Number(item.quantity||1);const unitPrice=Number(item.unit_price||0);const subtotal=Number(item.subtotal||unitPrice*qty);return `<article class="order-item-row"><img src="${escapeHtml(item.product_image)}" alt="${escapeHtml(item.product_name||"Product")}"><div><h3>${escapeHtml(item.product_name||"Product")}</h3><p>${escapeHtml(item.variant_name||"Default")} | Qty ${qty}</p><span>${money(unitPrice)} each</span></div><strong>${money(subtotal)}</strong></article>`}).join("")}
+    function renderCustomerDetails(order){document.getElementById("customerDetails").innerHTML=[detailRow("Recipient",order.recipient_name||currentUser.name||"Customer"),detailRow("Contact",order.delivery_contact||currentUser.phone||""),detailRow("Address",order.delivery_address||""),detailRow("Note",order.delivery_note||""),shippingDetailRows(order),detailRow("Placed",formatDate(order.created_at)),detailRow("Completed",order.delivered_at?formatDate(order.delivered_at):"")].join("")||`<div class="history-empty">No additional details yet.</div>`}
+    function renderInstallment(order){const panel=document.getElementById("installmentPanel");const isInstallment=order.payment_method==="installment"||order.installment_application_id||order.installment_terms;if(!isInstallment){panel.classList.add("d-none");return}panel.classList.remove("d-none");document.getElementById("installmentDetails").innerHTML=[detailRow("Application",installmentStatusLabel(order.installment_application_status)),detailRow("Downpayment Status",downpaymentStatusLabel(order.installment_downpayment_status)),detailRow("Terms",order.installment_terms?`${order.installment_terms} months`:""),detailRow("Downpayment",order.installment_downpayment?money(order.installment_downpayment):""),detailRow("Monthly",order.installment_monthly?money(order.installment_monthly):""),detailRow("Balance",order.installment_balance?money(order.installment_balance):"")].join("")}
+    function isInstallmentOrder(order){return order.payment_method==="installment"||order.installment_application_id||order.installment_terms}
+    function statementStatusLabel(status){const labels={paid:"Paid",overdue:"Overdue",due_soon:"Due Soon",partial:"Partial",current:"Current",unpaid:"Unpaid",pending_verification:"Pending Verification",failed:"Failed",expired:"Expired",cancelled:"Cancelled"};return labels[status]||status||"Current"}
+    function statementPaymentLabel(schedule){if((schedule.status||"")==="paid")return"Paid";const status=schedule.payment_status||"not_started";const labels={not_started:"No online link",pending_verification:"Online payment pending",paid:"Paid",failed:"Payment failed",expired:"Payment expired",cancelled:"Payment cancelled"};return labels[status]||status}
+    function canPayStatementSchedule(schedule){const remaining=Number(schedule.balance||0);return schedule.status!=="paid"&&remaining>0}
+    async function loadOrderStatement(){installmentStatement=null;if(!selectedOrder||!isInstallmentOrder(selectedOrder))return;try{const res=await fetch(`/soa/order/${selectedOrder.id}?user_id=${currentUser.id}`);const data=await res.json();if(res.ok)installmentStatement=data.statement||null}catch(error){installmentStatement=null}}
+    function statementSummaryHtml(statement){return `<div class="soa-summary-grid"><div class="soa-summary-card"><span>Total Plan</span><strong>${money(statement.total_price)}</strong></div><div class="soa-summary-card"><span>Total Paid</span><strong>${money(statement.total_paid)}</strong></div><div class="soa-summary-card"><span>Balance</span><strong>${money(statement.balance)}</strong></div><div class="soa-summary-card"><span>Next Due</span><strong>${statement.next_due_date?`${formatDate(statement.next_due_date)} / ${money(statement.next_due_amount)}`:"None"}</strong></div></div>`}
+    function statementSchedulesHtml(statement){const schedules=Array.isArray(statement.schedules)?statement.schedules:[];if(!schedules.length)return`<div class="history-empty">Monthly schedule will appear after admin approval and paid downpayment.</div>`;return `<div class="soa-table-wrap"><table class="soa-table"><thead><tr><th>No.</th><th>Due Date</th><th>Due</th><th>Paid</th><th>Balance</th><th>Status</th><th>Online Payment</th></tr></thead><tbody>${schedules.map(schedule=>{const pendingOnline=schedule.payment_checkout_url&&schedule.payment_status==="pending_verification";return`<tr><td><strong>${escapeHtml(schedule.installment_no||"")}</strong></td><td>${escapeHtml(formatDate(schedule.due_date))}</td><td>${money(schedule.amount_due)}</td><td>${money(schedule.amount_paid)}</td><td>${money(schedule.balance)}</td><td><span class="soa-status ${escapeHtml(schedule.status)}">${escapeHtml(statementStatusLabel(schedule.status))}</span></td><td><div class="soa-schedule-actions"><span class="text-muted small">${escapeHtml(statementPaymentLabel(schedule))}</span>${canPayStatementSchedule(schedule)?`<select id="statementScheduleMethod${schedule.id}" class="form-select form-select-sm"><option value="gcash" ${(schedule.payment_method||"gcash")==="gcash"?"selected":""}>GCash</option><option value="maya" ${schedule.payment_method==="maya"?"selected":""}>Maya</option><option value="card" ${schedule.payment_method==="card"?"selected":""}>Card</option></select>${pendingOnline?`<a class="btn btn-sm btn-dark" href="${escapeHtml(schedule.payment_checkout_url)}">Continue</a>`:`<button class="btn btn-sm btn-dark" onclick="startStatementSchedulePayment(${schedule.id})">Pay Now</button>`}${schedule.payment_checkout_id?`<button class="btn btn-sm btn-outline-dark" onclick="refreshStatementSchedulePayment(${schedule.id})">Refresh</button>`:""}`:""}</div></td></tr>`}).join("")}</tbody></table></div>`}
+    function statementLedgerHtml(statement){const payments=Array.isArray(statement.payments)?statement.payments:[];if(!payments.length)return`<div class="history-empty">No payment records yet.</div>`;return `<div class="soa-ledger-list">${payments.map(payment=>`<article class="soa-ledger-row"><div><strong>Payment #${escapeHtml(payment.entry_no||payment.id)}</strong><span>${escapeHtml(formatDate(payment.paid_at||payment.created_at))}${payment.due_date?` | Due: ${escapeHtml(formatDate(payment.due_date))}`:""}</span></div><div class="text-end"><strong>${money(payment.amount_paid)}</strong><span>Balance after payment: ${money(payment.balance)}</span></div></article>`).join("")}</div>`}
+    function renderInstallmentStatement(order){const panel=document.getElementById("installmentStatementPanel");const body=document.getElementById("installmentStatementBody");if(!panel||!body)return;if(!isInstallmentOrder(order)){panel.classList.add("d-none");return}panel.classList.remove("d-none");if(!installmentStatement){body.innerHTML=`<div class="history-empty">Statement is not available yet.</div>`;return}body.innerHTML=`${statementSummaryHtml(installmentStatement)}<div class="panel-kicker mt-2">Monthly Schedule</div>${statementSchedulesHtml(installmentStatement)}<div class="panel-kicker mt-3">Payment Ledger</div>${statementLedgerHtml(installmentStatement)}`}
+    async function startStatementSchedulePayment(scheduleId){const method=document.getElementById(`statementScheduleMethod${scheduleId}`)?.value||"gcash";try{const res=await fetch(`/installments/schedules/${scheduleId}/checkout`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({user_id:currentUser.id,method})});const data=await res.json();if(!res.ok){alert(data.message||"Unable to create installment payment link.");await loadOrder();return}if(data.payment_checkout_url){window.location.href=data.payment_checkout_url;return}await loadOrder();alert(data.message||"Installment payment link created.")}catch(error){alert(error.message||"Unable to create installment payment link.")}}
+    async function refreshStatementSchedulePayment(scheduleId){try{const res=await fetch(`/installments/schedules/${scheduleId}/status?user_id=${currentUser.id}`);const data=await res.json();if(!res.ok){alert(data.message||"Unable to refresh installment payment.");await loadOrder();return}await loadOrder();alert(`Installment payment status: ${statementStatusLabel(data.payment_status||data.status)}`)}catch(error){alert(error.message||"Unable to refresh installment payment.")}}
+    function statementText(){const statement=installmentStatement;if(!statement)return"No statement available.";const schedules=(statement.schedules||[]).map(schedule=>`#${schedule.installment_no} | Due ${formatDate(schedule.due_date)} | Due ${money(schedule.amount_due)} | Paid ${money(schedule.amount_paid)} | Balance ${money(schedule.balance)} | ${statementStatusLabel(schedule.status)}`).join("\n");const payments=(statement.payments||[]).map(payment=>`Payment #${payment.entry_no||payment.id} | ${formatDate(payment.paid_at||payment.created_at)} | Paid ${money(payment.amount_paid)} | Balance ${money(payment.balance)}`).join("\n");return["Sheena's Gadgets & Accessories Shop","Installment Statement",orderLabel(statement.order_id),`Generated: ${formatDate(new Date())}`,"",`Total Plan: ${money(statement.total_price)}`,`Total Paid: ${money(statement.total_paid)}`,`Remaining Balance: ${money(statement.balance)}`,`Next Due: ${statement.next_due_date?`${formatDate(statement.next_due_date)} / ${money(statement.next_due_amount)}`:"None"}`,"","Monthly Schedule",schedules||"No schedules yet.","","Payment Ledger",payments||"No payment records yet."].join("\n")}
+    function downloadStatement(){if(!installmentStatement)return alert("No statement available yet.");const blob=new Blob([statementText()],{type:"text/plain"});const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=`${orderReference(installmentStatement.order_id)}-statement.txt`;document.body.appendChild(link);link.click();URL.revokeObjectURL(link.href);link.remove()}
+    function printStatement(){if(!installmentStatement)return alert("No statement available yet.");const popup=window.open("","_blank","width=900,height=720");if(!popup)return alert("Please allow pop-ups to print this statement.");popup.document.open();popup.document.write(`<!doctype html><html><head><title>${escapeHtml(orderLabel(installmentStatement.order_id))} Statement</title><style>body{font-family:Arial,Helvetica,sans-serif;color:#080808;margin:30px}pre{white-space:pre-wrap;line-height:1.55;font-size:13px}</style></head><body><pre>${escapeHtml(statementText())}</pre></body></html>`);popup.document.close();popup.focus();setTimeout(()=>popup.print(),300)}
+    function renderRepair(order){const panel=document.getElementById("repairPanel");const shouldShow=(order.status||"")==="delivered"||Boolean(order.repair_request_status);if(!shouldShow){panel.classList.add("d-none");return}panel.classList.remove("d-none");const warrantyText=order.warranty_expires_at?`${formatDate(order.warranty_expires_at)} (${isWarrantyActive(order)?"Active":"Expired"})`:((order.status||"")==="delivered"?"Active":"Not active yet");document.getElementById("repairDetails").innerHTML=[detailRow("Warranty",warrantyText),detailRow("Repair Request",repairStatusLabel(order.repair_request_status)),detailRow("Repair Progress",order.repair_request_status==="approved"?repairServiceStatusLabel(order.repair_service_status):""),detailRow("Issue",order.repair_issue||""),detailRow("Admin Instructions",order.repair_admin_note||"")].join("");const steps=["approved","item_received","diagnosing","repairing","ready_for_pickup","completed"];const current=order.repair_service_status||"approved";document.getElementById("repairSteps").innerHTML=order.repair_request_status==="approved"?steps.map(step=>`<span class="${step===current?"active":""}">${escapeHtml(repairServiceStatusLabel(step))}</span>`).join(""):""}
+
+    function receiptText(order){const rows=orderItems(order).map(item=>{const qty=Number(item.quantity||1);const subtotal=Number(item.subtotal||Number(item.unit_price||0)*qty);return `${item.product_name||"Product"} | ${item.variant_name||"Default"} | Qty ${qty} | ${money(subtotal)}`}).join("\n");return["Sheena's Gadgets & Accessories Shop",orderLabel(order),`Date: ${formatDate(order.created_at)}`,`Status: ${orderStatusLabel(order)}`,`Payment: ${String(order.payment_method||"cod").toUpperCase()}`,`Payment Status: ${paymentStatusLabel(order)}`,"",rows,"",receiptShippingLines(order),`Total: ${money(order.total_price)}`].join("\n")}
+    function printableOrderHtml(order){const rows=orderItems(order).map(item=>{const qty=Number(item.quantity||1);const subtotal=Number(item.subtotal||Number(item.unit_price||0)*qty);return `<tr><td>${escapeHtml(item.product_name||"Product")}</td><td>${escapeHtml(item.variant_name||"Default")}</td><td>${qty}</td><td>${money(subtotal)}</td></tr>`}).join("");return `<!doctype html><html><head><title>${escapeHtml(orderLabel(order))}</title><style>body{font-family:Arial,Helvetica,sans-serif;color:#080808;margin:30px}h1,h2{margin:0 0 8px;font-weight:900}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ddd;padding:10px;text-align:left}.total{margin-top:18px;font-size:24px;font-weight:900;text-align:right}</style></head><body><h1>Sheena's Gadgets & Accessories Shop</h1><h2>${escapeHtml(orderLabel(order))}</h2><p>Date: ${escapeHtml(formatDate(order.created_at))}</p><p>Payment: ${escapeHtml(String(order.payment_method||"cod").toUpperCase())}</p><table><thead><tr><th>Product</th><th>Variant</th><th>Qty</th><th>Subtotal</th></tr></thead><tbody>${rows}</tbody></table><div class="total">${printableShippingRows(order)}<div>Total: ${money(order.total_price)}</div></div></body></html>`}
+    function printReceipt(){if(!selectedOrder)return;const printWindow=window.open("","_blank","width=900,height=720");if(!printWindow)return alert("Please allow pop-ups to print this receipt.");printWindow.document.open();printWindow.document.write(printableOrderHtml(selectedOrder));printWindow.document.close();printWindow.focus();setTimeout(()=>printWindow.print(),300)}
+    function downloadReceipt(){if(!selectedOrder)return;const blob=new Blob([receiptText(selectedOrder)],{type:"text/plain"});const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=`${orderReference(selectedOrder)}-receipt.txt`;document.body.appendChild(link);link.click();URL.revokeObjectURL(link.href);link.remove()}
+    async function copyTextToClipboard(text,successMessage){try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text)}else{const input=document.createElement("textarea");input.value=text;input.setAttribute("readonly","readonly");input.style.position="fixed";input.style.opacity="0";document.body.appendChild(input);input.select();document.execCommand("copy");input.remove()}alert(successMessage)}catch(error){prompt("Copy this:",text)}}
+    function copyOrderId(){copyTextToClipboard(orderReference(selectedOrder),`Copied ${orderLabel(selectedOrder)}.`)}
+    function copyOrderLink(){copyTextToClipboard(location.href,`Copied link for ${orderLabel(selectedOrder)}.`)}
+    async function requestCancellation(){if(!selectedOrder)return;const reason=prompt("Why do you want to cancel this order?");if(reason===null)return;if(!reason.trim())return alert("Please enter a cancellation reason.");const res=await fetch(`/orders/${selectedOrder.id}/cancellation-request`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({user_id:currentUser.id,reason})});const data=await res.json();if(!res.ok)return alert(data.message||"Unable to request cancellation.");alert("Cancellation request submitted. Admin will review it.");await loadOrder()}
+    async function requestRepair(){if(!selectedOrder)return;const issue=prompt("Describe the issue that needs repair.");if(issue===null)return;if(!issue.trim())return alert("Please describe the repair issue.");const res=await fetch(`/orders/${selectedOrder.id}/repair-request`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({user_id:currentUser.id,issue})});const data=await res.json();if(!res.ok)return alert(data.message||"Unable to request repair.");alert("Repair request submitted. Admin will review it.");await loadOrder()}
+    async function refreshPaymentStatus(){if(!selectedOrder)return;try{const res=await fetch(`/payments/paymongo/status/${selectedOrder.id}`);const data=await res.json();if(!res.ok){alert(data.message||"Unable to refresh payment status.");await loadOrder();return}await loadOrder();alert(`Payment status: ${paymentStatusLabel({payment_status:data.payment_status,payment_method:selectedOrder.payment_method})}`)}catch(error){alert(error.message||"Unable to refresh payment status.")}}
+    async function retryPayment(){if(!selectedOrder)return;try{const res=await fetch(`/payments/paymongo/retry/${selectedOrder.id}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({user_id:currentUser.id})});const data=await res.json();if(!res.ok){alert(data.message||"Unable to regenerate payment link.");await loadOrder();return}if(data.payment_checkout_url){window.location.href=data.payment_checkout_url;return}await loadOrder();alert(data.message||"New payment link generated.")}catch(error){alert(error.message||"Unable to regenerate payment link.")}}
+    function goToReview(){if(!selectedOrder)return;location.href=`/customer/review.html?order_id=${selectedOrder.id}`}
+    function renderActions(order){const actions=[`<button class="btn btn-dark" onclick="printReceipt()">Print Receipt</button>`,`<button class="btn btn-outline-dark" onclick="downloadReceipt()">Download Receipt</button>`,`<button class="btn btn-outline-dark" onclick="copyOrderLink()">Copy Link</button>`];if(canPayOrder(order))actions.unshift(`<a class="btn btn-dark" href="${escapeHtml(order.payment_checkout_url)}">Pay Now</a>`);if(canRetryPayment(order))actions.unshift(`<button class="btn btn-dark" onclick="retryPayment()">${order.payment_method==="installment"?"Retry Downpayment":"Retry Payment"}</button>`);if(canRefreshPayment(order))actions.push(`<button class="btn btn-outline-dark" onclick="refreshPaymentStatus()">Refresh Payment</button>`);if(canRequestCancellation(order))actions.push(`<button class="btn btn-outline-dark" onclick="requestCancellation()">Request Cancel</button>`);if(canRequestRepair(order))actions.push(`<button class="btn btn-outline-dark" onclick="requestRepair()">Request Repair</button>`);if(canReviewOrder(order))actions.push(`<button class="btn btn-outline-dark" onclick="goToReview()">Write Review</button>`);document.getElementById("orderActions").innerHTML=actions.join("")}
+    function showError(title,message){document.getElementById("loadingState").classList.add("d-none");document.getElementById("orderShell").classList.add("d-none");document.getElementById("errorTitle").innerText=title;document.getElementById("errorMessage").innerText=message;document.getElementById("errorState").classList.remove("d-none")}
+    function renderOrder(order){document.getElementById("loadingState").classList.add("d-none");document.getElementById("errorState").classList.add("d-none");document.getElementById("orderShell").classList.remove("d-none");document.getElementById("orderTitle").innerText=orderLabel(order);document.getElementById("orderSubtitle").innerText=`${orderItemsTitle(order)} | ${formatDate(order.created_at)}`;document.getElementById("orderTotal").innerText=money(order.total_price);const pill=document.getElementById("orderStatusPill");pill.className=`status-pill status-${order.status||"pending"}`;pill.innerText=orderStatusLabel(order);renderTimeline(order);renderHistory(order);renderPayment(order);renderItems(order);renderCustomerDetails(order);renderInstallment(order);renderInstallmentStatement(order);renderRepair(order);renderActions(order)}
+    async function loadOrder(){if(!orderId){showError("Order is missing","Please open the order from your profile page.");return}try{const res=await fetch(`/orders/customer/${currentUser.id}`);const data=await res.json();if(!res.ok){showError("Unable to load order",data.message||"Please try again later.");return}selectedOrder=(Array.isArray(data)?data:[]).find(order=>Number(order.id)===orderId);if(!selectedOrder){showError("Order not found","This order is not available on your account.");return}await loadOrderStatement();renderOrder(selectedOrder)}catch(error){showError("Unable to load order","Please check the server and try again.")}}
+    document.addEventListener("DOMContentLoaded",()=>{currentUser=readCurrentUser();if(!currentUser||currentUser.role!=="customer"){location.href=`/auth.html?returnTo=${encodeURIComponent(location.pathname+location.search)}`;return}loadOrder()});
+  </script>
+</body>
+</html>

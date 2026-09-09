@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" role="img" aria-label="FitTrack Lite Smartwatch">
+  <rect width="900" height="700" fill="#ffffff"/>
+  <rect x="34" y="34" width="832" height="632" rx="28" fill="#ffffff" stroke="#080808" stroke-width="6"/>
+  <rect x="64" y="64" width="214" height="46" rx="23" fill="#080808"/>
+  <text x="90" y="95" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="800" fill="#ffffff">WATCH</text>
+  <g><rect x="392" y="72" width="116" height="116" rx="34" fill="#080808"/><rect x="392" y="400" width="116" height="116" rx="34" fill="#080808"/><rect x="334" y="168" width="232" height="252" rx="54" fill="#fff" stroke="#080808" stroke-width="18"/><circle cx="450" cy="294" r="54" fill="#080808"/></g>
+  <text x="72" y="570" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="900" fill="#080808">FitTrack Lite Smartwatch</text>
+  <text x="72" y="615" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="800" fill="#080808">PHP 2,990</text>
+</svg>

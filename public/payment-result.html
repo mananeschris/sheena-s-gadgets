@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Result</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #080808;
+      --muted: #666;
+      --line: #ddd;
+      --soft: #f6f6f6;
+      --white: #fff;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      margin: 0;
+      background: var(--white);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 24px;
+    }
+
+    .result-panel {
+      width: min(620px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      background: var(--white);
+    }
+
+    h1 {
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: .95;
+      font-weight: 900;
+      margin-bottom: 16px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 900;
+      text-transform: capitalize;
+      margin-bottom: 18px;
+    }
+
+    .btn {
+      border-radius: 6px;
+      font-weight: 900;
+    }
+
+    .btn-dark {
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+  </style>
+  <link rel="stylesheet" href="/css/ui-polish.css">
+  <link rel="stylesheet" href="/css/ideal-ui.css?v=ideal-ui-20260908f">
+</head>
+<body class="payment-result-page">
+  <main class="result-panel">
+    <span id="statusPill" class="status-pill">Checking</span>
+    <h1 id="title">Checking payment</h1>
+    <p id="message" class="text-muted">Please wait while we refresh your payment status.</p>
+    <div class="d-flex flex-wrap gap-2 mt-4">
+      <a id="orderLink" class="btn btn-dark" href="/customer/profile.html">View Order</a>
+      <a class="btn btn-outline-dark" href="/">Back to Shop</a>
+    </div>
+  </main>
+
+    <script src="/js/order-reference.js"></script>
+<script>
+    const PAYMENT_RESULT_LABELS = {
+      paid: "Paid",
+      installment_downpayment_paid: "Downpayment Paid",
+      installment_active: "Installment Active",
+      pending_verification: "Pending Verification",
+      installment_downpayment_pending: "Downpayment Pending",
+      expired: "Expired",
+      installment_downpayment_expired: "Downpayment Expired",
+      failed: "Failed",
+      installment_downpayment_failed: "Downpayment Failed",
+      cancelled: "Cancelled"
+    };
+
+    function statusLabel(status) {
+      return PAYMENT_RESULT_LABELS[status] || String(status || "pending_verification").replaceAll("_", " ");
+    }
+
+    function isPaidStatus(status) {
+      return ["paid", "installment_downpayment_paid", "installment_active", "installment_completed"].includes(status);
+    }
+
+    function isFailedStatus(status) {
+      return ["failed", "expired", "cancelled", "installment_downpayment_failed", "installment_downpayment_expired"].includes(status);
+    }
+
+    function titleForStatus(status, result) {
+      if (isPaidStatus(status)) return "Payment successful";
+      if (status === "expired" || status === "installment_downpayment_expired") return "Payment expired";
+      if (isFailedStatus(status)) return "Payment was not completed";
+      if (result === "cancelled") return "Payment not completed yet";
+      return "Payment pending";
+    }
+
+    function currentCustomerId() {
+      try {
+        const user = JSON.parse(localStorage.getItem("currentUser") || "null");
+        return user && String(user.role || "customer").toLowerCase() === "customer" ? user.id : "";
+      } catch (error) {
+        return "";
+      }
+    }
+
+    async function refreshSchedulePayment(scheduleId, orderId, result) {
+      const pill = document.getElementById("statusPill");
+      const title = document.getElementById("title");
+      const message = document.getElementById("message");
+      const orderLink = document.getElementById("orderLink");
+      const userId = currentCustomerId();
+      const query = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
+
+      orderLink.href = orderId
+        ? `/customer/order.html?order_id=${encodeURIComponent(orderId)}`
+        : "/customer/profile.html";
+      orderLink.innerText = orderId ? "View Order" : "View Profile";
+
+      try {
+        const res = await fetch(`/installments/schedules/${encodeURIComponent(scheduleId)}/status${query}`);
+        const data = await res.json();
+        const status = data.payment_status || data.status || (result === "cancelled" ? "cancelled" : "pending_verification");
+
+        pill.innerText = statusLabel(status);
+        title.innerText = titleForStatus(status, result);
+
+        if (!res.ok) {
+          message.innerText = data.message || "Unable to refresh installment payment status right now.";
+          return;
+        }
+
+        if (status === "paid" || data.status === "paid") {
+          message.innerText = `Installment payment was confirmed. You can view your order or profile activity now.`;
+        } else if (data.needs_checkout) {
+          message.innerText = data.message || "This installment needs a new payment checkout link.";
+        } else {
+          message.innerText = data.message || `Installment payment status is ${statusLabel(status)}.`;
+        }
+      } catch (error) {
+        pill.innerText = "Pending";
+        title.innerText = result === "cancelled" ? "Payment not completed yet" : "Payment needs checking";
+        message.innerText = error.message;
+      }
+    }
+
+    async function refreshPayment() {
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get("order_id");
+      const scheduleId = params.get("schedule_id");
+      const result = params.get("result") || "success";
+      const pill = document.getElementById("statusPill");
+      const title = document.getElementById("title");
+      const message = document.getElementById("message");
+      const orderLink = document.getElementById("orderLink");
+
+      if (scheduleId) {
+        await refreshSchedulePayment(scheduleId, orderId, result);
+        return;
+      }
+
+      if (!orderId) {
+        pill.innerText = "No order";
+        title.innerText = "Order not found";
+        message.innerText = "We could not find an order id in the payment return link.";
+        return;
+      }
+
+      orderLink.href = `/customer/order.html?order_id=${encodeURIComponent(orderId)}`;
+
+      try {
+        const res = await fetch(`/payments/paymongo/status/${orderId}`);
+        const data = await res.json();
+        const status = data.payment_status || (result === "cancelled" ? "cancelled" : "pending_verification");
+
+        pill.innerText = statusLabel(status);
+        title.innerText = titleForStatus(status, result);
+
+        if (!res.ok) {
+          message.innerText = data.message || "Unable to refresh payment status right now.";
+          return;
+        }
+
+        if (isPaidStatus(status)) {
+          message.innerText = `${orderLabel(orderId)} payment was confirmed. You can view the order activity now.`;
+        } else if (data.needs_checkout) {
+          message.innerText = data.message || `${orderLabel(orderId)} needs a new payment checkout link.`;
+        } else {
+          message.innerText = data.message || `${orderLabel(orderId)} payment status is ${statusLabel(status)}.`;
+        }
+      } catch (error) {
+        pill.innerText = "Pending";
+        title.innerText = result === "cancelled" ? "Payment not completed yet" : "Payment needs checking";
+        message.innerText = error.message;
+      }
+    }
+
+    refreshPayment();
+  </script>
+</body>
+</html>

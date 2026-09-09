@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" role="img" aria-label="NovaCam Pro 5G Smartphone">
+  <rect width="900" height="700" fill="#ffffff"/>
+  <rect x="34" y="34" width="832" height="632" rx="28" fill="#ffffff" stroke="#080808" stroke-width="6"/>
+  <rect x="64" y="64" width="214" height="46" rx="23" fill="#080808"/>
+  <text x="90" y="95" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="800" fill="#ffffff">PHONE</text>
+  <g><rect x="338" y="112" width="224" height="356" rx="36" fill="#fff" stroke="#080808" stroke-width="18"/><rect x="382" y="156" width="136" height="248" rx="14" fill="#080808"/><circle cx="450" cy="434" r="12" fill="#080808"/></g>
+  <text x="72" y="570" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="900" fill="#080808">NovaCam Pro 5G Smartphone</text>
+  <text x="72" y="615" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="800" fill="#080808">PHP 17,990</text>
+</svg>

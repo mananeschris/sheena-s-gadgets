@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product | Sheena's Gadgets & Accessories Shop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/customer-shop.css">
+  <style>
+    .product-page{padding:34px clamp(18px,4vw,52px);background:var(--white)}
+    .product-layout{display:grid;grid-template-columns:minmax(280px,.9fr) minmax(0,1.1fr);gap:28px;align-items:start}.product-gallery,.product-details,.review-panel{border:1px solid var(--line);border-radius:8px;background:var(--white);padding:16px}.product-gallery-main{width:100%;aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;object-fit:cover;background:var(--soft)}.product-thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.product-thumbs button{border:1px solid var(--line);border-radius:8px;background:var(--white);padding:4px}.product-thumbs img{width:64px;height:64px;object-fit:cover;border-radius:6px}.product-details h1{font-size:clamp(30px,4vw,50px);font-weight:900;margin:10px 0}.product-price{font-size:30px;font-weight:900}.product-actions-main{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.quantity-control{display:flex;align-items:center;gap:10px;margin-top:16px}.quantity-control input{width:96px;border:1px solid var(--ink);border-radius:8px;padding:9px;background:var(--white);color:var(--ink)}.review-panel,.recommend-panel{margin-top:22px}.recommend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.mini-product{border:1px solid var(--line);border-radius:8px;background:var(--white);padding:10px;cursor:pointer}.mini-product img{width:100%;aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;object-fit:cover;background:var(--soft)}.mini-product strong{display:block;margin-top:10px}.mini-product span{display:block;color:var(--muted);font-size:13px;margin-top:4px}.mini-product .mini-price{color:var(--ink);font-weight:900;font-size:16px}.review-images{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.review-images img{width:72px;height:72px;border:1px solid var(--line);border-radius:8px;object-fit:cover}.store-header.compact{min-height:auto}.store-header.compact .store-nav{border-bottom:0}@media(max-width:820px){.product-layout{grid-template-columns:1fr}}
+  </style>
+  <link rel="stylesheet" href="/css/ui-polish.css">
+  <link rel="stylesheet" href="/css/ideal-ui.css?v=ideal-ui-20260908f">
+</head>
+<body class="customer-product-page">
+  <header class="store-header compact">
+    <nav class="store-nav">
+      <a class="brand brand-with-logo" href="/"><img class="brand-logo" src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a>
+      <div class="nav-actions">
+        <a href="/" class="nav-link">Shop</a>
+        <a id="profileLink" href="/customer/profile.html" class="nav-link d-none">Profile</a>
+        <button id="cartButton" class="btn btn-outline-light btn-sm" onclick="toggleCart()">Cart <span id="cartCount" class="badge text-bg-light">0</span></button>
+        <button id="notificationButton" class="btn btn-outline-light btn-sm d-none" onclick="toggleNotifications()">Updates <span id="notificationCount" class="badge text-bg-light d-none">0</span></button>
+        <span id="accountLabel" class="account-label"></span>
+        <a id="loginLink" href="/auth.html" class="btn btn-outline-light btn-sm">Login</a>
+        <a id="signupLink" href="/auth.html?mode=register" class="btn btn-light btn-sm">Sign Up</a>
+        <button id="logoutButton" class="btn btn-outline-light btn-sm d-none" onclick="logoutCustomer()">Logout</button>
+      </div>
+    </nav>
+    <div id="cartPanel" class="cart-panel d-none">
+      <div class="cart-head"><strong>Cart</strong><button class="btn btn-sm btn-outline-dark" onclick="toggleCart()">Close</button></div>
+      <label class="cart-select-all"><input type="checkbox" id="cartSelectAll" onchange="toggleSelectAllCart(this.checked)"> Select all</label>
+      <div id="cartList" class="cart-list">Cart is empty.</div>
+      <div class="cart-footer"><div><small id="cartSelectedCount">0 selected</small><strong id="cartTotal">PHP 0.00</strong></div><button class="btn btn-dark btn-sm" onclick="checkoutCart()">Checkout</button></div>
+    </div>
+    <div id="notificationPanel" class="notification-panel customer-notification-panel d-none">
+      <div class="notification-head">
+        <strong>Notifications</strong>
+        <div class="notification-actions">
+          <button class="btn btn-sm btn-outline-dark" onclick="markAllNotificationsRead()">Mark all read</button>
+          <button class="btn btn-sm btn-dark" onclick="clearReadNotifications()">Clear read</button>
+        </div>
+      </div>
+      <div id="notificationList" class="notification-list">No notifications yet.</div>
+    </div>
+  </header>
+
+  <main class="product-page">
+    <div id="productPageBody">Loading product...</div>
+    <section class="review-panel">
+      <div class="catalog-head"><div><p class="eyebrow dark">Customer Reviews</p><h2>Reviews</h2></div></div>
+      <div id="productReviews">Loading reviews...</div>
+    </section>
+    <section class="recommend-panel">
+      <div class="catalog-head"><div><p class="eyebrow dark">You May Also Like</p><h2>Related Products</h2></div></div>
+      <div id="relatedProducts" class="recommend-grid"></div>
+    </section>
+    <section class="recommend-panel">
+      <div class="catalog-head"><div><p class="eyebrow dark">Recently Viewed</p><h2>Continue Browsing</h2></div></div>
+      <div id="recentProducts" class="recommend-grid"></div>
+    </section>
+  </main>
+
+  <script>var allProducts=[];</script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/customer-notifications.js"></script>
+  <script>
+    const productId = Number(new URLSearchParams(location.search).get("id"));
+    let product = null;
+    let selectedVariantIndex = "";
+
+    function money(value){return `PHP ${Number(value||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`}
+    function escapeHtml(value){return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+    function productImages(item){try{const images=item.images?JSON.parse(item.images):[];if(Array.isArray(images)&&images.length)return images}catch(e){}return item.image?[item.image]:[]}
+    function productVariants(item){try{const variants=item.variants?JSON.parse(item.variants):[];return Array.isArray(variants)?variants:[]}catch(e){return[]}}
+    function productCategory(item){const category=String(item?.category||"Accessories").trim();return category||"Accessories"}
+    function stockLabel(stock){const count=Number(stock||0);if(count<=0)return{text:"Unavailable",className:"out"};if(count<=5)return{text:"Limited pieces",className:"low"};return{text:"Available today",className:"ok"}}
+    function ratingStars(value){const rating=Math.round(Number(value||0));return Array.from({length:5},(_,i)=>i<rating?"&#9733;":"&#9734;").join("")}
+    function ratingSummary(item){const avg=Number(item.average_rating||0);const count=Number(item.review_count||0);return count?`${avg.toFixed(1)} / 5 (${count} review${count===1?"":"s"})`:"No reviews yet"}
+    function currentVariant(){const variants=productVariants(product);return selectedVariantIndex!==""?variants[Number(selectedVariantIndex)]:null}
+    function activePrice(){const variant=currentVariant();return Number(variant?variant.price:product.price||0)}
+    function activeStock(){const variant=currentVariant();return Number(variant?variant.stock:product.stock||0)}
+    function openProductDetails(id){window.location.href=`/customer/product.html?id=${id}`}
+    function logoutCustomer(){localStorage.removeItem("currentUser");location.href="/"}
+    function wishlistIds(){try{return JSON.parse(localStorage.getItem("wishlist")||"[]").map(Number)}catch(e){return[]}}
+    function isWishlisted(id){return wishlistIds().includes(Number(id))}
+    function toggleWishlist(id){const current=wishlistIds();const productId=Number(id);const next=current.includes(productId)?current.filter(item=>item!==productId):[...current,productId];localStorage.setItem("wishlist",JSON.stringify(next));renderProduct()}
+
+    function renderAccount(){let user=null;try{user=JSON.parse(localStorage.getItem("currentUser")||"null")}catch(e){};if(user&&String(user.role||"customer").toLowerCase()==="customer"){document.getElementById("profileLink").classList.remove("d-none");document.getElementById("logoutButton").classList.remove("d-none");document.getElementById("loginLink").classList.add("d-none");document.getElementById("signupLink").classList.add("d-none");document.getElementById("accountLabel").innerText=user.name||"Customer"}}
+    function setMainImage(src){document.getElementById("mainImage").src=src}
+    function selectVariant(index){selectedVariantIndex=index;renderProduct()}
+    function selectedQuantity(){const input=document.getElementById("productQty");const qty=Math.max(Number(input?.value||1),1);return Math.min(qty, activeStock() || 1)}
+    function updateQtyMax(){const input=document.getElementById("productQty");if(!input)return;input.max=activeStock();if(Number(input.value)>activeStock())input.value=activeStock()||1;if(Number(input.value)<1)input.value=1}
+    function addSelectedToCart(){addToCart(product.id, selectedVariantIndex, selectedQuantity())}
+    function buyNow(){const quantity=selectedQuantity();localStorage.setItem("checkout",JSON.stringify({product_id:product.id,variant_index:selectedVariantIndex,quantity}));let user=null;try{user=JSON.parse(localStorage.getItem("currentUser")||"null")}catch(e){};if(!user||String(user.role||"customer").toLowerCase()!=="customer"){location.href="/auth.html?returnTo="+encodeURIComponent(`/checkout.html`);return}location.href="/checkout.html"}
+
+    function renderProduct(){const images=productImages(product);const variants=productVariants(product);if(variants.length&&selectedVariantIndex===""){const first=variants.findIndex(v=>Number(v.stock||0)>0);selectedVariantIndex=String(first>=0?first:0)}const stock=stockLabel(activeStock());const category=productCategory(product);document.getElementById("productPageBody").innerHTML=`<div class="product-layout"><section class="product-gallery"><img id="mainImage" class="product-gallery-main" src="${escapeHtml(images[0]||"https://via.placeholder.com/700x700?text=Product")}" alt="${escapeHtml(product.name)}">${images.length>1?`<div class="product-thumbs">${images.slice(0,20).map(img=>`<button onclick="setMainImage('${escapeHtml(img)}')"><img src="${escapeHtml(img)}" alt="${escapeHtml(product.name)}"></button>`).join("")}</div>`:""}</section><section class="product-details"><div class="product-card-head"><span class="product-category">${escapeHtml(category)}</span><span class="stock-pill ${stock.className}">${stock.text}</span></div><h1>${escapeHtml(product.name)}</h1><div class="product-price">${money(activePrice())}</div><p class="text-muted mt-3">${escapeHtml(product.description||"No description available.")}</p><div class="product-meta mb-3"><span>${ratingStars(product.average_rating)} ${ratingSummary(product)}</span></div>${variants.length?`<h6 class="fw-bold">Variants</h6><div class="variant-options">${variants.map((variant,index)=>`<button type="button" class="variant-option ${String(index)===String(selectedVariantIndex)?"active":""}" ${Number(variant.stock||0)<=0?"disabled":""} onclick="selectVariant('${index}')"><strong>${escapeHtml(variant.name)}</strong><span>${money(variant.price)} - ${Number(variant.stock||0)<=5?"Limited pieces":"Available today"}</span></button>`).join("")}</div>`:"<p class='text-muted'>Default item only.</p>"}<div class="quantity-control"><label class="fw-bold" for="productQty">Quantity</label><input id="productQty" type="number" min="1" max="${activeStock()}" value="1" oninput="updateQtyMax()"><span class="text-muted">Choose your quantity</span></div><div class="product-actions-main"><button class="btn btn-outline-dark" onclick="toggleWishlist(product.id)">${isWishlisted(product.id)?"Saved":"Save"}</button><button class="btn btn-outline-dark" ${activeStock()<=0?"disabled":""} onclick="addSelectedToCart()">Add to Cart</button><button class="btn btn-dark" ${activeStock()<=0?"disabled":""} onclick="buyNow()">Buy Now</button></div></section></div>`;renderCart()}
+
+    function reviewImagesHtml(value){try{const images=value?JSON.parse(value):[];if(!Array.isArray(images)||!images.length)return"";return `<div class="review-images">${images.map(image=>`<img src="${escapeHtml(image)}" alt="Review photo">`).join("")}</div>`}catch(e){return""}}
+    function rememberProduct(){try{const ids=JSON.parse(localStorage.getItem("recentProducts")||"[]").filter(id=>Number(id)!==product.id);ids.unshift(product.id);localStorage.setItem("recentProducts",JSON.stringify(ids.slice(0,8)))}catch(e){localStorage.setItem("recentProducts",JSON.stringify([product.id]))}}
+    function miniProductCard(item){const image=productImages(item)[0]||"https://via.placeholder.com/400x400?text=Product";return `<article class="mini-product" onclick="location.href='/customer/product.html?id=${item.id}'"><img src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}"><strong>${escapeHtml(item.name)}</strong><span class="mini-price">${money(item.price)}</span><span>${ratingStars(item.average_rating)} ${ratingSummary(item)}</span></article>`}
+    function renderRelatedProducts(){const category=productCategory(product);const related=allProducts.filter(item=>Number(item.id)!==product.id).sort((a,b)=>(productCategory(b)===category)-(productCategory(a)===category)||Number(b.review_count||0)-Number(a.review_count||0)).slice(0,4);document.getElementById("relatedProducts").innerHTML=related.length?related.map(miniProductCard).join(""):"<div class='empty-state'>No related products yet.</div>"}
+    function renderRecentProducts(){let ids=[];try{ids=JSON.parse(localStorage.getItem("recentProducts")||"[]")}catch(e){}const recent=ids.map(id=>allProducts.find(item=>Number(item.id)===Number(id))).filter(item=>item&&Number(item.id)!==product.id).slice(0,4);document.getElementById("recentProducts").innerHTML=recent.length?recent.map(miniProductCard).join(""):"<div class='empty-state'>No recently viewed products yet.</div>"}
+    async function loadReviews(){const box=document.getElementById("productReviews");const res=await fetch(`/reviews/product/${productId}`);const data=await res.json();const reviews=Array.isArray(data)?data:[];if(!reviews.length){box.innerHTML="No reviews yet.";return}box.innerHTML=reviews.map(review=>`<div class="review-item"><strong>${escapeHtml(review.customer_name||"Customer")}</strong><span>${ratingStars(review.rating)} ${Number(review.rating||0)}/5</span>${review.comment?`<p>${escapeHtml(review.comment)}</p>`:""}${reviewImagesHtml(review.images)}</div>`).join("")}
+    async function loadProduct(){renderAccount();const res=await fetch("/products");allProducts=await res.json();product=allProducts.find(item=>Number(item.id)===productId);if(!product){document.getElementById("productPageBody").innerHTML="Product not found.";return}document.title=`${product.name} | Sheena's Gadgets & Accessories Shop`;rememberProduct();renderProduct();loadReviews();renderRelatedProducts();renderRecentProducts()}
+    document.addEventListener("DOMContentLoaded",loadProduct);
+  </script>
+</body>
+</html>
