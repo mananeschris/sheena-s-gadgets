@@ -1,3 +1,6 @@
+const { storeSession } = require('./adminSessions');
+const { sameOrigin, query } = require('./chatSession');
+
 function actorIdFromRequest(req) {
   const rawId = req.body?.actor_id || req.query?.actor_id || req.headers["x-actor-id"];
   const id = Number(rawId);
@@ -16,27 +19,21 @@ function requireRole(allowedRoles) {
   const allowed = allowedRoles.map(role => String(role).toLowerCase());
 
   return function roleGuard(req, res, next) {
-    const actorId = actorIdFromRequest(req);
-    if (!actorId) {
-      return res.status(403).json({ message: "Signed-in store account required." });
-    }
-
-    req.db.query(
-      "SELECT id, name, email, role FROM users WHERE id = ? LIMIT 1",
-      [actorId],
-      (err, rows) => {
-        if (err) return res.status(500).json({ message: err.message });
-
-        const user = rows[0];
-        const role = String(user?.role || "").toLowerCase();
-        if (!user || !allowed.includes(role)) {
-          return res.status(403).json({ message: "You do not have permission to do this action." });
+    sameOrigin(req, res, async () => {
+      try {
+        const user = await storeSession(req);
+        if (!user) return res.status(401).json({ message: 'Your session has expired. Sign in again.' });
+        if (!allowed.includes(user.role)) return res.status(403).json({ message: 'You do not have permission to do this action.' });
+        const supplied = [req.body?.actor_id, req.query?.actor_id, req.headers['x-actor-id']].filter(value => value !== undefined && value !== null);
+        if (supplied.some(value => Number(value) !== Number(user.id))) return res.status(401).json({ message: 'Account changed. Sign in again.' });
+        req.actorUser = { id: user.id, name: user.name, email: user.email, role: user.role };
+        if (user.role === 'admin' && !['GET', 'HEAD'].includes(req.method)) {
+          await query(req.db, 'UPDATE delivery_chat_sessions SET last_activity_at=NOW() WHERE token_hash=?', [user.token_hash]);
         }
-
-        req.actorUser = { ...user, role };
+        res.set('Cache-Control', 'no-store');
         next();
-      }
-    );
+      } catch (_) { res.status(503).json({ message: 'Unable to verify your session. Please try again.' }); }
+    });
   };
 }
 

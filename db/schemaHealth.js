@@ -54,6 +54,7 @@ async function ensureCoreSchema(db) {
       email VARCHAR(255) NOT NULL UNIQUE,
       password VARCHAR(255) NOT NULL,
       role VARCHAR(30) NOT NULL DEFAULT 'customer',
+      account_status VARCHAR(30) NOT NULL DEFAULT 'active',
       birthday DATE NULL,
       phone VARCHAR(50) NULL,
       gender VARCHAR(40) NULL,
@@ -61,6 +62,10 @@ async function ensureCoreSchema(db) {
       city VARCHAR(120) NULL,
       province VARCHAR(120) NULL,
       postal_code VARCHAR(30) NULL,
+      email_verified TINYINT(1) NOT NULL DEFAULT 1,
+      email_verification_code_hash VARCHAR(255) NULL,
+      email_verification_expires_at DATETIME NULL,
+      email_verified_at DATETIME NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `, report);
@@ -70,6 +75,7 @@ async function ensureCoreSchema(db) {
     ["email", "VARCHAR(255) NULL"],
     ["password", "VARCHAR(255) NULL"],
     ["role", "VARCHAR(30) NOT NULL DEFAULT 'customer'"],
+    ["account_status", "VARCHAR(30) NOT NULL DEFAULT 'active'"],
     ["birthday", "DATE NULL"],
     ["phone", "VARCHAR(50) NULL"],
     ["gender", "VARCHAR(40) NULL"],
@@ -77,6 +83,10 @@ async function ensureCoreSchema(db) {
     ["city", "VARCHAR(120) NULL"],
     ["province", "VARCHAR(120) NULL"],
     ["postal_code", "VARCHAR(30) NULL"],
+    ["email_verified", "TINYINT(1) NOT NULL DEFAULT 1"],
+    ["email_verification_code_hash", "VARCHAR(255) NULL"],
+    ["email_verification_expires_at", "DATETIME NULL"],
+    ["email_verified_at", "DATETIME NULL"],
     ["created_at", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"]
   ], report);
 
@@ -88,6 +98,9 @@ async function ensureCoreSchema(db) {
       recipient_name VARCHAR(255) NOT NULL,
       phone VARCHAR(50) NOT NULL,
       address TEXT NOT NULL,
+      landmark TEXT NULL,
+      latitude DECIMAL(10,7) NULL,
+      longitude DECIMAL(10,7) NULL,
       city VARCHAR(120) NULL,
       province VARCHAR(120) NULL,
       postal_code VARCHAR(30) NULL,
@@ -105,6 +118,9 @@ async function ensureCoreSchema(db) {
     ["recipient_name", "VARCHAR(255) NULL"],
     ["phone", "VARCHAR(50) NULL"],
     ["address", "TEXT NULL"],
+    ["landmark", "TEXT NULL"],
+    ["latitude", "DECIMAL(10,7) NULL"],
+    ["longitude", "DECIMAL(10,7) NULL"],
     ["city", "VARCHAR(120) NULL"],
     ["province", "VARCHAR(120) NULL"],
     ["postal_code", "VARCHAR(30) NULL"],
@@ -123,6 +139,10 @@ async function ensureCoreSchema(db) {
       image TEXT NULL,
       images TEXT NULL,
       variants TEXT NULL,
+      warranty_eligible TINYINT(1) NOT NULL DEFAULT 0,
+      warranty_duration_months INT NOT NULL DEFAULT 0,
+      warranty_coverage TEXT NULL,
+      warranty_exclusions TEXT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `, report);
@@ -136,6 +156,10 @@ async function ensureCoreSchema(db) {
     ["image", "TEXT NULL"],
     ["images", "TEXT NULL"],
     ["variants", "TEXT NULL"],
+    ["warranty_eligible", "TINYINT(1) NOT NULL DEFAULT 0"],
+    ["warranty_duration_months", "INT NOT NULL DEFAULT 0"],
+    ["warranty_coverage", "TEXT NULL"],
+    ["warranty_exclusions", "TEXT NULL"],
     ["created_at", "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"]
   ], report);
 
@@ -204,6 +228,9 @@ async function ensureCoreSchema(db) {
       recipient_name VARCHAR(255) NULL,
       delivery_contact VARCHAR(50) NULL,
       delivery_address TEXT NULL,
+      delivery_landmark TEXT NULL,
+      delivery_latitude DECIMAL(10,7) NULL,
+      delivery_longitude DECIMAL(10,7) NULL,
       delivery_note TEXT NULL,
       shipping_region VARCHAR(40) NULL,
       shipping_fee DECIMAL(12,2) NOT NULL DEFAULT 0,
@@ -253,6 +280,9 @@ async function ensureCoreSchema(db) {
     ["recipient_name", "VARCHAR(255) NULL"],
     ["delivery_contact", "VARCHAR(50) NULL"],
     ["delivery_address", "TEXT NULL"],
+    ["delivery_landmark", "TEXT NULL"],
+    ["delivery_latitude", "DECIMAL(10,7) NULL"],
+    ["delivery_longitude", "DECIMAL(10,7) NULL"],
     ["delivery_note", "TEXT NULL"],
     ["shipping_region", "VARCHAR(40) NULL"],
     ["shipping_fee", "DECIMAL(12,2) NOT NULL DEFAULT 0"],
@@ -348,6 +378,7 @@ async function ensureCoreSchema(db) {
   `, report);
 
   await ensureColumns(db, "vouchers", [
+    ["deleted_at", "DATETIME NULL"],
     ["code", "VARCHAR(80) NULL"],
     ["discount_type", "VARCHAR(30) NOT NULL DEFAULT 'fixed'"],
     ["discount_value", "DECIMAL(12,2) NOT NULL DEFAULT 0"],

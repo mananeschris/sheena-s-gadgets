@@ -4,8 +4,18 @@ const { requireAdmin, verifiedActor } = require("./roleGuard");
 const { logAudit, auditActor } = require("./auditLogs");
 const { createNotification } = require("./notifications");
 const { logInventoryMovementAsync } = require("./inventoryMovements");
+const { ensureVoucherTables, validateVoucher, recordVoucherRedemptionForSource } = require("./voucherService");
 const LAYAWAY_TERM_MONTHS = 5;
 const LAYAWAY_AUTO_CANCEL_REASON = "Auto-cancelled after 5-month layaway deadline.";
+const ONLINE_PAYMENT_METHODS = ["gcash"];
+
+function normalizeOnlinePaymentMethod(method) {
+  const value = cleanText(method, 60).toLowerCase();
+  if (ONLINE_PAYMENT_METHODS.includes(value)) return "gcash";
+  if (["online", "e-wallet", "ewallet"].includes(value)) return "gcash";
+  if (value && !["cod", "cash", "installment", "manual", "pos"].includes(value)) return "gcash";
+  return value;
+}
 const SYSTEM_ACTOR = {
   actor_id: null,
   actor_name: "System",
@@ -96,12 +106,25 @@ async function ensureLayawayTables(db) {
     ["amount_paid", "DECIMAL(12,2) NOT NULL DEFAULT 0"],
     ["balance", "DECIMAL(12,2) NOT NULL DEFAULT 0"],
     ["payment_method", "VARCHAR(60) NULL"],
+    ["payment_provider", "VARCHAR(80) NULL"],
     ["payment_reference", "VARCHAR(255) NULL"],
+    ["payment_checkout_id", "VARCHAR(255) NULL"],
+    ["payment_checkout_url", "TEXT NULL"],
+    ["payment_status", "VARCHAR(50) NULL"],
+    ["payment_error", "TEXT NULL"],
+    ["payment_last_checked_at", "DATETIME NULL"],
     ["due_date", "DATE NULL"],
     ["term_months", "INT NOT NULL DEFAULT 5"],
     ["status", "VARCHAR(30) NOT NULL DEFAULT 'active'"],
     ["note", "TEXT NULL"],
     ["released_at", "DATETIME NULL"],
+    ["reserved_at", "DATETIME NULL"],
+    ["ready_for_release_at", "DATETIME NULL"],
+    ["delivered_at", "DATETIME NULL"],
+    ["voucher_id", "INT NULL"],
+    ["voucher_code", "VARCHAR(80) NULL"],
+    ["voucher_discount", "DECIMAL(12,2) NOT NULL DEFAULT 0"],
+    ["original_product_total", "DECIMAL(12,2) NOT NULL DEFAULT 0"],
     ["cancelled_at", "DATETIME NULL"],
     ["cancel_reason", "TEXT NULL"],
     ["created_by", "INT NULL"],
@@ -133,7 +156,11 @@ async function ensureLayawayTables(db) {
     ["layaway_id", "INT NULL"],
     ["amount", "DECIMAL(12,2) NOT NULL DEFAULT 0"],
     ["payment_method", "VARCHAR(60) NULL"],
+    ["payment_provider", "VARCHAR(80) NULL"],
     ["payment_reference", "VARCHAR(255) NULL"],
+    ["payment_checkout_id", "VARCHAR(255) NULL"],
+    ["payment_checkout_url", "TEXT NULL"],
+    ["payment_status", "VARCHAR(50) NULL"],
     ["note", "TEXT NULL"],
     ["received_by", "INT NULL"],
     ["received_by_name", "VARCHAR(255) NULL"],
@@ -184,6 +211,7 @@ function addMonths(date, months) {
 function layawayDeadlineDate() {
   return dateInputValue(addMonths(new Date(), LAYAWAY_TERM_MONTHS));
 }
+
 function cleanDate(value) {
   const text = cleanText(value, 20);
   return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : null;
@@ -198,14 +226,44 @@ function parseVariants(value) {
   }
 }
 
+function boolFlag(value) {
+  return value === true || value === 1 || String(value || "").toLowerCase() === "true" || String(value || "") === "1";
+}
+
+function productLayawayEnabled(product) {
+  return boolFlag(product?.allow_layaway);
+}
+
+function productLayawaySettings(product = {}) {
+  const type = cleanText(product.layaway_downpayment_type || "percentage", 20).toLowerCase() === "fixed" ? "fixed" : "percentage";
+  const value = cleanMoney(product.layaway_downpayment_value || (type === "percentage" ? 20 : 0));
+  const duration = Number(product.layaway_duration_months);
+  const maxQuantity = Number(product.layaway_max_quantity);
+  return {
+    downpayment_type: type,
+    downpayment_value: type === "percentage" ? Math.min(value, 100) : value,
+    duration_months: Number.isInteger(duration) && duration > 0 ? duration : LAYAWAY_TERM_MONTHS,
+    max_quantity: Number.isInteger(maxQuantity) && maxQuantity > 0 ? maxQuantity : 1
+  };
+}
+
+function layawayDownpaymentAmount(totalAmount, settings) {
+  const total = cleanMoney(totalAmount);
+  const amount = settings.downpayment_type === "fixed"
+    ? settings.downpayment_value
+    : total * (settings.downpayment_value / 100);
+  return Math.min(Math.max(amount, 1), total);
+}
+
 function variantLabel(variant, index) {
   return cleanText(variant?.name, 255) || `Variant ${index + 1}`;
 }
 
 function layawayStatus(balance, dueDate, currentStatus = "active") {
   const status = cleanText(currentStatus, 30).toLowerCase();
-  if (["released", "cancelled"].includes(status)) return status;
-  if (balance <= 0) return "paid";
+  if (["pending_downpayment", "payment_failed", "ready_for_release", "on_the_way", "delivered", "released", "cancelled"].includes(status)) return status;
+  if (balance <= 0) return "ready_for_release";
+  if (isPastLayawayDeadline({ due_date: dueDate })) return "overdue";
   return "active";
 }
 
@@ -241,7 +299,7 @@ function isPastLayawayDeadline(row) {
 function isDeadlineSoon(row) {
   const days = daysUntilDeadline(row);
   const status = cleanText(row?.status, 30).toLowerCase();
-  return days !== null && days >= 0 && days <= 14 && paymentStatusAmount(row) > 0 && ["active", "overdue"].includes(status);
+  return days !== null && days >= 0 && days <= 14 && paymentStatusAmount(row) > 0 && ["active", "overdue", "ready_for_release"].includes(status);
 }
 
 function isAutoCancelableLayaway(row) {
@@ -300,7 +358,7 @@ async function autoCancelExpiredLayaways(db) {
 async function refreshLayawayStatuses(db) {
   await dbQuery(db, `
     UPDATE layaways
-    SET status='paid', balance=0
+    SET status='ready_for_release', ready_for_release_at=COALESCE(ready_for_release_at, NOW()), balance=0
     WHERE status IN ('active', 'overdue')
       AND balance <= 0
   `);
@@ -322,9 +380,11 @@ async function loadLayaways(db) {
     ORDER BY
       CASE l.status
         WHEN 'active' THEN 0
-        WHEN 'paid' THEN 1
-        WHEN 'released' THEN 2
-        WHEN 'cancelled' THEN 3
+        WHEN 'pending_downpayment' THEN 1
+        WHEN 'overdue' THEN 2
+        WHEN 'ready_for_release' THEN 3
+        WHEN 'released' THEN 4
+        WHEN 'cancelled' THEN 5
         ELSE 4
       END,
       l.due_date IS NULL,
@@ -363,14 +423,14 @@ function buildSummary(items) {
   const active = items.filter(item => !["released", "cancelled"].includes(item.status_label));
   return {
     total_count: items.length,
-    active_count: active.filter(item => item.status_label === "active").length,
+    active_count: active.filter(item => ["pending_downpayment", "active", "overdue"].includes(item.status_label)).length,
     deadline_soon_count: active.filter(isDeadlineSoon).length,
     overdue_count: 0,
-    paid_count: active.filter(item => item.status_label === "paid").length,
+    paid_count: active.filter(item => item.status_label === "ready_for_release").length,
     released_count: items.filter(item => item.status_label === "released").length,
     cancelled_count: items.filter(item => item.status_label === "cancelled").length,
     outstanding_balance: active.reduce((sum, item) => sum + Number(item.balance || 0), 0),
-    ready_release_count: active.filter(item => item.status_label === "paid").length,
+    ready_release_count: active.filter(item => item.status_label === "ready_for_release").length,
     term_months: LAYAWAY_TERM_MONTHS
   };
 }
@@ -389,6 +449,80 @@ function notifyCustomer(db, layaway, title, message) {
   });
 }
 
+async function activateLayawayAfterDownpayment(req, layaway, paymentStatus) {
+  if (paymentStatus !== "paid") {
+    const failedStatus = ["failed", "expired", "cancelled"].includes(paymentStatus) ? "payment_failed" : "pending_downpayment";
+    await dbQuery(req.db, `
+      UPDATE layaways
+      SET payment_status=?, status=?, payment_last_checked_at=NOW()
+      WHERE id=?
+    `, [paymentStatus, failedStatus, layaway.id]);
+    return { status: failedStatus, payment_status: paymentStatus, activated: false };
+  }
+
+  if (["active", "ready_for_release", "released", "delivered"].includes(layaway.status)) {
+    return { status: layawayStatus(paymentStatusAmount(layaway), layaway.due_date, layaway.status), payment_status: "paid", activated: false };
+  }
+
+  const actor = SYSTEM_ACTOR;
+  await beginTransaction(req.db);
+  try {
+    const rows = await dbQuery(req.db, "SELECT * FROM layaways WHERE id=? FOR UPDATE", [layaway.id]);
+    const current = rows[0];
+    if (!current) throw new Error("Layaway not found.");
+    if (current.status !== "pending_downpayment" && current.status !== "payment_failed") {
+      await rollbackTransaction(req.db);
+      return { status: current.status, payment_status: current.payment_status || "paid", activated: false };
+    }
+
+    const reserved = await reserveStock(req.db, current, actor);
+    const downpayment = Math.max(Number(current.total_amount || 0) * 0.2, 1);
+    const nextPaid = downpayment;
+    const nextBalance = Math.max(Number(current.total_amount || 0) - nextPaid, 0);
+    const nextStatus = layawayStatus(nextBalance, current.due_date, "active");
+
+    await dbQuery(req.db, `
+      INSERT INTO layaway_payments
+      (layaway_id, amount, payment_method, payment_provider, payment_reference, payment_checkout_id, payment_checkout_url, payment_status, note, received_by, received_by_name)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'paid', ?, NULL, 'Manual GCash')
+    `, [
+      current.id,
+      downpayment,
+      current.payment_method || "online",
+      current.payment_provider || "manual_gcash",
+      current.payment_reference || null,
+      current.payment_checkout_id || null,
+      current.payment_checkout_url || null,
+      "Confirmed layaway downpayment."
+    ]);
+
+    await dbQuery(req.db, `
+      UPDATE layaways
+      SET amount_paid=?, balance=?, status=?, payment_status='paid', reserved_at=NOW(), payment_last_checked_at=NOW()
+      WHERE id=?
+    `, [nextPaid, nextBalance, nextStatus, current.id]);
+
+    await logInventoryMovementAsync(req.db, { ...reserved.movement, note: `Stock reserved after GCash downpayment for Layaway #${current.id}.` });
+    await recordVoucherRedemptionForSource(req.db, {
+      source_type: "layaway",
+      source_id: current.id,
+      customer_id: current.customer_id,
+      checkout_type: "layaway",
+      voucher_id: current.voucher_id,
+      voucher_code: current.voucher_code,
+      voucher_discount: current.voucher_discount,
+      eligible_subtotal: current.original_product_total || current.total_amount
+    }, { skipEnsure: true });
+    await commitTransaction(req.db);
+    notifyCustomer(req.db, current, `Layaway #${current.id} activated`, `Your downpayment was confirmed. Your layaway is now active until ${current.due_date}.`);
+    return { status: nextStatus, payment_status: "paid", activated: true, balance: nextBalance };
+  } catch (error) {
+    await rollbackTransaction(req.db);
+    await dbQuery(req.db, "UPDATE layaways SET status='payment_failed', payment_status='paid', payment_error=? WHERE id=?", [error.message, layaway.id]);
+    throw error;
+  }
+}
+
 async function reserveStock(db, input, actor) {
   const productId = Number(input.product_id);
   const quantity = cleanQuantity(input.quantity);
@@ -401,6 +535,9 @@ async function reserveStock(db, input, actor) {
   if (!rows.length) throw new Error("Product not found.");
 
   const product = rows[0];
+  if (!productLayawayEnabled(product)) throw new Error("This product is not available for layaway.");
+  const settings = productLayawaySettings(product);
+  if (quantity > settings.max_quantity) throw new Error(`Layaway for this product is limited to ${settings.max_quantity} item(s).`);
   const variants = parseVariants(product.variants);
   let variant = null;
   if (variants.length) {
@@ -438,6 +575,7 @@ async function reserveStock(db, input, actor) {
     variant_name: variant ? variantLabel(variant, variantIndex) : null,
     quantity,
     unit_price: unitPrice,
+    layaway_settings: settings,
     stock_before: stockBefore,
     stock_after: stockBefore - quantity,
     movement: {
@@ -457,6 +595,10 @@ async function reserveStock(db, input, actor) {
 }
 
 async function restoreStock(db, layaway, actor) {
+  if (!layaway.reserved_at && ["pending_downpayment", "payment_failed"].includes(cleanText(layaway.status, 30).toLowerCase())) {
+    return { restored: false, quantity: 0 };
+  }
+
   const productId = Number(layaway.product_id);
   const quantity = cleanQuantity(layaway.quantity);
   const rows = await dbQuery(db, "SELECT * FROM products WHERE id=? FOR UPDATE", [productId]);
@@ -502,6 +644,244 @@ router.get("/", requireAdmin, async (req, res) => {
   }
 });
 
+router.get("/customer/:customer_id", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity('customer_id'), async (req, res) => {
+  try {
+    await ensureLayawayTables(req.db);
+    await refreshLayawayStatuses(req.db);
+    const rows = await dbQuery(req.db, `
+      SELECT *
+      FROM layaways
+      WHERE customer_id=?
+      ORDER BY created_at DESC, id DESC
+    `, [req.params.customer_id]);
+    res.json(rows.map(row => ({
+      ...row,
+      balance: paymentStatusAmount(row),
+      status_label: layawayStatus(paymentStatusAmount(row), row.due_date, row.status),
+      days_left: daysUntilDeadline(row)
+    })));
+  } catch (error) {
+    res.status(500).json({ message: error.message || "Unable to load customer layaways." });
+  }
+});
+
+router.post("/customer", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), async (req, res) => {
+  const customerId = Number(req.body.customer_id || 0);
+  const productId = Number(req.body.product_id || 0);
+  const quantity = cleanQuantity(req.body.quantity);
+  const variantIndex = req.body.variant_index === undefined || req.body.variant_index === null || req.body.variant_index === ""
+    ? null
+    : Number(req.body.variant_index);
+  const paymentMethod = normalizeOnlinePaymentMethod(req.body.payment_method || "gcash");
+  const voucherCode = cleanText(req.body.voucher_code, 80);
+
+  if (!customerId) return res.status(400).json({ message: "Customer account is required for layaway." });
+  if (!productId) return res.status(400).json({ message: "Product is required for layaway." });
+  if (!ONLINE_PAYMENT_METHODS.includes(paymentMethod)) return res.status(400).json({ message: "Layaway downpayment must use GCash verification." });
+
+  try {
+    await ensureLayawayTables(req.db);
+    await ensureVoucherTables(req.db);
+    const accounts = await dbQuery(req.db, "SELECT id, name, email, phone FROM users WHERE id=? AND role='customer' LIMIT 1", [customerId]);
+    if (!accounts.length) throw new Error("Customer account not found.");
+    const productRows = await dbQuery(req.db, "SELECT * FROM products WHERE id=? LIMIT 1", [productId]);
+    if (!productRows.length) throw new Error("Product not found.");
+
+    const account = accounts[0];
+    const product = productRows[0];
+    if (!productLayawayEnabled(product)) throw new Error("This product is not available for layaway.");
+    const settings = productLayawaySettings(product);
+    if (quantity > settings.max_quantity) throw new Error(`Layaway for this product is limited to ${settings.max_quantity} item(s).`);
+    const variants = parseVariants(product.variants);
+    const variant = Number.isInteger(variantIndex) ? variants[variantIndex] : null;
+    if (variants.length && !variant) throw new Error("Please select a valid product variant for layaway.");
+    const stock = Number(variant ? variant.stock : product.stock || 0);
+    if (quantity > stock) throw new Error(`Only ${stock} item(s) available for layaway.`);
+
+    const unitPrice = cleanMoney(variant ? variant.price : product.price);
+    const originalTotal = unitPrice * quantity;
+    const voucherResult = voucherCode
+      ? await validateVoucher(req.db, {
+        code: voucherCode,
+        customer_id: customerId,
+        checkout_type: "layaway",
+        items: [{ product_id: productId, quantity, variant_index: variantIndex }]
+      })
+      : null;
+    const voucherDiscount = Number(voucherResult?.discount || 0);
+    const totalAmount = Math.max(originalTotal - voucherDiscount, 0);
+    const downpayment = layawayDownpaymentAmount(totalAmount, settings);
+    const balance = Math.max(totalAmount - downpayment, 0);
+    const dueDate = dateInputValue(addMonths(new Date(), settings.duration_months));
+
+    const insert = await dbQuery(req.db, `
+      INSERT INTO layaways
+      (customer_id, customer_name, customer_phone, customer_email, product_id, product_name, variant_index, variant_name,
+       quantity, unit_price, total_amount, amount_paid, balance, payment_method, due_date, term_months, status, note,
+       voucher_id, voucher_code, voucher_discount, original_product_total)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, ?, 'pending_downpayment', ?, ?, ?, ?, ?)
+    `, [
+      customerId,
+      account.name || "Customer",
+      account.phone || null,
+      account.email || null,
+      productId,
+      product.name,
+      variant ? variantIndex : null,
+      variant ? variantLabel(variant, variantIndex) : null,
+      quantity,
+      unitPrice,
+      totalAmount,
+      totalAmount,
+      paymentMethod,
+      dueDate,
+      settings.duration_months,
+      "Customer-created layaway. Stock will be reserved after downpayment is confirmed.",
+      voucherResult?.voucher_id || null,
+      voucherResult?.voucher_code || null,
+      voucherDiscount,
+      originalTotal
+    ]);
+
+    const layaway = { id: insert.insertId, customer_id: customerId, product_name: product.name, total_amount: totalAmount };
+    await dbQuery(req.db, `
+      UPDATE layaways
+      SET payment_provider='manual_gcash', payment_reference=NULL, payment_checkout_id=NULL, payment_checkout_url=NULL, payment_status='pending_payment', payment_error=NULL
+      WHERE id=?
+    `, [insert.insertId]);
+
+    notifyCustomer(req.db, layaway, `Layaway #${insert.insertId} pending downpayment`, `Submit your GCash downpayment proof to activate your layaway for ${product.name}.`);
+    res.json({
+      message: "Layaway created. Upload your GCash downpayment proof from your profile.",
+      id: insert.insertId,
+      status: "pending_downpayment",
+      total_amount: totalAmount,
+      voucher_discount: voucherDiscount,
+      downpayment_amount: downpayment,
+      balance,
+      due_date: dueDate,
+      term_months: settings.duration_months,
+      payment_status: "pending_payment",
+      payment_provider: "manual_gcash"
+    });
+  } catch (error) {
+    res.status(httpStatusForError(error)).json({ message: error.message || "Unable to create layaway." });
+  }
+});
+
+router.get("/:id/payment-status", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), async (req, res) => {
+  try {
+    await ensureLayawayTables(req.db);
+    const rows = await dbQuery(req.db, "SELECT * FROM layaways WHERE id=? LIMIT 1", [req.params.id]);
+    if (!rows.length) return res.status(404).json({ message: "Layaway not found." });
+
+    const layaway = rows[0];
+    const userId = req.actorUser.id;
+    if (userId && Number(layaway.customer_id || 0) !== userId) {
+      return res.status(403).json({ message: "You can only check your own layaway payment." });
+    }
+
+    res.json({
+      message: "Layaway payments use GCash proof upload.",
+      layaway_id: layaway.id,
+      status: layaway.status,
+      payment_status: layaway.payment_status || "pending_payment",
+      payment_provider: layaway.payment_provider || "manual_gcash",
+      balance: paymentStatusAmount(layaway)
+    });
+  } catch (error) {
+    res.status(httpStatusForError(error)).json({ message: error.message || "Unable to refresh layaway payment." });
+  }
+});
+
+router.post("/:id/payments/checkout", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), async (req, res) => {
+  const userId = Number(req.body.user_id || 0);
+  const amount = cleanMoney(req.body.amount);
+  const method = normalizeOnlinePaymentMethod(req.body.payment_method || "gcash");
+
+  if (!userId) return res.status(400).json({ message: "Customer account is required." });
+  if (amount <= 0) return res.status(400).json({ message: "Payment amount is required." });
+  if (!ONLINE_PAYMENT_METHODS.includes(method)) return res.status(400).json({ message: "Use GCash for layaway payments." });
+
+  try {
+    await ensureLayawayTables(req.db);
+    const rows = await dbQuery(req.db, "SELECT * FROM layaways WHERE id=? LIMIT 1", [req.params.id]);
+    if (!rows.length) return res.status(404).json({ message: "Layaway not found." });
+    const layaway = rows[0];
+    if (Number(layaway.customer_id || 0) !== userId) return res.status(403).json({ message: "You can only pay your own layaway." });
+    if (!["active", "overdue"].includes(layaway.status)) return res.status(400).json({ message: "Layaway must be active before paying installments." });
+
+    const balance = paymentStatusAmount(layaway);
+    if (amount > balance) return res.status(400).json({ message: "Payment cannot be greater than remaining balance." });
+
+    const pending = await dbQuery(req.db, `
+      INSERT INTO layaway_payments
+      (layaway_id, amount, payment_method, payment_status, note)
+      VALUES (?, ?, ?, 'pending_verification', 'Customer online layaway installment.')
+    `, [layaway.id, amount, method]);
+
+    await dbQuery(req.db, `
+      UPDATE layaway_payments
+      SET payment_provider='manual_gcash', payment_reference=NULL, payment_checkout_id=NULL, payment_checkout_url=NULL
+      WHERE id=?
+    `, [pending.insertId]);
+
+    res.json({
+      message: "You can now upload your GCash proof for this layaway payment.",
+      payment_id: pending.insertId,
+      payment_status: "pending_verification",
+      payment_provider: "manual_gcash"
+    });
+  } catch (error) {
+    res.status(httpStatusForError(error)).json({ message: error.message || "Unable to create layaway payment." });
+  }
+});
+
+router.get("/payments/:payment_id/status", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), async (req, res) => {
+  try {
+    await ensureLayawayTables(req.db);
+    const rows = await dbQuery(req.db, `
+      SELECT lp.*, l.customer_id, l.total_amount, l.amount_paid, l.balance, l.status, l.due_date, l.product_name
+      FROM layaway_payments lp
+      JOIN layaways l ON l.id = lp.layaway_id
+      WHERE lp.id=?
+      LIMIT 1
+    `, [req.params.payment_id]);
+    if (!rows.length) return res.status(404).json({ message: "Layaway payment not found." });
+    const payment = rows[0];
+    const userId = req.actorUser.id;
+    if (userId && Number(payment.customer_id || 0) !== userId) {
+      return res.status(403).json({ message: "You can only check your own layaway payment." });
+    }
+
+    return res.json({
+      message: "Layaway payments use GCash proof upload.",
+      payment_status: payment.payment_status || "pending_verification",
+      status: payment.status,
+      payment_provider: payment.payment_provider || "manual_gcash"
+    });
+
+    if (payment.payment_status === "paid") {
+      return res.json({ message: "Layaway payment already confirmed.", payment_status: "paid", status: payment.status });
+    }
+
+    const nextPaid = Number(payment.amount_paid || 0) + Number(payment.amount || 0);
+    const nextBalance = Math.max(Number(payment.total_amount || 0) - nextPaid, 0);
+    const nextStatus = layawayStatus(nextBalance, payment.due_date, payment.status);
+    await dbQuery(req.db, "UPDATE layaway_payments SET payment_status='paid' WHERE id=?", [payment.id]);
+    await dbQuery(req.db, `
+      UPDATE layaways
+      SET amount_paid=?, balance=?, status=?, ready_for_release_at=IF(?='ready_for_release', COALESCE(ready_for_release_at, NOW()), ready_for_release_at)
+      WHERE id=?
+    `, [nextPaid, nextBalance, nextStatus, nextStatus, payment.layaway_id]);
+
+    notifyCustomer(req.db, { id: payment.layaway_id, customer_id: payment.customer_id }, `Layaway #${payment.layaway_id} payment confirmed`, `Payment received: PHP ${Number(payment.amount).toFixed(2)}. Remaining balance: PHP ${nextBalance.toFixed(2)}.`);
+    res.json({ message: "Layaway payment confirmed.", payment_status: "paid", status: nextStatus, balance: nextBalance });
+  } catch (error) {
+    res.status(httpStatusForError(error)).json({ message: error.message || "Unable to refresh layaway payment." });
+  }
+});
+
 router.post("/", requireAdmin, async (req, res) => {
   const actor = actorFor(req);
   const customerId = Number(req.body.customer_id || 0) || null;
@@ -509,7 +889,7 @@ router.post("/", requireAdmin, async (req, res) => {
   const customerPhone = cleanText(req.body.customer_phone, 80);
   const customerEmail = cleanText(req.body.customer_email, 255);
   const downpayment = cleanMoney(req.body.downpayment_amount);
-  const dueDate = layawayDeadlineDate();
+  let dueDate = layawayDeadlineDate();
   const note = cleanText(req.body.note, 1000);
   const paymentMethod = cleanText(req.body.payment_method, 60);
   const paymentReference = cleanText(req.body.payment_reference, 255);
@@ -530,6 +910,7 @@ router.post("/", requireAdmin, async (req, res) => {
     }
 
     const reserved = await reserveStock(req.db, req.body, actor);
+    dueDate = dateInputValue(addMonths(new Date(), reserved.layaway_settings?.duration_months || LAYAWAY_TERM_MONTHS));
     const totalAmount = reserved.unit_price * reserved.quantity;
     if (downpayment > totalAmount) throw new Error("Downpayment cannot be greater than layaway total.");
 
@@ -558,7 +939,7 @@ router.post("/", requireAdmin, async (req, res) => {
       paymentMethod || null,
       paymentReference || null,
       dueDate,
-      LAYAWAY_TERM_MONTHS,
+      reserved.layaway_settings?.duration_months || LAYAWAY_TERM_MONTHS,
       status,
       note || null,
       actor.actor_id || null,
@@ -604,7 +985,7 @@ router.post("/", requireAdmin, async (req, res) => {
       amount_paid: amountPaid,
       balance,
       status,
-      term_months: LAYAWAY_TERM_MONTHS,
+      term_months: reserved.layaway_settings?.duration_months || LAYAWAY_TERM_MONTHS,
       due_date: dueDate
     });
   } catch (error) {

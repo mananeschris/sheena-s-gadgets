@@ -1,11 +1,13 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
+const employee = require('./employeeAccounts');
 const adminRouter = express.Router();
 const riderRouter = express.Router();
 const { requireAdmin, requireRider, verifiedActor } = require("./roleGuard");
+const { requireAccountSession, sameOrigin } = require('./chatSession');
 const { logAudit, auditActor } = require("./auditLogs");
 const { createNotification } = require("./notifications");
 const { orderLabel } = require("./orderReference");
+const { parseDeliveryProof, prepareDeliveryProof, saveDeliveryProof, removeDeliveryProof, serveDeliveryProof, openDeliveryConnection } = require("./deliveryProof");
 
 const ACTIVE_ASSIGNMENT_STATUSES = ["assigned", "picked_up", "out_for_delivery", "failed_attempt"];
 const DELIVERY_STATUS_LABELS = {
@@ -70,6 +72,7 @@ async function ensureDeliveryAssignmentsTable(db) {
       id INT AUTO_INCREMENT PRIMARY KEY,
       order_id INT NOT NULL,
       rider_id INT NOT NULL,
+      chat_generation INT NOT NULL DEFAULT 1,
       rider_name VARCHAR(255) NULL,
       rider_phone VARCHAR(80) NULL,
       status VARCHAR(40) NOT NULL DEFAULT 'assigned',
@@ -96,12 +99,18 @@ async function ensureDeliveryAssignmentsTable(db) {
   const columns = [
     ["order_id", "INT NULL"],
     ["rider_id", "INT NULL"],
+    ["chat_generation", "INT NOT NULL DEFAULT 1"],
     ["rider_name", "VARCHAR(255) NULL"],
     ["rider_phone", "VARCHAR(80) NULL"],
     ["status", "VARCHAR(40) NOT NULL DEFAULT 'assigned'"],
     ["pickup_note", "TEXT NULL"],
     ["delivery_note", "TEXT NULL"],
     ["failed_reason", "TEXT NULL"],
+    ["delivery_proof_file", "VARCHAR(255) NULL"],
+    ["delivery_proof_uploaded_at", "DATETIME NULL"],
+    ["delivery_proof_uploaded_by", "INT NULL"],
+    ["delivery_proof_seen_at", "DATETIME NULL"],
+    ["delivery_proof_seen_by", "INT NULL"],
     ["assigned_by", "INT NULL"],
     ["assigned_by_name", "VARCHAR(255) NULL"],
     ["assigned_at", "DATETIME DEFAULT CURRENT_TIMESTAMP"],
@@ -121,18 +130,6 @@ async function ensureDeliveryAssignmentsTable(db) {
 
 function cleanText(value, max = 1000) {
   return String(value || "").trim().slice(0, max);
-}
-
-function normalizeEmail(value) {
-  return cleanText(value, 255).toLowerCase();
-}
-
-function cleanPassword(value) {
-  return String(value || "").trim();
-}
-
-function isValidPassword(password) {
-  return /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(String(password || ""));
 }
 
 function httpStatusForError(error) {
@@ -164,7 +161,7 @@ function orderAddress(order) {
 
 function notifyOrderCustomer(db, order, title, message) {
   if (!order?.user_id) return;
-  const orderId = order.id || order.order_id;
+  const orderId = order.order_id || order.id;
   createNotification(db, {
     user_id: order.user_id,
     title,
@@ -174,7 +171,7 @@ function notifyOrderCustomer(db, order, title, message) {
   });
 }
 
-async function insertOrderStatusHistory(db, payload) {
+async function ensureDeliveryHistoryTable(db) {
   await dbQuery(db, `
     CREATE TABLE IF NOT EXISTS order_status_history (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -186,6 +183,10 @@ async function insertOrderStatusHistory(db, payload) {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
+}
+
+async function insertOrderStatusHistory(db, payload, tableReady = false) {
+  if (!tableReady) await ensureDeliveryHistoryTable(db);
   await dbQuery(db, `
     INSERT INTO order_status_history (order_id, status, note, actor_role, actor_name)
     VALUES (?, ?, ?, ?, ?)
@@ -222,6 +223,9 @@ async function loadAssignments(db, options = {}) {
       o.recipient_name,
       o.delivery_contact,
       o.delivery_address,
+      o.delivery_landmark,
+      o.delivery_latitude,
+      o.delivery_longitude,
       o.delivery_note,
       o.shipping_region,
       o.shipping_fee,
@@ -323,52 +327,24 @@ async function loadOrderForAssignment(db, orderId, lock = false) {
 }
 
 async function loadRider(db, riderId) {
-  const rows = await dbQuery(db, "SELECT id, name, email, phone, role FROM users WHERE id=? AND role='rider' LIMIT 1", [riderId]);
+  const rows = await dbQuery(db, "SELECT id, name, email, phone, role FROM users WHERE id=? AND role='rider' AND account_status='active' LIMIT 1 FOR UPDATE", [riderId]);
   return rows[0] || null;
 }
 
 adminRouter.get("/", requireAdmin, async (req, res) => {
   try {
-    const riders = await dbQuery(req.db, "SELECT id, name, email, phone, role FROM users WHERE role='rider' ORDER BY id DESC");
+    const riders = await dbQuery(req.db, "SELECT id, name, email, phone, role, account_status FROM users WHERE role='rider' ORDER BY id DESC");
     res.json(riders);
   } catch (error) {
     res.status(500).json({ message: error.message || "Unable to load riders." });
   }
 });
 
-adminRouter.post("/", requireAdmin, async (req, res) => {
-  const name = cleanText(req.body.name, 255);
-  const email = normalizeEmail(req.body.email);
-  const phone = cleanText(req.body.phone, 80);
-  const password = cleanPassword(req.body.password);
+adminRouter.post('/', requireAdmin, require('./adminSessions').requireRecentAdmin, employee.create('rider'));
+adminRouter.post('/:id/invitation', requireAdmin, require('./adminSessions').requireRecentAdmin, employee.resend('rider'));
+adminRouter.put('/:id/status', requireAdmin, require('./adminSessions').requireRecentAdmin, employee.status('rider'));
 
-  if (!name || !email || !phone || !password) {
-    return res.status(400).json({ message: "Name, email, phone, and password are required." });
-  }
-  if (!isValidPassword(password)) {
-    return res.status(400).json({ message: "Password must have 8 characters, uppercase letter, number, and special character." });
-  }
-
-  try {
-    const existing = await dbQuery(req.db, "SELECT id FROM users WHERE LOWER(TRIM(email))=? LIMIT 1", [email]);
-    if (existing.length) return res.status(400).json({ message: "Email already exists." });
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const result = await dbQuery(req.db, "INSERT INTO users (name, email, password, role, phone) VALUES (?, ?, ?, 'rider', ?)", [name, email, hashedPassword, phone]);
-    const actor = actorFor(req);
-    logAudit(req.db, {
-      ...actor,
-      action: "create_rider",
-      entity_type: "rider",
-      entity_id: result.insertId,
-      details: `${name} | ${email} | ${phone}`
-    });
-    res.json({ message: "Rider account created.", rider: { id: result.insertId, name, email, phone, role: "rider" } });
-  } catch (error) {
-    res.status(500).json({ message: error.message || "Unable to create rider account." });
-  }
-});
-
-adminRouter.delete("/:id", requireAdmin, async (req, res) => {
+adminRouter.delete("/:id", requireAdmin, require('./adminSessions').requireRecentAdmin, async (req, res) => {
   try {
     await ensureDeliveryAssignmentsTable(req.db);
     const active = await dbQuery(req.db, "SELECT COUNT(*) AS count FROM delivery_assignments WHERE rider_id=? AND status IN (?)", [req.params.id, ACTIVE_ASSIGNMENT_STATUSES]);
@@ -421,7 +397,7 @@ adminRouter.post("/assignments", requireAdmin, async (req, res) => {
     }
 
     const rider = await loadRider(req.db, riderId);
-    if (!rider) throw new Error("Rider account not found.");
+    if (!rider) throw new Error("Rider must have an active, activated account.");
 
     const existing = await dbQuery(req.db, "SELECT * FROM delivery_assignments WHERE order_id=? AND status IN (?) FOR UPDATE", [orderId, ACTIVE_ASSIGNMENT_STATUSES]);
     let assignmentId;
@@ -429,7 +405,7 @@ adminRouter.post("/assignments", requireAdmin, async (req, res) => {
       assignmentId = existing[0].id;
       await dbQuery(req.db, `
         UPDATE delivery_assignments
-        SET rider_id=?, rider_name=?, rider_phone=?, status='assigned', pickup_note=NULL, delivery_note=?, failed_reason=NULL,
+        SET chat_generation=chat_generation+1, rider_id=?, rider_name=?, rider_phone=?, status='assigned', pickup_note=NULL, delivery_note=?, failed_reason=NULL,
             assigned_by=?, assigned_by_name=?, assigned_at=NOW(), picked_up_at=NULL, out_for_delivery_at=NULL, failed_at=NULL, cancelled_at=NULL
         WHERE id=?
       `, [rider.id, rider.name, rider.phone || null, note || null, actor.actor_id || null, actor.actor_name || null, assignmentId]);
@@ -502,84 +478,108 @@ riderRouter.get("/assignments", requireRider, async (req, res) => {
   }
 });
 
-riderRouter.put("/assignments/:id/status", requireRider, async (req, res) => {
+async function updateAssignmentStatus(req, res) {
   const nextStatus = cleanText(req.body.status, 40).toLowerCase();
   const note = cleanText(req.body.note, 1000);
   const actor = actorFor(req);
+  let savedProof = null;
+  let committed = false;
+  let transactionDb = null;
 
   if (!DELIVERY_STATUS_LABELS[nextStatus] || nextStatus === "cancelled") {
     return res.status(400).json({ message: "Invalid delivery status." });
   }
 
   try {
+    const proof = nextStatus === "delivered" ? await prepareDeliveryProof(req.file) : null;
     await ensureDeliveryAssignmentsTable(req.db);
-    await beginTransaction(req.db);
+    await ensureDeliveryHistoryTable(req.db);
+    transactionDb = await openDeliveryConnection(req.db);
+    await beginTransaction(transactionDb);
 
-    const rows = await dbQuery(req.db, `
+    const rows = await dbQuery(transactionDb, `
       SELECT da.*, o.status AS order_status, o.user_id, o.recipient_name, o.delivery_contact, o.delivery_address, u.name AS customer_name
       FROM delivery_assignments da
       JOIN orders o ON o.id=da.order_id
       LEFT JOIN users u ON u.id=o.user_id
-      WHERE da.id=? AND da.rider_id=?
+      WHERE da.id=? AND (da.rider_id=? OR ?='admin')
       FOR UPDATE
-    `, [req.params.id, req.actorUser.id]);
+    `, [req.params.id, req.actorUser.id, req.actorUser.role]);
     const assignment = rows[0];
     if (!assignment) throw new Error("Delivery assignment not found.");
     if (["delivered", "cancelled"].includes(assignment.status)) throw new Error("This delivery assignment is already closed.");
+    if (["delivered", "cancelled"].includes(assignment.order_status)) throw new Error("This order is already delivered or cancelled.");
+    if (req.actorUser.role === 'admin' && assignment.order_status !== 'shipped') throw new Error('Order must be marked Ready before updating delivery.');
 
     const allowedNext = STATUS_TRANSITIONS[assignment.status] || [];
     if (!allowedNext.includes(nextStatus)) {
       throw new Error(`${deliveryStatusLabel(assignment.status)} cannot move directly to ${deliveryStatusLabel(nextStatus)}.`);
     }
 
+    if (proof) {
+      savedProof = await saveDeliveryProof(proof);
+      await dbQuery(transactionDb, `UPDATE delivery_assignments SET delivery_proof_file=?, delivery_proof_uploaded_at=NOW(), delivery_proof_uploaded_by=?, delivery_proof_seen_at=NULL, delivery_proof_seen_by=NULL WHERE id=?`, [savedProof, actor.actor_id, assignment.id]);
+    }
+
     const timeColumn = STATUS_TIME_COLUMNS[nextStatus];
     const noteColumn = nextStatus === "failed_attempt" ? "failed_reason" : nextStatus === "picked_up" ? "pickup_note" : "delivery_note";
-    await dbQuery(req.db, `
+    await dbQuery(transactionDb, `
       UPDATE delivery_assignments
       SET status=?, ${noteColumn}=COALESCE(NULLIF(?, ''), ${noteColumn}), ${timeColumn}=NOW()
       WHERE id=?
     `, [nextStatus, note, assignment.id]);
 
     if (["picked_up", "out_for_delivery"].includes(nextStatus) && !["shipped", "delivered"].includes(assignment.order_status)) {
-      await dbQuery(req.db, "UPDATE orders SET status='shipped', processing_at=COALESCE(processing_at, NOW()), shipped_at=COALESCE(shipped_at, NOW()) WHERE id=?", [assignment.order_id]);
-      await insertOrderStatusHistory(req.db, {
+      await dbQuery(transactionDb, "UPDATE orders SET status='shipped', processing_at=COALESCE(processing_at, NOW()), shipped_at=COALESCE(shipped_at, NOW()) WHERE id=?", [assignment.order_id]);
+      await insertOrderStatusHistory(transactionDb, {
         order_id: assignment.order_id,
         status: "shipped",
         note: note || `Rider marked delivery as ${deliveryStatusLabel(nextStatus)}.`,
-        actor_role: "rider",
+        actor_role: actor.actor_role,
         actor_name: actor.actor_name
-      });
+      }, true);
+    }
+
+    if (nextStatus === "out_for_delivery") {
+      await insertOrderStatusHistory(transactionDb, {
+        order_id: assignment.order_id,
+        status: "out_for_delivery",
+        note: note || `${actor.actor_name} marked the order out for delivery.`,
+        actor_role: actor.actor_role,
+        actor_name: actor.actor_name
+      }, true);
     }
 
     if (nextStatus === "delivered") {
-      await dbQuery(req.db, "UPDATE orders SET status='delivered', processing_at=COALESCE(processing_at, NOW()), shipped_at=COALESCE(shipped_at, NOW()), delivered_at=COALESCE(delivered_at, NOW()), warranty_expires_at=COALESCE(warranty_expires_at, DATE_ADD(NOW(), INTERVAL 7 DAY)) WHERE id=?", [assignment.order_id]);
-      await insertOrderStatusHistory(req.db, {
+      await dbQuery(transactionDb, "UPDATE orders SET status='delivered', processing_at=COALESCE(processing_at, NOW()), shipped_at=COALESCE(shipped_at, NOW()), delivered_at=COALESCE(delivered_at, NOW()), warranty_expires_at=COALESCE(warranty_expires_at, DATE_ADD(NOW(), INTERVAL 7 DAY)) WHERE id=?", [assignment.order_id]);
+      await insertOrderStatusHistory(transactionDb, {
         order_id: assignment.order_id,
         status: "delivered",
-        note: note || "Order delivered by rider.",
-        actor_role: "rider",
+        note: note || `Delivery confirmed by ${actor.actor_name} with photo proof.`,
+        actor_role: actor.actor_role,
         actor_name: actor.actor_name
-      });
+      }, true);
     }
 
     if (nextStatus === "failed_attempt") {
-      await insertOrderStatusHistory(req.db, {
+      await insertOrderStatusHistory(transactionDb, {
         order_id: assignment.order_id,
         status: assignment.order_status || "shipped",
         note: note || "Delivery attempt failed.",
-        actor_role: "rider",
+        actor_role: actor.actor_role,
         actor_name: actor.actor_name
-      });
+      }, true);
     }
 
-    await commitTransaction(req.db);
+    await commitTransaction(transactionDb);
+    committed = true;
 
     logAudit(req.db, {
       ...actor,
       action: "update_delivery_status",
       entity_type: "delivery_assignment",
       entity_id: assignment.id,
-      details: `${orderLabel(assignment.order_id)} | ${deliveryStatusLabel(nextStatus)} | ${note || "No note"}`
+      details: `${orderLabel(assignment.order_id)} | ${deliveryStatusLabel(nextStatus)} | ${note || (nextStatus === 'delivered' ? 'Photo proof submitted' : 'No note')}`
     });
 
     const customerMessage = nextStatus === "delivered"
@@ -590,9 +590,74 @@ riderRouter.put("/assignments/:id/status", requireRider, async (req, res) => {
     notifyOrderCustomer(req.db, assignment, `${orderLabel(assignment.order_id)} delivery update`, customerMessage);
     res.json({ message: "Delivery status updated.", status: nextStatus, status_label: deliveryStatusLabel(nextStatus) });
   } catch (error) {
-    await rollbackTransaction(req.db);
+    if (transactionDb && !committed) await rollbackTransaction(transactionDb);
+    if (!committed) await removeDeliveryProof(savedProof);
     res.status(httpStatusForError(error)).json({ message: error.message || "Unable to update delivery status." });
+  } finally {
+    if (transactionDb) transactionDb.end();
   }
+}
+
+riderRouter.put("/assignments/:id/status", requireRider, updateAssignmentStatus);
+riderRouter.post("/assignments/:id/delivery-proof", sameOrigin, requireAccountSession('rider'), parseDeliveryProof, updateAssignmentStatus);
+
+adminRouter.put('/assignments/:id/status', sameOrigin, requireAccountSession('admin'), updateAssignmentStatus);
+adminRouter.post('/assignments/:id/delivery-proof', sameOrigin, requireAccountSession('admin'), parseDeliveryProof, updateAssignmentStatus);
+
+adminRouter.post('/self-delivery', sameOrigin, requireAccountSession('admin'), async (req, res) => {
+  let connection;
+  let committed = false;
+  try {
+    await ensureDeliveryAssignmentsTable(req.db);
+    await ensureDeliveryHistoryTable(req.db);
+    connection = await openDeliveryConnection(req.db);
+    await beginTransaction(connection);
+    const orders = await dbQuery(connection, 'SELECT * FROM orders WHERE id=? FOR UPDATE', [req.body.order_id]);
+    const order = orders[0];
+    if (!order) throw new Error('Order not found.');
+    if (!['processing', 'shipped'].includes(order.status)) throw new Error('Order must be Processing or Ready for admin delivery.');
+    const active = await dbQuery(connection, 'SELECT id FROM delivery_assignments WHERE order_id=? AND status IN (?) FOR UPDATE', [order.id, ACTIVE_ASSIGNMENT_STATUSES]);
+    if (active.length) throw new Error('Order already has a delivery assignment. Refresh the orders and use its delivery actions.');
+    const actor = actorFor(req);
+    const result = await dbQuery(connection, `INSERT INTO delivery_assignments (order_id, rider_id, rider_name, status, assigned_by, assigned_by_name) VALUES (?, ?, ?, 'assigned', ?, ?)`, [order.id, actor.actor_id, actor.actor_name, actor.actor_id, actor.actor_name]);
+    await insertOrderStatusHistory(connection, { order_id: order.id, status: order.status, note: `Delivery handled by admin ${actor.actor_name}.`, actor_role: actor.actor_role, actor_name: actor.actor_name }, true);
+    await commitTransaction(connection);
+    committed = true;
+    logAudit(req.db, { ...actor, action: 'assign_admin_delivery', entity_type: 'delivery_assignment', entity_id: result.insertId, details: orderLabel(order.id) });
+    res.json({ assignment_id: result.insertId, message: 'Admin delivery selected.' });
+  } catch (error) {
+    if (connection && !committed) await rollbackTransaction(connection);
+    res.status(httpStatusForError(error)).json({ message: error.message || 'Unable to start admin delivery.' });
+  } finally { if (connection) connection.end(); }
+});
+
+adminRouter.get("/delivery-notifications", requireAccountSession('admin'), async (req, res) => {
+  try {
+    await ensureDeliveryAssignmentsTable(req.db);
+    const rows = await dbQuery(req.db, `SELECT da.id AS assignment_id, da.order_id, da.rider_name, da.delivery_proof_uploaded_at AS created_at,
+      COALESCE(p.name, 'Delivered item') AS product_name
+      FROM delivery_assignments da JOIN orders o ON o.id=da.order_id LEFT JOIN products p ON p.id=o.product_id
+      WHERE da.status='delivered' AND da.delivery_proof_file IS NOT NULL AND da.delivery_proof_seen_at IS NULL
+      ORDER BY da.delivery_proof_uploaded_at DESC LIMIT 100`);
+    res.json({ items: rows.map(row => ({ ...row, type: 'delivery_proof', title: `${row.product_name}: Delivered`, detail: `${row.rider_name || 'Rider'} submitted a delivery photo.`, section: 'riders' })) });
+  } catch (error) { res.status(500).json({ message: error.message }); }
+});
+
+adminRouter.get("/assignments/:id/proof", requireAccountSession('admin'), async (req, res) => {
+  try {
+    await ensureDeliveryAssignmentsTable(req.db);
+    const rows = await dbQuery(req.db, 'SELECT delivery_proof_file FROM delivery_assignments WHERE id=? AND status=\'delivered\'', [req.params.id]);
+    if (!rows[0]?.delivery_proof_file) return res.status(404).json({ message: 'No delivery proof photo is available.' });
+    res.set({ 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+    await serveDeliveryProof(req, res, rows[0].delivery_proof_file);
+  } catch (error) { res.status(500).json({ message: error.message }); }
+});
+
+adminRouter.post("/assignments/:id/proof/seen", sameOrigin, requireAccountSession('admin'), async (req, res) => {
+  try {
+    await dbQuery(req.db, "UPDATE delivery_assignments SET delivery_proof_seen_at=COALESCE(delivery_proof_seen_at, NOW()), delivery_proof_seen_by=COALESCE(delivery_proof_seen_by, ?) WHERE id=? AND status='delivered' AND delivery_proof_file IS NOT NULL", [req.actorUser.id, req.params.id]);
+    res.json({ success: true });
+  } catch (error) { res.status(500).json({ message: error.message }); }
 });
 
 module.exports = adminRouter;

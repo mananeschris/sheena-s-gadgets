@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { requireAdmin } = require("./roleGuard");
+const { requireAdmin, requireAdminOrStaff, verifiedActor } = require("./roleGuard");
 
 function ensureAuditLogTable(db, callback) {
   const sql = `
@@ -23,6 +23,7 @@ function ensureAuditLogTable(db, callback) {
 }
 
 function auditActor(req) {
+  if (req.actorUser) return verifiedActor(req);
   return {
     actor_id: req.body?.actor_id || req.query?.actor_id || null,
     actor_name: req.body?.actor_name || req.query?.actor_name || "System",
@@ -63,21 +64,8 @@ router.get("/", requireAdmin, (req, res) => {
   });
 });
 
-router.post("/", (req, res) => {
-  const actor = auditActor(req);
-  const action = String(req.body.action || "").trim();
-  const entityType = String(req.body.entity_type || "").trim();
-  if (!action || !entityType) return res.status(400).json({ message: "Action and entity type are required." });
-  logAudit(req.db, {
-    ...actor,
-    action,
-    entity_type: entityType,
-    entity_id: req.body.entity_id || null,
-    details: req.body.details || null
-  }, (err) => {
-    if (err) return res.status(500).json({ message: err.message });
-    res.json({ message: "Audit log recorded." });
-  });
+router.post("/", requireAdminOrStaff, (req, res) => {
+  res.status(405).json({ message: 'Audit entries are created by the server.' });
 });
 
 module.exports = router;

@@ -1,0 +1,1035 @@
+body.customer-profile-page .service-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+body.customer-profile-page .service-toolbar h3 { margin: 0; font-size: 14px !important; }
+body.customer-profile-page .service-toolbar h3 span { display: inline-block; margin-left: 8px; font-size: 11px; font-weight: 500; color: var(--account-muted); }
+body.customer-profile-page .service-toolbar select { width: 190px; flex-shrink: 0; min-height: 40px; margin: 0; font-size: 12px; }
+body.customer-profile-page .service-list { display: grid; gap: 16px; }
+body.customer-profile-page .service-item { min-width: 0; padding: 20px; border: 1px solid var(--account-line); border-radius: 6px; background: var(--account-panel); }
+body.customer-profile-page .service-head { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 14px; }
+body.customer-profile-page .service-head img { width: 64px; height: 64px; object-fit: contain; border-radius: 4px; background: var(--account-soft); }
+body.customer-profile-page .service-product { min-width: 0; }
+body.customer-profile-page .service-product h3 { margin: 0 0 6px; font-size: 15px !important; line-height: 1.4; overflow-wrap: anywhere; }
+body.customer-profile-page .service-product p { margin: 0; font-size: 12px; color: var(--account-muted); line-height: 1.5; overflow-wrap: anywhere; }
+body.customer-profile-page .service-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 20px 0 0; padding: 16px 0; border-top: 1px solid var(--account-line); }
+body.customer-profile-page .service-facts dt { margin-bottom: 6px; font-size: 11px; color: var(--account-muted); font-weight: 500; }
+body.customer-profile-page .service-facts dd { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+body.customer-profile-page .service-facts dd.covered { color: var(--account-accent); }
+body.customer-profile-page .service-facts svg { width: 15px; height: 15px; flex-shrink: 0; }
+body.customer-profile-page .service-progress { padding: 16px 0; border-top: 1px solid var(--account-line); }
+body.customer-profile-page .service-progress > p { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; font-size: 12px; color: var(--account-muted); }
+body.customer-profile-page .service-progress > p strong { color: var(--account-accent); font-weight: 600; }
+body.customer-profile-page .service-steps { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; list-style: none; padding: 0; margin: 0; }
+body.customer-profile-page .service-steps li { display: grid; justify-items: start; align-content: start; gap: 8px; position: relative; font-size: 11px; line-height: 1.5; color: var(--account-muted); }
+body.customer-profile-page .service-steps li:not(:last-child)::after { content: ""; position: absolute; height: 1px; top: 14px; left: 38px; right: 0; background: var(--account-line); }
+body.customer-profile-page .service-step-marker { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--account-line); border-radius: 50%; background: var(--account-soft); font-size: 11px; }
+body.customer-profile-page .service-step-marker svg { width: 14px; height: 14px; }
+body.customer-profile-page .service-steps li.done { color: var(--account-accent); }
+body.customer-profile-page .service-steps li.done .service-step-marker { border-color: #c5ded2; background: var(--account-accent-soft); }
+body.customer-profile-page .service-steps li.current { color: var(--account-accent); font-weight: 700; }
+body.customer-profile-page .service-steps li.current .service-step-marker { background: var(--account-accent); border-color: var(--account-accent); color: white; }
+body.customer-profile-page .service-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 16px 0; border-top: 1px solid var(--account-line); }
+body.customer-profile-page .service-notes h4 { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; font-size: 11px !important; font-weight: 600; }
+body.customer-profile-page .service-notes h4 svg { width: 14px; height: 14px; color: var(--account-accent); }
+body.customer-profile-page .service-notes p { margin: 0; font-size: 12px; color: var(--account-muted); line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+body.customer-profile-page .service-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px solid var(--account-line); }
+body.customer-profile-page .service-footer > span { font-size: 11px; color: var(--account-muted); line-height: 1.5; }
+body.customer-profile-page .service-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+body.customer-profile-page .service-actions .btn { min-height: 38px; font-size: 12px !important; }
+
+@media (max-width: 700px) {
+  body.customer-profile-page .service-toolbar { align-items: stretch; flex-direction: column; gap: 12px; }
+  body.customer-profile-page .service-toolbar select { width: 100%; }
+  body.customer-profile-page .service-item { padding: 16px; }
+  body.customer-profile-page .service-head { grid-template-columns: 56px minmax(0, 1fr); gap: 10px; }
+  body.customer-profile-page .service-head img { width: 56px; height: 56px; }
+  body.customer-profile-page .service-head .payment-state { grid-column: 2; justify-self: start; white-space: normal; }
+  body.customer-profile-page .service-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.customer-profile-page .service-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 16px; }
+  body.customer-profile-page .service-steps li:nth-child(3)::after { display: none; }
+  body.customer-profile-page .service-notes { grid-template-columns: 1fr; gap: 16px; }
+  body.customer-profile-page .service-footer { flex-wrap: wrap; gap: 12px; }
+  body.customer-profile-page .service-actions { margin-left: auto; }
+}
+
+body.customer-profile-page #wishlistSection .wishlist-list {
+  display: grid;
+  gap: 0;
+}
+
+body.customer-profile-page .wishlist-item {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--account-line);
+}
+
+body.customer-profile-page .wishlist-image {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--account-soft);
+}
+
+body.customer-profile-page .wishlist-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform .2s ease;
+}
+
+body.customer-profile-page .wishlist-image:hover img { transform: scale(1.05); }
+body.customer-profile-page .wishlist-details { min-width: 0; }
+body.customer-profile-page .wishlist-category { color: var(--account-muted); font-size: 11px; }
+body.customer-profile-page .wishlist-details h3 { margin: 5px 0 8px; font-size: 15px !important; line-height: 1.4; overflow-wrap: anywhere; }
+body.customer-profile-page .wishlist-details h3 a { color: var(--account-ink); text-decoration: none; }
+body.customer-profile-page .wishlist-details h3 a:hover { color: var(--account-accent); text-decoration: underline; }
+body.customer-profile-page .wishlist-stock { font-size: 12px; }
+body.customer-profile-page .wishlist-stock.in-stock { color: var(--account-accent); }
+body.customer-profile-page .wishlist-stock.out-of-stock { color: #9b4444; }
+body.customer-profile-page .wishlist-price { font-size: 15px; white-space: nowrap; }
+body.customer-profile-page .wishlist-actions { display: flex; gap: 8px; }
+body.customer-profile-page .wishlist-icon { display: grid; place-items: center; width: 38px; height: 38px; padding: 0; border: 1px solid var(--account-line); border-radius: 6px; background: white; color: var(--account-muted); transition: background .15s ease, color .15s ease; }
+body.customer-profile-page .wishlist-icon svg { width: 18px; height: 18px; }
+body.customer-profile-page .wishlist-view { background: var(--account-accent-soft); color: var(--account-accent); border-color: #c5ded2; }
+body.customer-profile-page .wishlist-view:hover { background: #d0eadd; }
+body.customer-profile-page .wishlist-remove:hover { background: #fff0f0; color: #a12f2f; border-color: #e8c3c3; }
+body.customer-profile-page .wishlist-icon:focus-visible { outline: 2px solid var(--account-accent); outline-offset: 3px; }
+body.customer-profile-page .wishlist-empty { display: grid; justify-items: center; gap: 16px; padding: 56px 16px; text-align: center; color: var(--account-muted); }
+body.customer-profile-page .wishlist-empty > svg { width: 36px; height: 36px; color: var(--account-accent); }
+body.customer-profile-page .wishlist-empty h3 { margin: 0; font-size: 16px !important; color: var(--account-ink); }
+
+@media (max-width: 700px) {
+  body.customer-profile-page .wishlist-item { grid-template-columns: 76px minmax(0, 1fr) auto; gap: 12px; padding: 16px 0; }
+  body.customer-profile-page .wishlist-image { width: 76px; height: 76px; grid-row: 1 / 3; }
+  body.customer-profile-page .wishlist-details { grid-column: 2 / -1; }
+  body.customer-profile-page .wishlist-price { grid-column: 2; font-size: 14px; }
+  body.customer-profile-page .wishlist-actions { grid-column: 3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.customer-profile-page .wishlist-image img,
+  body.customer-profile-page .wishlist-icon { transition: none; }
+}
+
+body.customer-profile-page .payment-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  padding: 20px 0 24px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--account-line);
+}
+
+body.customer-profile-page .payment-metric {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding-right: 16px;
+  border-right: 1px solid var(--account-line);
+}
+
+body.customer-profile-page .payment-metric:last-child { border-right: 0; }
+body.customer-profile-page .payment-metric > svg { width: 20px; height: 20px; color: var(--account-accent); }
+body.customer-profile-page .payment-metric > span { color: var(--account-muted); font-size: 12px; }
+body.customer-profile-page .payment-metric > strong { color: var(--account-ink); font-size: 21px; line-height: 1.3; overflow-wrap: anywhere; }
+body.customer-profile-page .payment-metric > small { color: var(--account-muted); font-size: 11px; }
+body.customer-profile-page .payment-metric.overdue > svg { color: #a65f1f; }
+body.customer-profile-page .payment-ledger-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--account-line); }
+body.customer-profile-page .payment-ledger-head h3 { margin: 0; font-size: 15px !important; }
+body.customer-profile-page .payment-ledger-head > span { color: var(--account-muted); font-size: 12px; }
+body.customer-profile-page .payment-ledger-row { display: grid; grid-template-columns: minmax(0, 1fr) auto 110px 110px 38px; gap: 18px; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--account-line); }
+body.customer-profile-page .payment-product { display: grid; grid-template-columns: 38px minmax(0, 1fr); align-items: start; gap: 12px; min-width: 0; }
+body.customer-profile-page .payment-product h3 { margin: 0 0 5px; font-size: 14px !important; line-height: 1.4; overflow-wrap: anywhere; }
+body.customer-profile-page .payment-product span:not(.payment-method-icon),
+body.customer-profile-page .payment-product small { display: block; color: var(--account-muted); font-size: 12px; line-height: 1.5; }
+body.customer-profile-page .payment-method-icon { display: grid; place-items: center; width: 38px; height: 38px; background: var(--account-soft); color: var(--account-accent); border-radius: 6px; }
+body.customer-profile-page .payment-method-icon svg { width: 18px; height: 18px; }
+body.customer-profile-page .payment-state { padding: 5px 8px; font-size: 11px; font-weight: 700; line-height: 1.4; border-radius: 4px; white-space: nowrap; }
+body.customer-profile-page .payment-state.paid { color: #0b6344; background: #e5f3ed; }
+body.customer-profile-page .payment-state.pending { color: #85551b; background: #fff3dd; }
+body.customer-profile-page .payment-state.overdue { color: #a03232; background: #fcecec; }
+body.customer-profile-page .payment-state.neutral { color: #616a66; background: #eef1ef; }
+body.customer-profile-page .payment-amount { display: grid; gap: 4px; text-align: right; min-width: 0; }
+body.customer-profile-page .payment-amount span { font-size: 11px; color: var(--account-muted); }
+body.customer-profile-page .payment-amount strong { font-size: 13px; overflow-wrap: anywhere; }
+body.customer-profile-page .payment-view { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--account-line); border-radius: 6px; color: var(--account-accent); background: var(--account-soft); }
+body.customer-profile-page .payment-view svg { width: 18px; height: 18px; }
+body.customer-profile-page .payment-view:hover { background: var(--account-accent-soft); }
+body.customer-profile-page .payment-view:focus-visible { outline: 2px solid var(--account-accent); outline-offset: 3px; }
+body.customer-profile-page .payments-empty { display: grid; justify-items: center; gap: 16px; padding: 40px 16px; text-align: center; color: var(--account-muted); }
+body.customer-profile-page .payments-empty > svg { width: 32px; height: 32px; color: var(--account-accent); }
+body.customer-profile-page .payments-empty h3 { margin: 0; color: var(--account-ink); font-size: 16px !important; }
+body.customer-profile-page #paymentActivitySection { margin-top: 30px !important; }
+body.customer-profile-page .payment-alert-list { display: grid; gap: 12px; }
+body.customer-profile-page .payment-alert { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px; border-left: 3px solid #d0b16e; background: #faf7f0; }
+body.customer-profile-page .payment-alert.rejected { background: #fff5f4; border-left-color: #d5857d; }
+body.customer-profile-page .payment-alert > div { min-width: 0; }
+body.customer-profile-page .payment-alert strong { display: block; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+body.customer-profile-page .payment-alert .text-muted { display: block; font-size: 12px; margin-top: 5px; line-height: 1.5; }
+body.customer-profile-page .payment-alert .btn { flex-shrink: 0; }
+body.customer-profile-page .payment-all-clear { display: flex; align-items: center; gap: 10px; padding: 14px 0; color: var(--account-muted); font-size: 13px; }
+body.customer-profile-page .payment-all-clear svg { width: 20px; height: 20px; color: var(--account-accent); }
+
+@media (max-width: 900px) {
+  body.customer-profile-page .payment-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; }
+  body.customer-profile-page .payment-metric:nth-child(2) { border-right: 0; }
+  body.customer-profile-page .payment-ledger-row { grid-template-columns: minmax(0, 1fr) auto 38px; gap: 14px; }
+  body.customer-profile-page .payment-product { grid-column: 1 / 3; }
+  body.customer-profile-page .payment-view { grid-column: 3; grid-row: 1; }
+  body.customer-profile-page .payment-state { grid-column: 1; justify-self: start; }
+  body.customer-profile-page .payment-amount { grid-row: 3; text-align: left; }
+  body.customer-profile-page .payment-amount:nth-last-child(2) { grid-column: 2 / 4; }
+  body.customer-profile-page .payment-alert { align-items: flex-start; flex-direction: column; gap: 12px; }
+}
+
+body.customer-profile-page .installment-area-title { margin: 0; font-size: 15px !important; line-height: 1.4; }
+body.customer-profile-page #installmentDueSection { margin-bottom: 28px; }
+body.customer-profile-page .plan-reminders { display: grid; gap: 8px; margin-top: 12px; }
+body.customer-profile-page .plan-reminder { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 16px; background: #fcf8ed; border-left: 3px solid #d0b16e; }
+body.customer-profile-page .plan-reminder.overdue { background: #fff4f2; border-left-color: #cb7d70; }
+body.customer-profile-page .plan-reminder > svg { width: 20px; height: 20px; color: #92602c; }
+body.customer-profile-page .plan-reminder strong { display: block; font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+body.customer-profile-page .plan-reminder div > span { display: block; color: var(--account-muted); font-size: 12px; line-height: 1.5; margin-top: 4px; }
+body.customer-profile-page .plan-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--account-line); margin-bottom: 20px; }
+body.customer-profile-page .plan-tabs button { display: flex; align-items: center; gap: 8px; padding: 12px 0; min-height: 44px; background: transparent; color: var(--account-muted); border: 0; border-bottom: 2px solid transparent; font-size: 13px; font-weight: 700; }
+body.customer-profile-page .plan-tabs button[aria-selected="true"] { color: var(--account-accent); border-bottom-color: var(--account-accent); }
+body.customer-profile-page .plan-tabs button:focus-visible { outline: 2px solid var(--account-accent); outline-offset: 3px; }
+body.customer-profile-page .plan-tabs svg { width: 17px; height: 17px; flex-shrink: 0; }
+body.customer-profile-page .plan-tab-count { display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 4px; border-radius: 4px; font-size: 11px; background: var(--account-soft); }
+body.customer-profile-page .plan-schedule-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+body.customer-profile-page .plan-schedule-toolbar select { width: 165px; font-size: 12px; flex-shrink: 0; }
+body.customer-profile-page #installmentScheduleFilter[hidden] { display: none !important; }
+body.customer-profile-page .payments-empty.plan-schedule-empty { grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; justify-items: start; gap: 16px; padding: 24px 0; border-top: 1px solid var(--account-line); text-align: left; }
+body.customer-profile-page .plan-schedule-empty h3 { font-size: 14px !important; }
+body.customer-profile-page .plan-list { display: grid; gap: 16px; }
+body.customer-profile-page .plan-request,
+body.customer-profile-page .plan-schedule-item { padding: 20px; border: 1px solid var(--account-line); border-radius: 6px; background: white; }
+body.customer-profile-page .plan-item-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+body.customer-profile-page .plan-item-head h3 { margin: 0; font-size: 15px !important; line-height: 1.4; overflow-wrap: anywhere; }
+body.customer-profile-page .plan-payment-number { display: block; color: var(--account-muted); font-size: 11px; margin-bottom: 6px; }
+body.customer-profile-page .plan-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+body.customer-profile-page .plan-facts > div { display: grid; gap: 5px; min-width: 0; }
+body.customer-profile-page .plan-facts span { color: var(--account-muted); font-size: 12px; }
+body.customer-profile-page .plan-facts strong { font-size: 15px; overflow-wrap: anywhere; }
+body.customer-profile-page .plan-note { margin: 16px 0 0; color: var(--account-muted); font-size: 12px; line-height: 1.5; }
+body.customer-profile-page .plan-progress { display: block; width: 100%; height: 5px; margin-top: 18px; border: 0; border-radius: 4px; overflow: hidden; background: #e9eeeb; accent-color: var(--account-accent); }
+body.customer-profile-page .plan-progress::-webkit-progress-bar { background: #e9eeeb; }
+body.customer-profile-page .plan-progress::-webkit-progress-value { background: var(--account-accent); }
+body.customer-profile-page .plan-progress::-moz-progress-bar { background: var(--account-accent); }
+body.customer-profile-page .plan-item-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; margin-top: 16px; border-top: 1px solid var(--account-line); }
+body.customer-profile-page .plan-item-footer > span { color: var(--account-muted); font-size: 12px; line-height: 1.5; }
+body.customer-profile-page .plan-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex-shrink: 0; }
+body.customer-profile-page #schedulePanel[hidden],
+body.customer-profile-page #requestsPanel[hidden] { display: none !important; }
+
+@media (max-width: 600px) {
+  body.customer-profile-page .payments-empty.plan-schedule-empty { grid-template-columns: 32px minmax(0, 1fr); gap: 12px; }
+  body.customer-profile-page .plan-schedule-empty .btn { grid-column: 2; }
+  body.customer-profile-page .plan-tabs { gap: 16px; }
+  body.customer-profile-page .plan-tabs button { font-size: 12px; gap: 6px; }
+  body.customer-profile-page .plan-tabs svg { display: none; }
+  body.customer-profile-page .plan-request,
+  body.customer-profile-page .plan-schedule-item { padding: 16px; }
+  body.customer-profile-page .plan-facts { gap: 10px; }
+  body.customer-profile-page .plan-facts strong { font-size: 13px; }
+  body.customer-profile-page .plan-item-footer { align-items: flex-start; flex-direction: column; gap: 12px; }
+  body.customer-profile-page .plan-item-head { flex-wrap: wrap; gap: 10px; }
+  body.customer-profile-page .plan-reminder { grid-template-columns: 20px minmax(0, 1fr); }
+  body.customer-profile-page .plan-reminder > .payment-state { grid-column: 2; justify-self: start; }
+}
+
+body.customer-profile-page #layawayOverview[hidden],
+body.customer-profile-page #layawayFilter[hidden] { display: none !important; }
+body.customer-profile-page .layaway-count { margin-left: 6px; color: var(--account-muted); font-size: 12px; font-weight: 400; }
+body.customer-profile-page .layaway-product-meta { display: block; margin-top: 6px; color: var(--account-muted); font-size: 12px; line-height: 1.5; }
+body.customer-profile-page .layaway-progress-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; font-size: 11px; color: var(--account-muted); }
+body.customer-profile-page .layaway-progress-label strong { color: var(--account-accent); font-size: 12px; }
+body.customer-profile-page .layaway-plan .plan-progress { margin-top: 8px; }
+body.customer-profile-page .layaway-deadline { display: inline-flex; align-items: center; gap: 7px; }
+body.customer-profile-page .layaway-deadline svg { width: 16px; height: 16px; flex-shrink: 0; }
+body.customer-profile-page .layaway-deadline.overdue { color: #a03232; }
+
+body.customer-profile-page .settings-section { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; padding: 28px 0; border-bottom: 1px solid var(--account-line); }
+body.customer-profile-page .settings-section:first-child { padding-top: 14px; }
+body.customer-profile-page .settings-section:last-child { border-bottom: 0; }
+body.customer-profile-page .settings-section-title { display: flex; align-items: flex-start; gap: 12px; }
+body.customer-profile-page .settings-section-title > svg { width: 20px; height: 20px; flex-shrink: 0; color: var(--account-accent); }
+body.customer-profile-page .settings-section-title h3 { margin: 0; font-size: 15px !important; line-height: 1.4; }
+body.customer-profile-page .settings-section-title .payment-state { display: inline-block; margin-top: 10px; }
+body.customer-profile-page .settings-form { width: 100%; max-width: 640px; min-width: 0; }
+body.customer-profile-page .settings-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 16px; }
+body.customer-profile-page .settings-fields > .full { grid-column: 1 / -1; }
+body.customer-profile-page .settings-fields > div { min-width: 0; }
+body.customer-profile-page #accountSettingsSection .settings-fields label { display: block; margin-bottom: 7px; font-size: 12px !important; font-weight: 600; color: var(--account-ink); }
+body.customer-profile-page .settings-fields .form-control,
+body.customer-profile-page .settings-fields .form-select { min-height: 44px !important; }
+body.customer-profile-page .settings-password-field { position: relative; }
+body.customer-profile-page .settings-password-field .form-control { padding-right: 48px; }
+body.customer-profile-page .settings-eye { position: absolute; right: 4px; top: 4px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--account-muted); }
+body.customer-profile-page .settings-eye svg { width: 18px; height: 18px; }
+body.customer-profile-page .settings-eye:hover { background: var(--account-soft); color: var(--account-ink); }
+body.customer-profile-page .settings-eye:focus-visible { outline: 2px solid var(--account-accent); }
+body.customer-profile-page .settings-hint { margin: 8px 0 0; font-size: 11px; line-height: 1.5; color: var(--account-muted); }
+body.customer-profile-page .settings-save-row { display: flex; justify-content: flex-end; margin-top: 20px; }
+body.customer-profile-page #accountSettingsSection .account-status { margin: 12px 0 0; border-radius: 4px !important; }
+body.customer-profile-page #accountSettingsSection .account-status.success { background: #eaf6ef !important; color: #126347 !important; border-color: #c4e0ce !important; }
+body.customer-profile-page #accountSettingsSection .account-status.error { background: #fff1ef !important; color: #a3342b !important; border-color: #edc9c5 !important; }
+body.customer-profile-page #accountSettingsSection .settings-switch-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--account-line); cursor: pointer; font-size: 13px !important; }
+body.customer-profile-page .settings-switch-row strong { display: block; font-size: 13px; }
+body.customer-profile-page .settings-switch-row small { display: block; margin-top: 5px; font-size: 12px; line-height: 1.5; font-weight: 400; color: var(--account-muted); }
+body.customer-profile-page .settings-switch-row input { appearance: none; width: 42px; height: 24px; flex: 0 0 42px; margin: 0; border: 1px solid #aeb8b2; border-radius: 12px; background: #c7cfca; cursor: pointer; position: relative; }
+body.customer-profile-page .settings-switch-row input::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: white; }
+body.customer-profile-page .settings-switch-row input:checked { background: var(--account-accent); border-color: var(--account-accent); }
+body.customer-profile-page .settings-switch-row input:checked::after { left: 21px; }
+body.customer-profile-page .settings-switch-row input:focus-visible { outline: 2px solid var(--account-accent); outline-offset: 3px; }
+
+@media (max-width: 1000px) {
+  body.customer-profile-page .settings-section { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  body.customer-profile-page .settings-form { max-width: none; }
+}
+@media (max-width: 600px) {
+  body.customer-profile-page .settings-fields { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  body.customer-profile-page .settings-section { padding: 24px 0; }
+  body.customer-profile-page .settings-save-row { justify-content: flex-start; }
+}
+
+body.customer-profile-page .address-library { margin-bottom: 32px; }
+body.customer-profile-page .address-library-head,
+body.customer-profile-page .address-editor-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+body.customer-profile-page .address-library-head h3,
+body.customer-profile-page .address-editor-head h3 { margin: 0; font-size: 15px !important; }
+body.customer-profile-page .saved-address-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+body.customer-profile-page .saved-address-list > .payments-empty { grid-column: 1 / -1; }
+body.customer-profile-page .saved-address-list .saved-address-item { padding: 18px !important; border-radius: 6px !important; display: flex; flex-direction: column; gap: 0; min-width: 0; }
+body.customer-profile-page .saved-address-list .saved-address-item.default { border-color: #b3d4c4 !important; background: #fcfefd !important; }
+body.customer-profile-page .saved-address-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+body.customer-profile-page .saved-address-head h3 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px !important; }
+body.customer-profile-page .saved-address-head h3 svg { width: 18px; height: 18px; color: var(--account-accent); flex-shrink: 0; }
+body.customer-profile-page .saved-address-recipient { font-size: 13px; overflow-wrap: anywhere; }
+body.customer-profile-page .saved-address-phone { color: var(--account-muted); font-size: 12px; margin-top: 4px; }
+body.customer-profile-page .saved-address-list .saved-address-line { margin: 12px 0 8px; color: var(--account-ink); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+body.customer-profile-page .saved-address-list .saved-address-landmark { margin: 0 0 12px; color: var(--account-muted); font-size: 12px; line-height: 1.5; }
+body.customer-profile-page .saved-address-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--account-line); margin-top: auto; padding-top: 12px; }
+body.customer-profile-page .saved-address-pin { display: flex; align-items: center; gap: 6px; color: var(--account-accent); font-size: 11px; }
+body.customer-profile-page .saved-address-pin.missing { color: #9b6427; }
+body.customer-profile-page .saved-address-pin svg { width: 16px; height: 16px; }
+body.customer-profile-page .saved-address-delete:hover { background: #fff0ee; border-color: #edc8c3; color: #a2392e; }
+body.customer-profile-page .address-editor { padding-top: 24px; border-top: 1px solid var(--account-line); scroll-margin-top: 24px; }
+body.customer-profile-page .address-workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 28px; }
+body.customer-profile-page #addressBookSection .settings-fields label { display: block; margin-bottom: 7px; font-size: 12px !important; font-weight: 600; }
+body.customer-profile-page #addressBookSection .settings-fields .address-default-choice { display: flex; align-items: center; gap: 10px; padding-top: 8px; cursor: pointer; font-weight: 400; }
+body.customer-profile-page .address-default-choice input { margin: 0; accent-color: var(--account-accent); }
+body.customer-profile-page .address-editor .delivery-pin-editor { min-width: 0; padding: 0; border: 1px solid var(--account-line); border-radius: 6px; overflow: hidden; background: white; }
+body.customer-profile-page .address-map-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border-bottom: 1px solid var(--account-line); }
+body.customer-profile-page .address-map-toolbar > strong { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+body.customer-profile-page .address-map-toolbar > strong svg { width: 16px; height: 16px; color: var(--account-accent); }
+body.customer-profile-page .address-map-toolbar > div { display: flex; gap: 6px; }
+body.customer-profile-page #deliveryLocationMap { width: 100%; height: 440px !important; min-height: 0; border: 0; border-radius: 0; background: #eef2ef; }
+body.customer-profile-page #deliveryLocationMap .maplibregl-canvas { cursor: crosshair; }
+body.customer-profile-page #deliveryLocationMap .maplibregl-ctrl-attrib { font-size: 9px; line-height: 1.4; }
+body.customer-profile-page #deliveryLocationMap .maplibregl-ctrl button { min-width: 29px; min-height: 29px; }
+body.customer-profile-page .address-editor #deliveryPinStatus { margin: 0; padding: 12px !important; border: 0 !important; border-top: 1px solid var(--account-line) !important; border-radius: 0 !important; background: white !important; color: var(--account-muted) !important; font-size: 11px !important; }
+body.customer-profile-page .address-editor #deliveryPinStatus.success { color: var(--account-accent) !important; }
+body.customer-profile-page .address-editor #deliveryPinStatus.error { color: #a2392e !important; }
+body.customer-profile-page .address-editor-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
+body.customer-profile-page #addressSaveStatus { margin-top: 12px; }
+body.customer-profile-page #addressSaveStatus.success { color: #126347 !important; background: #eaf6ef !important; border-color: #c4e0ce !important; }
+body.customer-profile-page #addressSaveStatus.error { color: #a3342b !important; background: #fff1ef !important; border-color: #edc9c5 !important; }
+body.customer-profile-page.address-map-open { overflow: hidden; }
+body.customer-profile-page .address-editor .delivery-pin-editor.map-expanded { position: fixed; inset: 20px; z-index: 11000; display: flex; flex-direction: column; border-radius: 6px; box-shadow: 0 0 0 100vmax rgba(15,25,20,.6); }
+body.customer-profile-page .map-expanded #deliveryLocationMap { flex: 1; height: auto !important; }
+body.customer-profile-page .map-expanded .address-map-toolbar { flex-shrink: 0; }
+
+@media (max-width: 900px) {
+  body.customer-profile-page .address-workspace { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  body.customer-profile-page .saved-address-list { grid-template-columns: minmax(0, 1fr); }
+  body.customer-profile-page #deliveryLocationMap { height: 360px !important; }
+  body.customer-profile-page .address-editor .delivery-pin-editor.map-expanded { inset: 8px; }
+  body.customer-profile-page .address-editor-actions { justify-content: flex-start; }
+  body.customer-profile-page .address-map-toolbar { gap: 8px; }
+}
+
+body.customer-profile-page {
+  --account-bg: #f3f5f4;
+  --account-panel: #ffffff;
+  --account-soft: #f7f9f8;
+  --account-ink: #151918;
+  --account-muted: #68716e;
+  --account-line: #dfe4e2;
+  --account-accent: #0f6b50;
+  --account-accent-soft: #e5f3ed;
+  background: var(--account-bg) !important;
+  color: var(--account-ink) !important;
+}
+
+body.customer-profile-page .profile-shell {
+  grid-template-columns: 268px minmax(0, 1fr) !important;
+  background: var(--account-bg) !important;
+}
+
+body.customer-profile-page .side {
+  padding: 20px 16px !important;
+  background: #111513 !important;
+}
+
+body.customer-profile-page .brand-with-logo {
+  grid-template-columns: 42px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  margin-bottom: 16px !important;
+}
+
+body.customer-profile-page .brand-logo {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 8px !important;
+}
+
+body.customer-profile-page .brand-with-logo span {
+  font-size: 13px !important;
+  line-height: 1.25 !important;
+}
+
+body.customer-profile-page .customer-card {
+  grid-template-columns: 36px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  margin-bottom: 14px !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  background: #1a201e !important;
+  border-color: #303936 !important;
+}
+
+body.customer-profile-page .customer-avatar {
+  width: 36px;
+  height: 36px;
+  border-color: #46504c;
+  background: #eef6f2;
+  color: var(--account-accent);
+}
+
+body.customer-profile-page .customer-avatar svg {
+  width: 18px;
+  height: 18px;
+}
+
+body.customer-profile-page .customer-card h2 {
+  font-size: 16px !important;
+  line-height: 1.2 !important;
+}
+
+body.customer-profile-page .customer-card p {
+  font-size: 12px !important;
+  line-height: 1.3 !important;
+}
+
+body.customer-profile-page .profile-navigation {
+  gap: 12px !important;
+  margin: 12px 0 14px !important;
+}
+
+body.customer-profile-page .profile-nav-group {
+  gap: 3px;
+}
+
+body.customer-profile-page .profile-nav-title {
+  margin-bottom: 2px;
+  padding: 0 10px;
+  color: #89928e;
+  font-size: 9px;
+}
+
+body.customer-profile-page .profile-navigation a {
+  min-height: 38px !important;
+  gap: 9px !important;
+  padding: 8px 10px !important;
+  border-radius: 6px !important;
+  color: #d9dfdc !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+body.customer-profile-page .profile-navigation a svg {
+  width: 16px;
+  height: 16px;
+  flex-basis: 16px;
+}
+
+body.customer-profile-page .profile-navigation a:hover {
+  background: #202825 !important;
+}
+
+body.customer-profile-page .profile-navigation a[aria-current="page"] {
+  border-color: #bcd9cc !important;
+  background: var(--account-accent-soft) !important;
+  color: #0a4b38 !important;
+}
+
+body.customer-profile-page .side-actions {
+  gap: 6px !important;
+  margin-top: 14px !important;
+  padding-top: 12px !important;
+}
+
+body.customer-profile-page .side-actions .btn {
+  min-height: 38px !important;
+  padding: 8px 10px !important;
+  font-size: 12px !important;
+}
+
+body.customer-profile-page .main {
+  max-width: 1220px !important;
+  min-height: 100vh;
+  margin: 0 auto !important;
+  padding: 30px clamp(22px, 4vw, 48px) 52px !important;
+  background: var(--account-panel) !important;
+}
+
+body.customer-profile-page .profile-main-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center !important;
+  gap: 24px;
+  margin-bottom: 28px !important;
+  padding: 24px;
+  background: #182923;
+  border-left: 4px solid #7fc7a8;
+  color: #ffffff;
+}
+
+body.customer-profile-page .profile-header-intro {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+body.customer-profile-page .profile-header-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: #2c4439;
+  color: #b6e5cc;
+  border-radius: 6px;
+}
+
+body.customer-profile-page .profile-header-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+body.customer-profile-page .profile-header-copy {
+  min-width: 0;
+}
+
+body.customer-profile-page .profile-header-refresh {
+  background: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid #6d877b !important;
+}
+
+body.customer-profile-page .profile-header-refresh:hover {
+  background: #2c4439 !important;
+  border-color: #b6e5cc !important;
+}
+
+body.customer-profile-page .profile-header-refresh:focus-visible {
+  outline: 2px solid #b6e5cc;
+  outline-offset: 3px;
+}
+
+body.customer-profile-page .profile-page-eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: #b6e5cc;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+body.customer-profile-page .profile-main-header h1 {
+  margin: 0;
+  color: #ffffff !important;
+  font-size: 28px !important;
+  line-height: 1.2 !important;
+}
+
+body.customer-profile-page .profile-main-header p {
+  max-width: 620px;
+  margin: 8px 0 0 !important;
+  color: #cedbd4 !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+}
+
+body.customer-profile-page .btn {
+  min-height: 38px !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+}
+
+body.customer-profile-page .summary-grid {
+  gap: 10px !important;
+  margin-bottom: 22px !important;
+}
+
+body.customer-profile-page .summary {
+  min-height: 82px !important;
+  align-content: center !important;
+  padding: 14px !important;
+  border: 1px solid var(--account-line) !important;
+  border-radius: 8px !important;
+  background: var(--account-soft) !important;
+  box-shadow: none !important;
+}
+
+body.customer-profile-page .summary::after {
+  display: none !important;
+}
+
+body.customer-profile-page .summary > svg {
+  top: 12px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--account-accent-soft);
+  color: var(--account-accent);
+}
+
+body.customer-profile-page .summary:nth-child(2) > svg {
+  background: #fff2d8;
+  color: #8a5a00;
+}
+
+body.customer-profile-page .summary:nth-child(3) > svg {
+  background: #e8effa;
+  color: #285b93;
+}
+
+body.customer-profile-page .summary:nth-child(4) > svg {
+  background: #e8f4f3;
+  color: #176b68;
+}
+
+body.customer-profile-page .summary span {
+  font-size: 10px !important;
+}
+
+body.customer-profile-page .summary strong {
+  margin-top: 6px !important;
+  font-size: 24px !important;
+}
+
+body.customer-profile-page .main > section {
+  margin-top: 0 !important;
+}
+
+body.customer-profile-page .main > section > .page-head {
+  min-height: 0;
+  align-items: flex-end !important;
+  margin: 0 0 14px !important;
+  padding: 0 0 12px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--account-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.customer-profile-page .main > section > .page-head h2 {
+  margin: 0;
+  color: var(--account-ink);
+  font-size: 20px !important;
+  line-height: 1.2 !important;
+  font-weight: 900;
+}
+
+body.customer-profile-page .main > section > .page-head p {
+  margin-top: 4px !important;
+  color: var(--account-muted) !important;
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+}
+
+body.customer-profile-page .account-settings-grid,
+body.customer-profile-page .address-book-grid {
+  gap: 12px !important;
+}
+
+body.customer-profile-page .account-panel,
+body.customer-profile-page .address-form-panel,
+body.customer-profile-page .address-list-panel,
+body.customer-profile-page .installment-panel,
+body.customer-profile-page .orders-section,
+body.customer-profile-page .order-card,
+body.customer-profile-page .repair-card,
+body.customer-profile-page .notification-card,
+body.customer-profile-page .statement-order-row,
+body.customer-profile-page .due-alert-card,
+body.customer-profile-page .empty-state,
+body.customer-profile-page .address-card,
+body.customer-profile-page .installment-row,
+body.customer-profile-page .statement-card {
+  border: 1px solid var(--account-line) !important;
+  border-radius: 8px !important;
+  background: var(--account-panel) !important;
+  box-shadow: none !important;
+}
+
+body.customer-profile-page .account-panel,
+body.customer-profile-page .address-form-panel,
+body.customer-profile-page .address-list-panel,
+body.customer-profile-page .installment-panel,
+body.customer-profile-page .orders-section {
+  padding: 16px !important;
+}
+
+body.customer-profile-page .account-panel h2,
+body.customer-profile-page .address-form-panel h2,
+body.customer-profile-page .address-list-panel h2,
+body.customer-profile-page .installment-head h2,
+body.customer-profile-page .orders-section-head h2 {
+  font-size: 16px !important;
+}
+
+body.customer-profile-page .panel-title svg {
+  width: 18px;
+  height: 18px;
+  color: var(--account-accent);
+}
+
+body.customer-profile-page .account-form-grid,
+body.customer-profile-page .address-form-grid {
+  gap: 10px !important;
+}
+
+body.customer-profile-page label,
+body.customer-profile-page .address-default-row span {
+  font-size: 10px !important;
+}
+
+body.customer-profile-page .form-control,
+body.customer-profile-page .form-select {
+  min-height: 40px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+}
+
+body.customer-profile-page textarea.form-control {
+  min-height: 82px !important;
+}
+
+body.customer-profile-page .account-status,
+body.customer-profile-page .address-default-row,
+body.customer-profile-page .installment-payment-note {
+  padding: 8px 10px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+}
+
+body.customer-profile-page .tabs,
+body.customer-profile-page .notification-tabs {
+  gap: 5px !important;
+  margin-bottom: 12px !important;
+  padding: 4px !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+body.customer-profile-page .tabs {
+  grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+}
+
+body.customer-profile-page .tab,
+body.customer-profile-page .notification-filter {
+  min-width: 104px !important;
+  min-height: 36px !important;
+  border-radius: 6px !important;
+  padding: 7px 10px !important;
+  font-size: 12px !important;
+}
+
+body.customer-profile-page .tab.active,
+body.customer-profile-page .notification-filter.active {
+  border-color: var(--account-accent) !important;
+  background: var(--account-accent) !important;
+}
+
+body.customer-profile-page .tab-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: #e7efea;
+  color: #315641;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+body.customer-profile-page .orders-toolbar,
+body.customer-profile-page .notification-toolbar {
+  margin-bottom: 12px !important;
+  padding: 9px !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+body.customer-profile-page .orders-section {
+  gap: 10px !important;
+  margin-top: 12px !important;
+}
+
+body.customer-profile-page .order-card.has-image,
+body.customer-profile-page .repair-card {
+  grid-template-columns: 78px minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+  padding: 13px !important;
+}
+
+body.customer-profile-page .order-image,
+body.customer-profile-page .repair-card img {
+  width: 78px !important;
+  height: 78px !important;
+  border-radius: 6px !important;
+}
+
+body.customer-profile-page .order-card h3,
+body.customer-profile-page .repair-card h3 {
+  margin-bottom: 6px !important;
+  font-size: 15px !important;
+}
+
+body.customer-profile-page .order-meta span,
+body.customer-profile-page .order-meta strong,
+body.customer-profile-page .due-alert-meta span {
+  min-height: 24px !important;
+  padding: 4px 7px !important;
+  font-size: 11px !important;
+}
+
+body.customer-profile-page .notification-card,
+body.customer-profile-page .installment-row,
+body.customer-profile-page .statement-order-row,
+body.customer-profile-page .due-alert-card,
+body.customer-profile-page .address-card {
+  padding: 13px !important;
+}
+
+body.customer-profile-page .empty-state {
+  min-height: 88px !important;
+  padding: 20px !important;
+  background: var(--account-soft) !important;
+  color: var(--account-muted) !important;
+  font-size: 13px;
+}
+
+body.customer-profile-page .status-pill,
+body.customer-profile-page .address-badge,
+body.customer-profile-page .application-status,
+body.customer-profile-page .notification-badge {
+  border-color: #b8d5c9 !important;
+  background: var(--account-accent-soft) !important;
+  color: #0a4b38 !important;
+}
+
+@media (max-width: 1180px) {
+  body.customer-profile-page .profile-shell {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.customer-profile-page .side {
+    position: static !important;
+    height: auto !important;
+    overflow: visible;
+  }
+
+  body.customer-profile-page .profile-navigation {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 820px) {
+  body.customer-profile-page .tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  body.customer-profile-page .profile-navigation {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.customer-profile-page .main {
+    padding: 22px 14px 40px !important;
+  }
+
+  body.customer-profile-page .profile-main-header {
+    align-items: flex-start !important;
+    flex-direction: row !important;
+    padding: 18px 16px;
+    gap: 12px;
+  }
+
+  body.customer-profile-page .profile-header-intro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  body.customer-profile-page .profile-header-refresh {
+    width: 38px;
+    height: 38px;
+    padding: 0 !important;
+  }
+
+  body.customer-profile-page .profile-header-refresh span {
+    display: none;
+  }
+
+  body.customer-profile-page .profile-main-header h1 {
+    font-size: 26px !important;
+  }
+
+  body.customer-profile-page .main > section > .page-head {
+    align-items: flex-start !important;
+  }
+
+  body.customer-profile-page .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.customer-profile-page .order-card.has-image,
+  body.customer-profile-page .repair-card {
+    grid-template-columns: 70px minmax(0, 1fr) !important;
+  }
+
+  body.customer-profile-page .order-image,
+  body.customer-profile-page .repair-card img {
+    width: 70px !important;
+    height: 70px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  body.customer-profile-page .side {
+    padding: 14px !important;
+  }
+
+  body.customer-profile-page .profile-navigation {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.customer-profile-page .profile-nav-group {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.customer-profile-page .profile-navigation a {
+    min-height: 36px !important;
+  }
+
+  body.customer-profile-page .profile-main-header {
+    gap: 12px !important;
+  }
+
+  body.customer-profile-page .profile-main-header p {
+    max-width: 250px;
+  }
+
+  body.customer-profile-page .summary {
+    min-height: 74px !important;
+  }
+
+  body.customer-profile-page .main > section > .page-head {
+    align-items: flex-start !important;
+    padding: 0 0 10px !important;
+  }
+
+  body.customer-profile-page .main > section > .page-head h2 {
+    font-size: 18px !important;
+  }
+
+  body.customer-profile-page .notification-actions {
+    width: 100%;
+  }
+
+  body.customer-profile-page .notification-actions .btn {
+    flex: 1 1 120px;
+  }
+
+  body.customer-profile-page .account-panel,
+  body.customer-profile-page .address-form-panel,
+  body.customer-profile-page .address-list-panel,
+  body.customer-profile-page .installment-panel,
+  body.customer-profile-page .orders-section {
+    padding: 13px !important;
+  }
+
+  body.customer-profile-page .tabs,
+  body.customer-profile-page .notification-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.customer-profile-page .order-card.has-image,
+  body.customer-profile-page .repair-card {
+    grid-template-columns: 58px minmax(0, 1fr) !important;
+  }
+
+  body.customer-profile-page .order-image,
+  body.customer-profile-page .repair-card img {
+    width: 58px !important;
+    height: 58px !important;
+  }
+}
+
+body.customer-profile-page .notification-card.has-product-image {
+  display: grid !important;
+  grid-template-columns: 48px minmax(0, 1fr) auto !important;
+  align-items: start !important;
+  justify-content: initial !important;
+}
+
+body.customer-profile-page .notification-card.has-product-image > .notification-product-image {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px;
+  flex-basis: 48px;
+}
+
+body.customer-profile-page .notification-card.has-product-image > .notification-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+body.customer-profile-page .notification-card.has-product-image > .notification-card-actions {
+  grid-column: 2 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  body.customer-profile-page .notification-card.has-product-image {
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+  }
+
+  body.customer-profile-page .notification-card.has-product-image > .notification-product-image {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px;
+    flex-basis: 42px;
+  }
+
+  body.customer-profile-page .notification-card.has-product-image > .notification-card-actions {
+    grid-column: 2;
+  }
+}

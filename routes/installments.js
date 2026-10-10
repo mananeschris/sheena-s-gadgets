@@ -6,12 +6,15 @@ const { orderLabel } = require("./orderReference")
 
 const TERMS = [3, 6, 12];
 const STATUSES = ["pending", "approved", "rejected"];
-const ONLINE_PAYMENT_METHODS = ["gcash", "maya", "card"];
-const PAYMONGO_METHODS = {
-  gcash: "gcash",
-  maya: "paymaya",
-  card: "card"
-};
+const ONLINE_PAYMENT_METHODS = ["gcash"];
+
+function normalizeOnlinePaymentMethod(method) {
+  const value = String(method || "").trim().toLowerCase();
+  if (ONLINE_PAYMENT_METHODS.includes(value)) return "gcash";
+  if (["online", "e-wallet", "ewallet"].includes(value)) return "gcash";
+  if (value && !["cod", "cash", "installment", "manual", "pos"].includes(value)) return "gcash";
+  return value;
+}
 
 function dbQuery(db, sql, params = []) {
   return new Promise((resolve, reject) => {
@@ -31,29 +34,6 @@ function createNotificationAsync(db, payload) {
   });
 }
 
-function paymongoAuthHeader() {
-  const secretKey = process.env.PAYMONGO_SECRET_KEY;
-  if (!secretKey) return null;
-  return `Basic ${Buffer.from(`${secretKey}:`).toString("base64")}`;
-}
-
-function normalizePaymongoStatus(checkoutSession) {
-  const attributes = checkoutSession?.attributes || {};
-  const payments = Array.isArray(attributes.payments) ? attributes.payments : [];
-  const paymentIntent = attributes.payment_intent?.attributes || {};
-  const candidates = [
-    payments[0]?.attributes?.status,
-    paymentIntent.status,
-    attributes.status
-  ].filter(Boolean).map(value => String(value).toLowerCase());
-
-  if (candidates.some(status => ["paid", "succeeded", "success"].includes(status))) return "paid";
-  if (candidates.includes("expired")) return "expired";
-  if (candidates.some(status => ["failed", "payment_failed"].includes(status))) return "failed";
-  if (candidates.some(status => ["cancelled", "canceled"].includes(status))) return "cancelled";
-  return "pending_verification";
-}
-
 function scheduleRemaining(schedule) {
   return Math.max(Number(schedule.amount_due || 0) - Number(schedule.amount_paid || 0), 0);
 }
@@ -62,146 +42,6 @@ function cleanText(value, maxLength = 1000) {
   return String(value || "").trim().slice(0, maxLength);
 }
 
-function baseUrl(req) {
-  return process.env.APP_BASE_URL || `${req.protocol}://${req.get("host")}`;
-}
-
-async function createPaymongoDownpaymentCheckout(req, application) {
-  const secretKey = process.env.PAYMONGO_SECRET_KEY;
-  if (!secretKey) {
-    throw new Error("PayMongo sandbox key is not configured yet.");
-  }
-
-  const methodMap = {
-    gcash: "gcash",
-    maya: "paymaya",
-    card: "card"
-  };
-  const method = methodMap[application.downpayment_method] || "gcash";
-  const auth = Buffer.from(`${secretKey}:`).toString("base64");
-  const origin = baseUrl(req);
-
-  const payload = {
-    data: {
-      attributes: {
-        description: `Installment downpayment for ${orderLabel(application.order_id)}`,
-        line_items: [
-          {
-            name: `${orderLabel(application.order_id)} Downpayment`,
-            quantity: 1,
-            amount: Math.round(Number(application.downpayment_amount || 0) * 100),
-            currency: "PHP"
-          }
-        ],
-        payment_method_types: [method],
-        reference_number: `ORDER-${application.order_id}`,
-        send_email_receipt: false,
-        show_description: true,
-        show_line_items: true,
-        success_url: `${origin}/payment-result.html?order_id=${application.order_id}&result=success`,
-        cancel_url: `${origin}/payment-result.html?order_id=${application.order_id}&result=cancelled`
-      }
-    }
-  };
-
-  const response = await fetch("https://api.paymongo.com/v1/checkout_sessions", {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${auth}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  });
-  const data = await response.json();
-
-  if (!response.ok) {
-    const detail = data?.errors?.[0]?.detail || data?.errors?.[0]?.title || "PayMongo checkout creation failed";
-    throw new Error(detail);
-  }
-
-  const checkout = data.data || {};
-  const attributes = checkout.attributes || {};
-  return {
-    payment_reference: attributes.reference_number || `ORDER-${application.order_id}`,
-    payment_checkout_id: checkout.id,
-    payment_checkout_url: attributes.checkout_url
-  };
-}
-
-
-async function createPaymongoScheduleCheckout(req, schedule, paymentMethod) {
-  const auth = paymongoAuthHeader();
-  if (!auth) throw new Error("PayMongo sandbox key is not configured yet.");
-
-  const method = PAYMONGO_METHODS[paymentMethod] || "gcash";
-  const amount = scheduleRemaining(schedule);
-  if (!Number.isFinite(amount) || amount <= 0) {
-    throw new Error("This installment schedule has no remaining balance.");
-  }
-
-  const origin = baseUrl(req);
-  const reference = `INST-SCHED-${schedule.id}`;
-  const payload = {
-    data: {
-      attributes: {
-        description: `${orderLabel(schedule.order_id)} installment ${schedule.installment_no}`,
-        line_items: [
-          {
-            name: `${orderLabel(schedule.order_id)} Installment ${schedule.installment_no}`,
-            quantity: 1,
-            amount: Math.round(amount * 100),
-            currency: "PHP"
-          }
-        ],
-        payment_method_types: [method],
-        reference_number: reference,
-        send_email_receipt: false,
-        show_description: true,
-        show_line_items: true,
-        success_url: `${origin}/payment-result.html?schedule_id=${schedule.id}&order_id=${schedule.order_id}&result=success`,
-        cancel_url: `${origin}/payment-result.html?schedule_id=${schedule.id}&order_id=${schedule.order_id}&result=cancelled`
-      }
-    }
-  };
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  let response;
-  try {
-    response = await fetch("https://api.paymongo.com/v1/checkout_sessions", {
-      method: "POST",
-      headers: {
-        Authorization: auth,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal
-    });
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("PayMongo API request timed out. Check internet connection, firewall, or try again later.");
-    }
-    throw new Error(`Unable to connect to PayMongo API: ${error.message}`);
-  } finally {
-    clearTimeout(timeout);
-  }
-
-  const data = await response.json();
-  if (!response.ok) {
-    const detail = data?.errors?.[0]?.detail || data?.errors?.[0]?.title || "PayMongo checkout creation failed";
-    throw new Error(detail);
-  }
-
-  const checkout = data.data || {};
-  const attributes = checkout.attributes || {};
-  return {
-    payment_method: paymentMethod,
-    payment_provider: "paymongo_installment_monthly",
-    payment_reference: attributes.reference_number || reference,
-    payment_checkout_id: checkout.id,
-    payment_checkout_url: attributes.checkout_url
-  };
-}
 function ensureInstallmentTable(db, callback) {
   const sql = `
     CREATE TABLE IF NOT EXISTS installment_applications (
@@ -419,7 +259,7 @@ function refreshScheduleStatuses(db, callback) {
   db.query(sql, callback);
 }
 
-router.post("/apply", (req, res) => {
+router.post("/apply", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), (req, res) => {
   const {
     user_id,
     full_name,
@@ -535,12 +375,18 @@ router.get("/", requireAdmin, (req, res) => {
   });
 });
 
-router.get("/customer/:user_id", (req, res) => {
+router.get("/customer/:user_id", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), (req, res) => {
   const sql = `
-    SELECT *
-    FROM installment_applications
-    WHERE user_id = ?
-    ORDER BY created_at DESC
+    SELECT
+      ia.*,
+      o.payment_status AS order_payment_status,
+      o.payment_checkout_url,
+      p.name AS product_name
+    FROM installment_applications ia
+    LEFT JOIN orders o ON ia.order_id = o.id
+    LEFT JOIN products p ON o.product_id = p.id
+    WHERE ia.user_id = ?
+    ORDER BY ia.created_at DESC
   `;
 
   req.db.query(sql, [req.params.user_id], (err, rows) => {
@@ -549,7 +395,7 @@ router.get("/customer/:user_id", (req, res) => {
   });
 });
 
-router.get("/customer/:user_id/approved", (req, res) => {
+router.get("/customer/:user_id/approved", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), (req, res) => {
   const sql = `
     SELECT *
     FROM installment_applications
@@ -625,39 +471,29 @@ function syncInstallmentOrderAfterReview(req, applicationId, status, callback) {
     if (status !== "approved") return callback();
 
     if (application.downpayment_status !== "paid") {
-      return createPaymongoDownpaymentCheckout(req, application)
-        .then((paymentInfo) => {
+      return db.query(
+        `UPDATE orders
+         SET payment_status=?, payment_provider=?, payment_reference=NULL, payment_checkout_id=NULL, payment_checkout_url=NULL, payment_error=NULL
+         WHERE id=?`,
+        ["installment_downpayment_pending", "manual_gcash", application.order_id],
+        (updateErr) => {
+          if (updateErr) return callback(updateErr);
           db.query(
-            `UPDATE orders
-             SET payment_status=?, payment_provider=?, payment_reference=?, payment_checkout_id=?, payment_checkout_url=?, payment_error=NULL
-             WHERE id=?`,
-            [
-              "installment_downpayment_pending",
-              "paymongo_installment_downpayment",
-              paymentInfo.payment_reference,
-              paymentInfo.payment_checkout_id,
-              paymentInfo.payment_checkout_url,
-              application.order_id
-            ],
-            (updateErr) => {
-              if (updateErr) return callback(updateErr);
+            "UPDATE installment_applications SET downpayment_method='gcash', downpayment_status='pending' WHERE id=?",
+            [application.id],
+            (appErr) => {
+              if (appErr) return callback(appErr);
               createNotification(db, {
                 user_id: application.user_id,
                 title: "Installment approved",
-                message: `Your installment application for ${orderLabel(application.order_id)} was approved. You can now pay the downpayment.`,
+                message: `Your installment application for ${orderLabel(application.order_id)} was approved. Upload your GCash downpayment proof from your order page.`,
                 type: "installment",
                 action_url: `/customer/order.html?order_id=${application.order_id}`
               }, callback);
             }
           );
-        })
-        .catch((error) => {
-          db.query(
-            "UPDATE orders SET payment_status=?, payment_provider=?, payment_error=?, payment_failed_at=COALESCE(payment_failed_at, NOW()) WHERE id=?",
-            ["installment_downpayment_failed", "paymongo_installment_downpayment", error.message, application.order_id],
-            callback
-          );
-        });
+        }
+      );
     }
 
     activateInstallmentOrder(db, application, callback);
@@ -740,7 +576,7 @@ router.get("/schedules", requireAdmin, (req, res) => {
   });
 });
 
-router.get("/customer/:user_id/schedules", (req, res) => {
+router.get("/customer/:user_id/schedules", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), (req, res) => {
   refreshScheduleStatuses(req.db, (refreshErr) => {
     if (refreshErr) return res.status(500).json({ message: refreshErr.message });
 
@@ -860,10 +696,10 @@ async function markSchedulePaid(db, schedule, sourceLabel = "online") {
   });
 }
 
-router.post("/schedules/:id/checkout", async (req, res) => {
+router.post("/schedules/:id/checkout", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), async (req, res) => {
   const scheduleId = Number(req.params.id);
   const userId = Number(req.body.user_id || req.query.user_id);
-  const method = String(req.body.method || req.query.method || "gcash").toLowerCase();
+  const method = normalizeOnlinePaymentMethod(req.body.method || req.query.method || "gcash");
 
   if (!Number.isInteger(scheduleId) || scheduleId <= 0) {
     return res.status(400).json({ message: "Valid installment schedule id is required." });
@@ -872,7 +708,7 @@ router.post("/schedules/:id/checkout", async (req, res) => {
     return res.status(400).json({ message: "Signed-in customer is required." });
   }
   if (!ONLINE_PAYMENT_METHODS.includes(method)) {
-    return res.status(400).json({ message: "Choose GCash, Maya, or card for installment payment." });
+    return res.status(400).json({ message: "Choose GCash for installment payment." });
   }
 
   try {
@@ -888,38 +724,32 @@ router.post("/schedules/:id/checkout", async (req, res) => {
       return res.status(400).json({ message: "Installment schedule is not active yet." });
     }
 
-    const checkout = await createPaymongoScheduleCheckout(req, schedule, method);
     await dbQuery(req.db, `
       UPDATE installment_schedules
-      SET payment_method=?, payment_provider=?, payment_reference=?, payment_checkout_id=?, payment_checkout_url=?,
-          payment_status='pending_verification', payment_error=NULL, payment_last_checked_at=NULL
+      SET payment_method=?, payment_provider='manual_gcash',
+          payment_status='pending_payment', payment_error=NULL, payment_last_checked_at=NULL
       WHERE id=?
     `, [
-      checkout.payment_method,
-      checkout.payment_provider,
-      checkout.payment_reference,
-      checkout.payment_checkout_id,
-      checkout.payment_checkout_url,
+      method,
       schedule.id
     ]);
 
     res.json({
-      message: "Installment payment checkout created.",
+      message: "You can now upload your GCash proof for this installment payment.",
       schedule_id: schedule.id,
       order_id: schedule.order_id,
       amount: scheduleRemaining(schedule),
-      payment_status: "pending_verification",
-      payment_checkout_url: checkout.payment_checkout_url
+      payment_status: "pending_payment",
+      payment_provider: "manual_gcash"
     });
   } catch (error) {
-    res.status(502).json({ message: error.message || "Unable to create installment payment checkout." });
+    res.status(502).json({ message: error.message || "Unable to prepare installment payment." });
   }
 });
 
-router.get("/schedules/:id/status", async (req, res) => {
+router.get("/schedules/:id/status", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), async (req, res) => {
   const scheduleId = Number(req.params.id);
-  const userId = Number(req.query.user_id || req.body?.user_id || 0);
-  const auth = paymongoAuthHeader();
+  const userId = req.actorUser.id;
 
   if (!Number.isInteger(scheduleId) || scheduleId <= 0) {
     return res.status(400).json({ message: "Valid installment schedule id is required." });
@@ -934,78 +764,13 @@ router.get("/schedules/:id/status", async (req, res) => {
     if (schedule.status === "paid") {
       return res.json({ schedule_id: schedule.id, order_id: schedule.order_id, status: "paid", payment_status: "paid" });
     }
-    if (!schedule.payment_checkout_id) {
-      return res.json({
-        schedule_id: schedule.id,
-        order_id: schedule.order_id,
-        status: schedule.status || "unpaid",
-        payment_status: schedule.payment_status || "not_started",
-        needs_checkout: true,
-        message: "No monthly payment checkout link is linked to this installment yet."
-      });
-    }
-    if (!auth) {
-      return res.json({
-        schedule_id: schedule.id,
-        order_id: schedule.order_id,
-        status: schedule.status || "unpaid",
-        payment_status: schedule.payment_status || "pending_verification",
-        message: "PayMongo sandbox key is not configured yet."
-      });
-    }
-
-    const response = await fetch(`https://api.paymongo.com/v1/checkout_sessions/${schedule.payment_checkout_id}`, {
-      headers: { Authorization: auth }
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      const detail = data?.errors?.[0]?.detail || data?.errors?.[0]?.title || "Unable to retrieve installment payment status";
-      await dbQuery(req.db, "UPDATE installment_schedules SET payment_last_checked_at=NOW(), payment_error=? WHERE id=?", [detail, schedule.id]);
-      return res.status(502).json({ message: detail });
-    }
-
-    const checkout = data.data || {};
-    const attributes = checkout.attributes || {};
-    const sourceStatus = normalizePaymongoStatus(checkout);
-
-    if (sourceStatus === "paid") {
-      await markSchedulePaid(req.db, schedule, "online payment");
-      return res.json({
-        schedule_id: schedule.id,
-        order_id: schedule.order_id,
-        source_status: sourceStatus,
-        status: "paid",
-        payment_status: "paid",
-        checked_at: new Date().toISOString()
-      });
-    }
-
-    const paymentStatus = sourceStatus === "expired"
-      ? "expired"
-      : sourceStatus === "failed" || sourceStatus === "cancelled"
-        ? sourceStatus
-        : "pending_verification";
-
-    await dbQuery(req.db, `
-      UPDATE installment_schedules
-      SET payment_status=?, payment_reference=COALESCE(?, payment_reference), payment_checkout_url=COALESCE(?, payment_checkout_url),
-          payment_error=?, payment_last_checked_at=NOW()
-      WHERE id=?
-    `, [
-      paymentStatus,
-      attributes.reference_number || schedule.payment_reference,
-      attributes.checkout_url || schedule.payment_checkout_url,
-      ["failed", "expired", "cancelled"].includes(paymentStatus) ? paymentStatus : null,
-      schedule.id
-    ]);
-
     res.json({
       schedule_id: schedule.id,
       order_id: schedule.order_id,
-      source_status: sourceStatus,
       status: schedule.status || "unpaid",
-      payment_status: paymentStatus,
-      payment_checkout_url: attributes.checkout_url || schedule.payment_checkout_url,
+      payment_status: schedule.payment_status || "not_started",
+      payment_provider: schedule.payment_provider || "manual_gcash",
+      message: "Installment payments use GCash proof upload.",
       checked_at: new Date().toISOString()
     });
   } catch (error) {

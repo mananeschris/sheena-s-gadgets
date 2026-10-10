@@ -4,125 +4,122 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sheena's Gadgets & Accessories Shop</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/sheena-mark.svg">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/customer-shop.css">
-  <link rel="stylesheet" href="/css/ui-polish.css">
-  <link rel="stylesheet" href="/css/ideal-ui.css?v=ideal-ui-20260908f">
+<link rel="stylesheet" href="/css/customer-shop.css?v=shop-refresh-4">
+<link rel="stylesheet" href="/css/ui-polish.css?v=shop-header-grid-2">
+<link rel="stylesheet" href="/css/system-fonts.css?v=font-1">
+<link rel="stylesheet" href="/css/store-footer.css?v=footer-2">
+<link rel="stylesheet" href="/css/customer-mobile.css?v=shop-notifications-2">
+<link rel="stylesheet" href="/css/customer-typography.css?v=customer-suite-1">
+<link rel="stylesheet" href="/css/customer-catalog.css?v=catalog-1">
+<link rel="stylesheet" href="/css/customer-shop-hero.css?v=hero-1">
+<link rel="stylesheet" href="/css/customer-header.css?v=header-1">
+<link rel="stylesheet" href="/css/customer-cart.css?v=cart-2">
+<link rel="stylesheet" href="/css/customer-notifications.css?v=inbox-6">
 </head>
 
 <body class="customer-shop-page">
   <header class="store-header">
-    <nav class="store-nav">
-      <a class="brand brand-with-logo" href="/"><img class="brand-logo" src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a>
+    <nav id="customerStoreNav" class="store-nav customer-store-nav" aria-label="Customer navigation">
+      <a class="brand brand-with-logo" href="/customer/shop.html" aria-label="Sheena's Gadgets & Accessories Shop home"><img class="brand-logo" src="/assets/sheena-mark.svg?v=sg-2" alt=""><span class="brand-copy"><strong>Sheena's</strong><small>Gadgets &amp; Accessories Shop</small></span></a>
       <div class="nav-actions">
-        <a href="#products" class="nav-link">Shop</a>
-        <a id="profileLink" href="/customer/profile.html" class="nav-link d-none">Profile</a>
-        <button id="cartButton" class="btn btn-outline-light btn-sm" onclick="toggleCart()">Cart <span id="cartCount" class="badge text-bg-light">0</span></button>
-        <button id="notificationButton" class="btn btn-outline-light btn-sm d-none" onclick="toggleNotifications()">Updates <span id="notificationCount" class="badge text-bg-light d-none">0</span></button>
-        <span id="accountLabel" class="account-label"></span>
-        <a id="loginLink" href="/auth.html" class="btn btn-outline-light btn-sm">Login</a>
-        <a id="signupLink" href="/auth.html?mode=register" class="btn btn-light btn-sm">Sign Up</a>
-        <button id="logoutButton" class="btn btn-outline-light btn-sm d-none" onclick="logoutCustomer()">Logout</button>
+        <a href="#products" class="nav-link nav-icon-label"><i data-lucide="store" aria-hidden="true"></i><span>Shop</span></a>
+        <button id="cartButton" type="button" class="nav-tool d-none" aria-label="Shopping cart" data-tooltip="Cart" onclick="toggleCart()"><i data-lucide="shopping-cart" aria-hidden="true"></i><span id="cartCount" class="badge text-bg-light">0</span></button>
+        <button id="notificationButton" type="button" class="nav-tool d-none" aria-label="Notifications" data-tooltip="Notifications" onclick="toggleNotifications()"><i data-lucide="bell" aria-hidden="true"></i><span id="notificationCount" class="badge text-bg-light d-none">0</span></button>
+        <a id="profileLink" href="/customer/profile.html" class="nav-account d-none" aria-label="Profile" data-tooltip="My account"><span id="accountAvatar" class="account-avatar" aria-hidden="true"></span><span class="nav-account-copy"><span id="accountLabel" class="account-label"></span><small>My account</small></span></a>
+        <a id="loginLink" href="/auth.html" class="nav-icon-label"><i data-lucide="log-in" aria-hidden="true"></i><span>Login</span></a>
+        <a id="signupLink" href="/auth.html?mode=register" class="nav-icon-label"><i data-lucide="user-round-plus" aria-hidden="true"></i><span>Sign up</span></a>
+        <button id="logoutButton" type="button" class="nav-tool d-none" aria-label="Log out" data-tooltip="Log out" onclick="logoutCustomer()"><i data-lucide="log-out" aria-hidden="true"></i></button>
       </div>
     </nav>
-    <div id="cartPanel" class="cart-panel d-none">
-      <div class="cart-head">
-        <strong>Cart</strong>
-        <button class="btn btn-sm btn-outline-dark" onclick="toggleCart()">Close</button>
-      </div>
-      <label class="cart-select-all"><input type="checkbox" id="cartSelectAll" onchange="toggleSelectAllCart(this.checked)"> Select all</label>
-      <div id="cartList" class="cart-list">Cart is empty.</div>
-      <div class="cart-footer">
-        <div>
-          <small id="cartSelectedCount">0 selected</small>
-          <strong id="cartTotal">PHP 0.00</strong>
-        </div>
-        <button class="btn btn-dark btn-sm" onclick="checkoutCart()">Checkout</button>
-      </div>
-    </div>
-    <div id="notificationPanel" class="notification-panel customer-notification-panel d-none">
-      <div class="notification-head">
-        <strong>Notifications</strong>
-        <div class="notification-actions">
-          <button class="btn btn-sm btn-outline-dark" onclick="markAllNotificationsRead()">Mark all read</button>
-          <button class="btn btn-sm btn-dark" onclick="clearReadNotifications()">Clear read</button>
-        </div>
-      </div>
-      <div id="notificationList" class="notification-list">No notifications yet.</div>
-    </div>
+    <aside id="cartPanel" class="cart-panel d-none" aria-label="Shopping cart"></aside>
+    <aside id="notificationPanel" class="customer-notification-panel d-none" aria-label="Notifications"></aside>
 
-    <section class="hero">
+    <section class="hero shop-hero" aria-labelledby="shopHeroTitle">
+      <img class="hero-art" src="/assets/hero-iphone-style.png" alt="Smartphones, wireless earbuds, and a wall charger" fetchpriority="high">
+      <div class="shop-hero-inner">
       <div class="hero-copy">
-        <p class="eyebrow">Gadgets & Accessories</p>
-        <h1>Upgrade your everyday tech setup.</h1>
-        <p class="hero-text">Shop phones, chargers, cases, earbuds, and must-have accessories with clean deals, flexible payment choices, and a smoother buying experience.</p>
+        <p class="eyebrow"><i data-lucide="map-pin" aria-hidden="true"></i>Bacacay & Tabaco, Albay</p>
+        <h1 id="shopHeroTitle">Sheena's Gadgets<span>& Accessories Shop</span></h1>
+        <p class="hero-text">Find your next phone, everyday accessory, or desk essential.</p>
         <div class="hero-actions">
-          <a href="#products" class="btn btn-light">Start Shopping</a>
-          <button class="btn btn-outline-light" onclick="focusSearch()">Search Products</button>
+          <a href="#products" class="btn hero-browse"><i data-lucide="shopping-bag" aria-hidden="true"></i><span>Browse Products</span><i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+          <button class="hero-search" type="button" title="Search Products" aria-label="Search products in the catalog" onclick="focusSearch()"><i data-lucide="search" aria-hidden="true"></i></button>
         </div>
       </div>
-      <div class="hero-panel">
-        <div>
-          <span class="panel-label">New Arrivals</span>
-          <strong id="heroProductCount">0</strong>
-        </div>
-        <div>
-          <span class="panel-label">Curated Sets</span>
-          <strong id="heroStockCount">0</strong>
-        </div>
-        <div>
-          <span class="panel-label">Easy Payment</span>
-          <strong>COD / Wallet / Card</strong>
-        </div>
+      <div class="shop-hero-foot">
+        <div class="shop-hero-stats" aria-label="Catalog overview"><span><strong id="heroProductCount">0</strong> products</span><span><strong id="heroStockCount">0</strong> categories</span></div>
+        <span class="shop-hero-since">Online since 2019</span>
+      </div>
       </div>
     </section>
   </header>
 
   <main>
-    <section class="service-strip">
-      <div>
-        <strong>Superior Quality</strong>
-        <span>Clean picks for phone upgrades and daily tech needs.</span>
+    <section class="service-strip shop-services" aria-label="Shop services">
+      <div class="shop-service">
+        <i data-lucide="package-check" aria-hidden="true"></i>
+        <p><strong>Everyday Tech</strong><span>Phones, gadgets & accessories</span></p>
       </div>
-      <div>
-        <strong>Secure Checkout</strong>
-        <span>Choose COD, e-wallet, card, installment, or layaway.</span>
+      <div class="shop-service">
+        <i data-lucide="wallet" aria-hidden="true"></i>
+        <p><strong>Flexible Payments</strong><span>COD, GCash & installment</span></p>
       </div>
-      <div>
-        <strong>Order Updates</strong>
-        <span>Stay updated from order placement to delivery.</span>
+      <div class="shop-service">
+        <i data-lucide="truck" aria-hidden="true"></i>
+        <p><strong>Delivery Updates</strong><span>Order status & delivery progress</span></p>
       </div>
     </section>
 
     <section id="products" class="catalog">
       <div class="catalog-head">
         <div>
-          <p class="eyebrow dark">Catalog</p>
-          <h2>Shop The Catalog</h2>
+          <h2>Product Catalog</h2>
+          <p class="catalog-subtitle">Phones, gadgets, and everyday essentials.</p>
         </div>
-        <div class="catalog-count" id="catalogCount">0 items</div>
+        <div class="catalog-count" id="catalogCount" aria-live="polite">0 items</div>
       </div>
 
-      <div id="categoryPills" class="category-pills"></div>
-
-      <div class="shop-toolbar">
-        <input id="search" class="form-control" placeholder="Search phones, accessories, specs, or variant" oninput="renderProducts()">
+      <nav id="categoryPills" class="category-pills" aria-label="Product categories"></nav>
+      <div class="catalog-search-row">
+        <label class="shop-search">
+          <i data-lucide="search" aria-hidden="true"></i>
+          <span class="visually-hidden">Search products</span>
+          <input id="search" class="form-control" type="search" placeholder="Search products, specs, or variants" oninput="renderProducts()">
+        </label>
+        <button class="catalog-icon catalog-filter-toggle" type="button" title="Filters" aria-label="Filters" aria-controls="catalogFilters" aria-expanded="false" onclick="toggleCatalogFilters()"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span id="catalogFilterBadge" hidden>0</span></button>
+      </div>
+      <div class="catalog-layout">
+      <aside id="catalogFilters" class="shop-toolbar" data-mobile-open="false" aria-label="Product filters">
+        <div class="catalog-filter-head"><h3><i data-lucide="sliders-horizontal" aria-hidden="true"></i>Filters</h3><button class="catalog-icon shop-reset" type="button" title="Reset filters" aria-label="Reset filters" onclick="resetShopFilters()"><i data-lucide="rotate-ccw" aria-hidden="true"></i></button></div>
+        <div class="catalog-filter-field"><label for="categoryFilter">Category</label>
         <select id="categoryFilter" class="form-select" onchange="setCategoryFilter(this.value)">
           <option value="all">All categories</option>
-        </select>
+        </select></div>
+        <div class="catalog-filter-field"><label for="priceFilter">Price range</label>
         <select id="priceFilter" class="form-select" onchange="renderProducts()">
           <option value="all">All prices</option>
-          <option value="under-500">Under PHP 500</option>
-          <option value="500-1500">PHP 500 - 1,500</option>
-          <option value="1500-5000">PHP 1,500 - 5,000</option>
-          <option value="5000-15000">PHP 5,000 - 15,000</option>
-          <option value="15000-up">PHP 15,000+</option>
-        </select>
+          <option value="under-500">Under ₱500</option>
+          <option value="500-1500">₱500 - 1,500</option>
+          <option value="1500-5000">₱1,500 - 5,000</option>
+          <option value="5000-15000">₱5,000 - 15,000</option>
+          <option value="15000-up">₱15,000+</option>
+        </select></div>
+        <div class="catalog-filter-field"><label for="stockFilter">Availability</label>
         <select id="stockFilter" class="form-select" onchange="renderProducts()">
           <option value="all">All availability</option>
           <option value="available">Available only</option>
-          <option value="low">Limited deals</option>
+          <option value="low">Low stock</option>
+          <option value="out">Out of stock</option>
         </select>
+        </div>
+        <label class="catalog-saved-filter"><input id="savedFilter" name="catalog_saved_only" type="checkbox" autocomplete="off" onchange="renderProducts()"><i data-lucide="heart" aria-hidden="true"></i><span>Saved products only</span></label>
+      </aside>
+      <div class="catalog-results">
+        <div class="catalog-results-head">
+          <span id="catalogResultSummary" role="status" tabindex="-1">Loading products...</span>
+          <div class="catalog-result-controls"><label class="visually-hidden" for="sortBy">Sort products</label>
         <select id="sortBy" class="form-select" onchange="renderProducts()">
           <option value="featured">Featured</option>
           <option value="price-low">Price: Low to High</option>
@@ -131,11 +128,28 @@
           <option value="stock">Best Availability</option>
           <option value="name">Name</option>
         </select>
-      </div>
-
+          <div class="catalog-view-switch" role="group" aria-label="Product view">
+            <button id="catalogGridView" class="catalog-icon" type="button" title="Grid view" aria-label="Grid view" aria-pressed="true" onclick="setCatalogView('grid')"><i data-lucide="grid-2x2" aria-hidden="true"></i></button>
+            <button id="catalogListView" class="catalog-icon" type="button" title="List view" aria-label="List view" aria-pressed="false" onclick="setCatalogView('list')"><i data-lucide="list" aria-hidden="true"></i></button>
+          </div></div>
+        </div>
+        <div id="catalogActiveFilters" class="catalog-active-filters" aria-label="Applied filters" hidden></div>
       <div id="productList" class="product-grid"></div>
+        <nav id="catalogPagination" class="catalog-pagination" aria-label="Product pages" hidden></nav>
+      </div>
+      </div>
     </section>
   </main>
+
+  <footer class="store-footer">
+    <div class="store-footer-inner">
+      <div class="store-footer-brand"><a class="store-footer-logo" href="/customer/shop.html"><img src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a><p class="store-footer-copy">Online since December 2019. We sell gadgets, laptops, tablets, phones, printers, and tech essentials through social selling, referrals, live selling, and this website.</p><div class="store-footer-badges"><span class="store-footer-chip">Cash</span><span class="store-footer-chip">GCash</span><span class="store-footer-chip">COD</span></div></div>
+      <div class="store-footer-col"><h3 class="store-footer-title">Shop</h3><a class="store-footer-link" href="/customer/shop.html#products">All Products</a><a class="store-footer-link" href="/customer/shop.html#products">Phones</a><a class="store-footer-link" href="/customer/shop.html#products">Accessories</a><a class="store-footer-link" href="/customer/shop.html#products">New Arrivals</a></div>
+      <div class="store-footer-col"><h3 class="store-footer-title">Customer Care</h3><a class="store-footer-link" href="/customer/profile.html#orders">Track Orders</a><a class="store-footer-link" href="/customer/profile.html#addresses">Address Book</a><a class="store-footer-link" href="/customer/profile.html#repairs">Repairs & Warranty</a><a class="store-footer-link" href="/customer/profile.html#payments">Payments</a></div>
+      <div class="store-footer-col"><h3 class="store-footer-title">Company</h3><a class="store-footer-link" href="/about.html">About Us</a><a class="store-footer-link" href="/terms.html">Terms & Conditions</a><a class="store-footer-link" href="/privacy.html">Privacy Policy</a><span class="store-footer-text">Bacacay and Tabaco, Albay</span></div>
+    </div>
+    <div class="store-footer-bottom"><span>&copy; 2026 <strong>Sheena's Gadgets & Accessories Shop</strong>. All rights reserved.</span><span>Rider delivery • Service and replacement support</span></div>
+  </footer>
 
   <div class="modal fade" id="productModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -147,17 +161,43 @@
         <div class="modal-body" id="modalProductBody"></div>
         <div class="modal-footer">
           <button class="btn btn-outline-dark" data-bs-dismiss="modal">Close</button>
-          <button class="btn btn-outline-dark" id="modalCartButton">Add to Cart</button>
-          <button class="btn btn-dark" id="modalBuyButton">Buy Now</button>
+          <button class="btn btn-outline-dark shop-action-icon" id="modalCartButton"><i data-lucide="shopping-cart" aria-hidden="true"></i><span>Add to Cart</span></button>
+          <button class="btn btn-dark shop-action-icon" id="modalBuyButton"><i data-lucide="shopping-bag" aria-hidden="true"></i><span>Buy Now</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="guestAccountModal" tabindex="-1" aria-labelledby="guestAccountModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content guest-account-modal">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow dark mb-1">Account Required</p>
+            <h5 class="modal-title" id="guestAccountModalTitle">You must create an account or log in first.</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">You can continue browsing as guest, but cart and checkout are only available after signing in.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-dark" type="button" onclick="continueAsGuest()">Continue as Guest</button>
+          <button class="btn btn-dark" type="button" onclick="goToCustomerAuth('register')">Login / Create Account</button>
         </div>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/js/customer.js"></script>
-  <script src="/js/cart.js"></script>
-  <script src="/js/customer-notifications.js"></script>
+  <script src="/js/customer-header.js?v=header-1"></script>
+  <script src="/js/delivery-chat.js?v=2"></script>
+  <script src="/js/customer.js?v=header-1"></script>
+  <script src="/js/cart.js?v=cart-2"></script>
+  <script src="/js/customer-notifications.js?v=notification-inbox-6"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+  <script src="/js/shop-assistant.js?v=1"></script>
 </body>
 </html>
 

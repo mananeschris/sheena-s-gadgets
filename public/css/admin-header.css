@@ -1,0 +1,46 @@
+body.admin-dashboard-page .page-head {
+  align-items: center;
+  gap: 16px;
+  padding: 0 0 14px;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid #dce3df;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  letter-spacing: 0;
+}
+body.admin-dashboard-page .dashboard-heading { display: flex; align-items: center; gap: 10px; min-width: 0; }
+body.admin-dashboard-page .dashboard-heading-icon { display: grid; place-items: center; width: 24px; height: 24px; flex: 0 0 24px; color: #14634c; }
+body.admin-dashboard-page .dashboard-heading-icon svg { width: 20px; height: 20px; }
+body.admin-dashboard-page .page-title { font-size: 23px; line-height: 1.35; font-weight: 650; letter-spacing: 0; overflow-wrap: anywhere; }
+body.admin-dashboard-page .top-actions { flex: 0 0 auto; gap: 8px; width: auto; max-width: 100%; }
+body.admin-dashboard-page .top-actions > .btn,
+body.admin-dashboard-page .top-actions .notification-button { display: inline-grid; place-items: center; width: 34px; height: 34px; min-width: 34px; min-height: 34px; padding: 0; border: 1px solid #d1dad5; border-radius: 5px; background: #fff; color: #526b5d; transform: none; box-shadow: none; }
+body.admin-dashboard-page .top-actions > .btn:hover,
+body.admin-dashboard-page .top-actions .notification-button:hover { background: #e9f2ed; color: #14634c; border-color: #b9cdbf; }
+body.admin-dashboard-page .top-actions > .btn:focus-visible,
+body.admin-dashboard-page .top-actions .notification-button:focus-visible { outline: 2px solid #14634c; outline-offset: 3px; }
+body.admin-dashboard-page .top-actions .role-chip { min-height: 26px; padding: 3px 8px; border: 1px solid #dce3df; border-radius: 4px; background: transparent; color: #627369; font-size: 11px; font-weight: 600; text-transform: none; }
+body.admin-dashboard-page .top-actions #adminNotificationBadge { min-width: 17px; height: 17px; padding: 0 4px; right: -5px; top: -5px; border: 2px solid #f3f3f3; border-radius: 10px; font-size: 9px; line-height: 1; background: #14634c; color: #fff; }
+body.admin-dashboard-page .overview-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; padding: 14px 0; margin: 0 0 20px; border-bottom: 1px solid #dce3df; }
+body.admin-dashboard-page .overview-kpis .overview-metric { min-height: 44px; padding: 0 20px; gap: 10px; border: 0; border-left: 1px solid #dce3df; border-radius: 0; background: transparent; box-shadow: none; transform: none; animation: none; }
+body.admin-dashboard-page .overview-kpis .overview-metric:first-child { padding-left: 0; border-left: 0; }
+body.admin-dashboard-page .overview-kpis .overview-metric-icon { width: 24px; height: 24px; flex: 0 0 24px; border-radius: 0; background: transparent; }
+body.admin-dashboard-page .overview-kpis .overview-metric-icon svg { width: 18px; height: 18px; }
+body.admin-dashboard-page .overview-kpis .overview-metric-orders .overview-metric-icon { color: #a13d48; }
+body.admin-dashboard-page .overview-kpis .metric-label { font-size: 11px; line-height: 1.4; font-weight: 500; text-transform: none; color: #627369; }
+body.admin-dashboard-page .overview-kpis .metric-value { margin-top: 2px; font-size: 22px; line-height: 1.25; font-weight: 650; color: #20342a; letter-spacing: 0; overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  body.admin-dashboard-page .overview-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 16px; }
+  body.admin-dashboard-page .overview-kpis .overview-metric { padding: 0 12px; }
+  body.admin-dashboard-page .overview-kpis .overview-metric:nth-child(3) { padding-left: 0; border-left: 0; }
+}
+@media (max-width: 540px) {
+  body.admin-dashboard-page .page-head { position: relative; flex-wrap: wrap; gap: 12px; }
+  body.admin-dashboard-page .dashboard-heading { flex: 1 1 200px; }
+  body.admin-dashboard-page .page-title { font-size: 20px; }
+  body.admin-dashboard-page .top-actions { position: static; justify-content: flex-start; }
+  body.admin-dashboard-page .top-actions .notification-wrap { position: static; }
+  body.admin-dashboard-page .top-actions .notification-panel { left: 0; right: 0; width: 100%; }
+}

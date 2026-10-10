@@ -2,14 +2,19 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
+const fs = require("fs");
 const path = require("path");
+const uploadStorage = require('../services/uploadStorage');
 const { createNotification } = require("./notifications");
 const { logAudit, auditActor } = require("./auditLogs");
 const { requireAdmin, requireAdminOrStaff } = require("./roleGuard");
+const { customerSession, orderSession, customerIdentity } = require('./customerAccess');
 const { ensureOrderCoreColumns } = require("./orderSchema");
 const { orderLabel } = require("./orderReference");
+const { attachOrderDeliveryDetails } = require("./orderDeliveryDetails");
 const { restoreOrderStock } = require("./stockRestore");
 const { logInventoryMovement, logInventoryMovementAsync } = require("./inventoryMovements");
+const { ensureVoucherTables, validateVoucher, recordVoucherRedemption } = require("./voucherService");
 
 const ORDER_STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"];
 const ORDER_STATUS_LABELS = {
@@ -26,26 +31,73 @@ const ORDER_STATUS_TRANSITIONS = {
   delivered: [],
   cancelled: []
 };
-const ONLINE_PAYMENT_METHODS = ["gcash", "maya", "card"];
+const ONLINE_PAYMENT_METHODS = ["gcash"];
 const INSTALLMENT_PAYMENT_METHOD = "installment";
 const INSTALLMENT_TERMS = [3, 6, 12];
-const PAYMONGO_METHODS = {
-  gcash: "gcash",
-  maya: "paymaya",
-  card: "card"
-};
 const SHIPPING_RATES = {
   local: { label: "Local / Nearby Sogod-Bacacay", min: 0, mid: 0, max: 0 },
   luzon: { label: "Luzon", min: 180, mid: 200, max: 220 },
   visayas: { label: "Visayas", min: 190, mid: 230, max: 270 }
 };
+const FULFILLABLE_PAYMENT_STATUSES = new Set([
+  "to_collect",
+  "paid",
+  "installment_downpayment_paid",
+  "installment_active",
+  "installment_completed"
+]);
 
 function inventoryActor(req, userId, fallbackName, fallbackRole = "customer") {
+  if (req.actorUser) return { actor_id: req.actorUser.id, actor_name: req.actorUser.name, actor_role: req.actorUser.role };
   return {
     actor_id: req.body?.actor_id || req.query?.actor_id || userId || null,
     actor_name: req.body?.actor_name || req.query?.actor_name || fallbackName || "Customer",
     actor_role: req.body?.actor_role || req.query?.actor_role || fallbackRole
   };
+}
+
+function normalizePaymentMethod(method, options = {}) {
+  const value = String(method || "").trim().toLowerCase();
+  const allowOffline = options.allowOffline !== false;
+  const allowInstallment = options.allowInstallment !== false;
+  const allowCash = Boolean(options.allowCash);
+
+  if (ONLINE_PAYMENT_METHODS.includes(value)) return "gcash";
+  if (["online", "e-wallet", "ewallet"].includes(value)) return "gcash";
+  if (allowInstallment && value === INSTALLMENT_PAYMENT_METHOD) return INSTALLMENT_PAYMENT_METHOD;
+  if (allowOffline && value === "cod") return "cod";
+  if (allowOffline && allowCash && value === "cash") return "cash";
+  if (value && !["cod", "cash", INSTALLMENT_PAYMENT_METHOD, "manual", "pos"].includes(value)) return "gcash";
+  return "";
+}
+
+function paymentReadyForFulfillment(order) {
+  const method = String(order.payment_method || "cod").toLowerCase();
+  const provider = String(order.payment_provider || "").toLowerCase();
+  const status = String(order.payment_status || (method === "cod" ? "to_collect" : "")).toLowerCase();
+
+  if (provider === "pos" || method === "cash") return true;
+  if (method === "cod" || provider === "cod") return status === "to_collect" || status === "paid";
+  return FULFILLABLE_PAYMENT_STATUSES.has(status);
+}
+
+function paymentBlockMessage(order) {
+  const status = String(order.payment_status || "").toLowerCase();
+  const method = String(order.payment_method || "").toLowerCase();
+
+  if (method === "installment" && status === "installment_application_pending") {
+    return "Installment application must be approved before this order can be processed.";
+  }
+  if (status === "for_verification") {
+    return "Check the submitted GCash proof before processing this order.";
+  }
+  if (status === "pending_payment") {
+    return "Wait for the customer to submit GCash payment proof before processing this order.";
+  }
+  if (status === "rejected") {
+    return "Customer needs to upload GCash proof before this order can be processed.";
+  }
+  return "Payment must be verified before this order can be processed.";
 }
 
 function inventoryMovementFromOrderLine(item, orderId, actor, source, movementType) {
@@ -85,16 +137,37 @@ async function recordInventoryMovementsAsync(db, movements) {
 
 const upload = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, "uploads/"),
-    filename: (req, file, cb) =>
-      cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`)
+    destination: (req, file, cb) => {
+      if (file.fieldname === "payment_proof") {
+        const directory = uploadStorage.paymentProofs;
+        fs.mkdirSync(directory, { recursive: true });
+        return cb(null, directory);
+      }
+      fs.mkdirSync(uploadStorage.orderDocuments, { recursive: true });
+      cb(null, uploadStorage.orderDocuments);
+    },
+    filename: (req, file, cb) => {
+      const extension = path.extname(file.originalname || "").toLowerCase();
+      const safeExtension = [".jpg", ".jpeg", ".png", ".webp"].includes(extension) ? extension : ".jpg";
+      const prefix = file.fieldname === "payment_proof" ? "gcash-" : "";
+      cb(null, `${prefix}${Date.now()}-${Math.round(Math.random() * 1e9)}${safeExtension}`);
+    }
   }),
-  limits: { files: 2, fileSize: 5 * 1024 * 1024 }
+  limits: { files: 3, fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.mimetype)) {
+      return cb(new Error("Payment proof must be JPG, PNG, or WEBP."));
+    }
+    cb(null, true);
+  }
 });
 
 function uploadedFilePath(req, fieldName) {
   const file = req.files?.[fieldName]?.[0];
-  return file ? `/uploads/${file.filename}` : null;
+  if (!file) return null;
+  return fieldName === "payment_proof"
+    ? `/uploads/payments/${file.filename}`
+    : `/uploads/order-documents/${file.filename}`;
 }
 
 function parseInstallmentApplication(value) {
@@ -159,7 +232,10 @@ function requireShipping(regionValue, subtotal, quantity, isPos = false) {
 
 function ensureOrderColumns(db, callback) {
   ensureOrderCoreColumns(db)
-    .then(() => ensureInstallmentOrderColumns(db, callback))
+    .then(() => ensureInstallmentOrderColumns(db, (err) => {
+      if (err) return callback(err);
+      ensureOrderItemsTable(db, callback);
+    }))
     .catch(callback);
 }
 
@@ -372,10 +448,10 @@ function attachOrderStatusHistory(db, orders, callback) {
           return map;
         }, {});
 
-        callback(null, orders.map(order => ({
+        attachOrderDeliveryDetails(db, orders.map(order => ({
           ...order,
           status_history: byOrder[order.id] || []
-        })));
+        })), callback);
       }
     );
   });
@@ -489,83 +565,12 @@ function attachOrderItems(db, orders, callback) {
       }
     );
   });
-}async function createPaymongoCheckout(req, order, paymentMethod) {
-  const secretKey = process.env.PAYMONGO_SECRET_KEY;
-  if (!secretKey) {
-    return {
-      configured: false,
-      payment_status: "awaiting_gateway_setup",
-      message: "PayMongo sandbox key is not configured yet."
-    };
-  }
+}
 
-  const auth = Buffer.from(`${secretKey}:`).toString("base64");
-  const method = PAYMONGO_METHODS[paymentMethod] || "card";
-  const origin = baseUrl(req);
-  const payload = {
-    data: {
-      attributes: {
-        description: `${orderLabel(order.id)} - ${order.product_name}`,
-        line_items: [
-          {
-            name: order.product_name || orderLabel(order.id),
-            quantity: Number(order.quantity || 1),
-            amount: Math.round(Number(order.unit_price || 0) * 100),
-            currency: "PHP"
-          }
-        ],
-        payment_method_types: [method],
-        reference_number: `ORDER-${order.id}`,
-        send_email_receipt: false,
-        show_description: true,
-        show_line_items: true,
-        success_url: `${origin}/payment-result.html?order_id=${order.id}&result=success`,
-        cancel_url: `${origin}/payment-result.html?order_id=${order.id}&result=cancelled`
-      }
-    }
-  };
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-
-  let response;
-  try {
-    response = await fetch("https://api.paymongo.com/v1/checkout_sessions", {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal
-    });
-  } catch (error) {
-    if (error.name === "AbortError") {
-      throw new Error("PayMongo API request timed out. Check internet connection, firewall, or try again later.");
-    }
-
-    throw new Error(`Unable to connect to PayMongo API: ${error.message}`);
-  } finally {
-    clearTimeout(timeout);
-  }
-
-  const data = await response.json();
-  if (!response.ok) {
-    const detail = data?.errors?.[0]?.detail || data?.errors?.[0]?.title || "PayMongo checkout creation failed";
-    throw new Error(detail);
-  }
-
-  const checkout = data.data || {};
-  const attributes = checkout.attributes || {};
-
+function manualGcashPaymentInfo() {
   return {
-    configured: true,
-    payment_status: "pending_verification",
-    payment_provider: "paymongo",
-    payment_reference: attributes.reference_number || `ORDER-${order.id}`,
-    payment_checkout_id: checkout.id,
-    payment_checkout_url: attributes.checkout_url,
-    raw: data
+    payment_status: "pending_payment",
+    payment_provider: "manual_gcash"
   };
 }
 
@@ -581,24 +586,23 @@ function validateInstallmentApplicationFields(application, total) {
     "national_id_image",
     "selfie_with_id_image",
     "terms",
-    "downpayment_amount",
     "downpayment_method"
   ];
   const missing = requiredFields.some(field => !application[field]);
-  if (missing) return "Complete installment application and downpayment details are required.";
+  if (missing) return "Complete installment application details are required.";
 
   const terms = Number(application.terms);
-  const downpayment = Number(application.downpayment_amount);
   const method = String(application.downpayment_method || "");
   const orderTotal = Number(total || 0);
   const minDownpayment = orderTotal * 0.2;
 
   if (!INSTALLMENT_TERMS.includes(terms)) return "Installment terms must be 3, 6, or 12 months.";
-  if (!ONLINE_PAYMENT_METHODS.includes(method)) return "Downpayment must use GCash, Maya, or card.";
-  if (!Number.isFinite(downpayment) || downpayment < minDownpayment) {
-    return `Downpayment must be at least 20% of the order total.`;
-  }
-  if (downpayment >= orderTotal) return "Downpayment must be lower than the order total.";
+  if (!ONLINE_PAYMENT_METHODS.includes(method)) return "Downpayment must use GCash proof upload.";
+
+  const requestedDownpayment = Number(application.downpayment_amount);
+  application.downpayment_amount = Number.isFinite(requestedDownpayment) && requestedDownpayment >= minDownpayment && requestedDownpayment < orderTotal
+    ? requestedDownpayment
+    : minDownpayment;
 
   return null;
 }
@@ -736,6 +740,36 @@ function dbQuery(db, sql, params = []) {
   });
 }
 
+function gcashCommitDetails(req, paymentMethod) {
+  if (paymentMethod !== "gcash") return null;
+  const reference = String(req.body.gcash_reference || "").trim().replace(/\s+/g, "");
+  const file = req.files?.payment_proof?.[0];
+  if (!/^[A-Za-z0-9-]{8,50}$/.test(reference)) {
+    throw Object.assign(new Error("Enter a valid GCash reference number."), { status: 400 });
+  }
+  if (!file) {
+    throw Object.assign(new Error("Upload your GCash payment proof before submitting the order."), { status: 400 });
+  }
+  return { reference, proofPath: uploadedFilePath(req, "payment_proof") };
+}
+
+async function assertUniqueGcashReference(db, reference) {
+  const rows = await dbQuery(db, "SELECT id FROM orders WHERE gcash_reference=? LIMIT 1", [reference]);
+  if (rows.length) {
+    throw Object.assign(new Error("This GCash reference number is already used by another order."), { status: 409 });
+  }
+}
+
+function notifyGcashSubmitted(db, userId, orderId) {
+  createNotification(db, {
+    user_id: userId,
+    title: "Payment proof submitted",
+    message: `${orderLabel(orderId)} is waiting for admin payment approval. The order will be placed after approval.`,
+    type: "payment",
+    action_url: `/customer/order.html?order_id=${orderId}`
+  });
+}
+
 function beginTransaction(db) {
   return new Promise((resolve, reject) => db.beginTransaction(err => err ? reject(err) : resolve()));
 }
@@ -757,17 +791,36 @@ function ensureOrderInfrastructure(db) {
   });
 }
 
-router.post("/cart", async (req, res) => {
-  const items = Array.isArray(req.body.items) ? req.body.items : [];
+router.post("/cart", orderSession, upload.fields([{ name: "payment_proof", maxCount: 1 }]), uploadStorage.validateUploadedMedia, (req, res, next) => {
+  if (req.body?.source === 'pos') return requireAdminOrStaff(req, res, next);
+  if (req.actorUser.role !== 'customer') return res.status(403).json({ message: 'Use the POS checkout for store orders.' });
+  customerIdentity()(req, res, next);
+}, async (req, res) => {
+  let items = Array.isArray(req.body.items) ? req.body.items : [];
+  if (typeof req.body.items === "string") {
+    try {
+      const parsed = JSON.parse(req.body.items);
+      items = Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return res.status(400).json({ message: "Cart items are invalid." });
+    }
+  }
+  const cleanVoucherCode = req.body.voucher_code ? String(req.body.voucher_code).trim() : "";
   const userId = Number(req.body.user_id || 1);
   const isPos = req.body.source === "pos";
-  const allowedCartPayments = isPos ? ["cod", "gcash", "maya", "card"] : ["cod", ...ONLINE_PAYMENT_METHODS];
-  const paymentMethod = allowedCartPayments.includes(req.body.payment_method) ? req.body.payment_method : null;
+  const paymentMethod = normalizePaymentMethod(req.body.payment_method, {
+    allowOffline: true,
+    allowCash: isPos,
+    allowInstallment: false
+  });
   let requestedShippingRegion = cleanText(req.body.shipping_region, 40);
   const delivery = {
     recipient_name: cleanText(req.body.recipient_name, 255),
     delivery_contact: cleanText(req.body.delivery_contact, 50),
     delivery_address: cleanText(req.body.delivery_address, 1000),
+    delivery_landmark: cleanText(req.body.delivery_landmark, 500),
+    delivery_latitude: req.body.delivery_latitude === "" || req.body.delivery_latitude == null ? null : Number(req.body.delivery_latitude),
+    delivery_longitude: req.body.delivery_longitude === "" || req.body.delivery_longitude == null ? null : Number(req.body.delivery_longitude),
     delivery_note: cleanText(req.body.delivery_note, 1000)
   };
 
@@ -779,14 +832,27 @@ router.post("/cart", async (req, res) => {
   }
 
   if (!userId || !items.length) return res.status(400).json({ message: "Cart items are required." });
-  if (!paymentMethod) return res.status(400).json({ message: isPos ? "Invalid POS payment method." : "Cart checkout currently supports COD only." });
+  if (!paymentMethod) return res.status(400).json({ message: isPos ? "Invalid POS payment method." : "Choose Cash on Delivery or GCash." });
   if (!delivery.recipient_name || !delivery.delivery_contact || !delivery.delivery_address) {
     return res.status(400).json({ message: "Complete delivery details are required" });
+  }
+  if (!isPos && (!Number.isFinite(delivery.delivery_latitude) || delivery.delivery_latitude < -90 || delivery.delivery_latitude > 90 ||
+      !Number.isFinite(delivery.delivery_longitude) || delivery.delivery_longitude < -180 || delivery.delivery_longitude > 180)) {
+    return res.status(400).json({ message: "Confirm your saved delivery location before placing this order." });
+  }
+
+  let gcashCommit;
+  try {
+    if (!isPos) gcashCommit = gcashCommitDetails(req, paymentMethod);
+  } catch (error) {
+    return res.status(error.status || 400).json({ message: error.message });
   }
 
   try {
     await ensureOrderInfrastructure(req.db);
+    await ensureVoucherTables(req.db);
     await beginTransaction(req.db);
+    if (gcashCommit) await assertUniqueGcashReference(req.db, gcashCommit.reference);
 
     const orderLines = [];
     for (const rawItem of items) {
@@ -857,15 +923,25 @@ router.post("/cart", async (req, res) => {
     }
 
     const total = orderLines.reduce((sum, item) => sum + item.subtotal, 0);
+    const voucherResult = cleanVoucherCode
+      ? await validateVoucher(req.db, {
+        code: cleanVoucherCode,
+        customer_id: userId,
+        checkout_type: "regular",
+        items: orderLines
+      })
+      : null;
+    const discount = Number(voucherResult?.discount || 0);
+    const productTotal = Math.max(total - discount, 0);
     const totalQuantity = orderLines.reduce((sum, item) => sum + item.quantity, 0);
     const selectedShippingRegion = inferShippingRegion(requestedShippingRegion, delivery.delivery_address);
     const shipping = requireShipping(selectedShippingRegion, total, totalQuantity, isPos);
-    const grandTotal = total + shipping.fee;
+    const grandTotal = productTotal + shipping.fee;
     const first = orderLines[0];
     const insertOrder = await dbQuery(req.db, `
       INSERT INTO orders
-      (product_id, quantity, total_price, user_id, payment_method, variant_name, variant_price, recipient_name, delivery_contact, delivery_address, delivery_note, shipping_region, shipping_fee)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (product_id, quantity, total_price, user_id, payment_method, variant_name, variant_price, recipient_name, delivery_contact, delivery_address, delivery_landmark, delivery_latitude, delivery_longitude, delivery_note, shipping_region, shipping_fee, voucher_id, voucher_code, voucher_discount, product_subtotal, final_product_total)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       first.product_id,
       totalQuantity,
@@ -877,9 +953,17 @@ router.post("/cart", async (req, res) => {
       delivery.recipient_name,
       delivery.delivery_contact,
       delivery.delivery_address,
+      delivery.delivery_landmark,
+      delivery.delivery_latitude,
+      delivery.delivery_longitude,
       delivery.delivery_note,
       shipping.region,
-      shipping.fee
+      shipping.fee,
+      voucherResult?.voucher_id || null,
+      voucherResult?.voucher_code || null,
+      discount,
+      total,
+      productTotal
     ]);
 
     const orderId = insertOrder.insertId;
@@ -921,59 +1005,48 @@ router.post("/cart", async (req, res) => {
     let paymentInfo = null;
     if (isPos) {
       await dbQuery(req.db, "UPDATE orders SET payment_status=?, payment_provider=?, payment_completed_at=COALESCE(payment_completed_at, NOW()), status=?, processing_at=COALESCE(processing_at, NOW()), shipped_at=COALESCE(shipped_at, NOW()), delivered_at=NOW(), warranty_expires_at=DATE_ADD(NOW(), INTERVAL 7 DAY) WHERE id=?", ["paid", "pos", "delivered", orderId]);
+      await recordVoucherRedemption(req.db, { id: orderId, user_id: userId, voucher_id: voucherResult?.voucher_id, voucher_code: voucherResult?.voucher_code, voucher_discount: discount, product_subtotal: total }, "regular", { skipEnsure: true });
     } else if (paymentMethod === "cod") {
       await dbQuery(req.db, "UPDATE orders SET payment_status=?, payment_provider=? WHERE id=?", ["to_collect", "cod", orderId]);
-    }
-    await commitTransaction(req.db);
-
-    if (!isPos && ONLINE_PAYMENT_METHODS.includes(paymentMethod)) {
-      try {
-        paymentInfo = await createPaymongoCheckout(req, {
-          id: orderId,
-          product_name: orderLines.length > 1 ? `${orderLines.length} cart items` : first.product_name,
-          quantity: 1,
-          unit_price: grandTotal
-        }, paymentMethod);
-
+    } else if (ONLINE_PAYMENT_METHODS.includes(paymentMethod)) {
+      paymentInfo = manualGcashPaymentInfo();
+      if (gcashCommit) {
+        paymentInfo = {
+          payment_status: "for_verification",
+          payment_provider: "manual_gcash",
+          payment_reference: gcashCommit.reference,
+          gcash_reference: gcashCommit.reference,
+          payment_proof_image: gcashCommit.proofPath
+        };
         await dbQuery(req.db, `
           UPDATE orders
-          SET payment_status=?, payment_provider=?, payment_reference=?, payment_checkout_id=?, payment_checkout_url=?, payment_error=NULL
+          SET payment_status=?, payment_provider=?, payment_reference=?, gcash_reference=?,
+              payment_proof_image=?, payment_submitted_at=NOW(), payment_error=NULL
           WHERE id=?
-        `, [
-          paymentInfo.payment_status,
-          paymentInfo.payment_provider || "paymongo",
-          paymentInfo.payment_reference || null,
-          paymentInfo.payment_checkout_id || null,
-          paymentInfo.payment_checkout_url || null,
-          orderId
-        ]);
-      } catch (paymongoErr) {
-        paymentInfo = {
-          payment_status: "payment_setup_failed",
-          payment_provider: "paymongo",
-          payment_error: paymongoErr.message,
-          message: paymongoErr.message
-        };
-        await dbQuery(req.db, "UPDATE orders SET payment_status=?, payment_provider=?, payment_error=?, payment_failed_at=COALESCE(payment_failed_at, NOW()) WHERE id=?", ["payment_setup_failed", "paymongo", paymongoErr.message, orderId]);
+        `, [paymentInfo.payment_status, paymentInfo.payment_provider, gcashCommit.reference, gcashCommit.reference, gcashCommit.proofPath, orderId]);
+      } else {
+        await dbQuery(req.db, "UPDATE orders SET payment_status=?, payment_provider=?, payment_reference=NULL, payment_checkout_id=NULL, payment_checkout_url=NULL, payment_error=NULL WHERE id=?", [paymentInfo.payment_status, paymentInfo.payment_provider, orderId]);
       }
     }
+    await commitTransaction(req.db);
+    if (gcashCommit) notifyGcashSubmitted(req.db, userId, orderId);
 
     res.json({
-      message: isPos ? "POS sale completed" : "Cart order created",
+      message: isPos ? "POS sale completed" : gcashCommit ? "Payment submitted. Waiting for admin approval before the order is placed." : "Cart order created",
       order_id: orderId,
       subtotal: total,
-      discount: 0,
+      discount,
       shipping_region: shipping.region,
       shipping_label: shipping.label,
       shipping_fee: shipping.fee,
       total: grandTotal,
+      voucher_applied: voucherResult?.voucher_code || null,
       payment_method: paymentMethod,
-      payment_status: paymentInfo?.payment_status || (isPos ? "paid" : paymentMethod === "cod" ? "to_collect" : "pending_verification"),
-      payment_provider: paymentInfo?.payment_provider || (isPos ? "pos" : paymentMethod === "cod" ? "cod" : "paymongo"),
+      payment_status: paymentInfo?.payment_status || (isPos ? "paid" : paymentMethod === "cod" ? "to_collect" : "pending_payment"),
+      payment_provider: paymentInfo?.payment_provider || (isPos ? "pos" : paymentMethod === "cod" ? "cod" : "manual_gcash"),
       payment_reference: paymentInfo?.payment_reference || null,
-      payment_checkout_id: paymentInfo?.payment_checkout_id || null,
-      payment_checkout_url: paymentInfo?.payment_checkout_url || null,
-      payment_error: paymentInfo?.payment_error || paymentInfo?.message || null,
+      requires_payment_proof: ONLINE_PAYMENT_METHODS.includes(paymentMethod),
+      payment_error: paymentInfo?.payment_error || null,
       payment_message: paymentInfo?.message || null,
       delivery,
       items: orderLines,
@@ -983,10 +1056,11 @@ router.post("/cart", async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-router.post("/", upload.fields([
+router.post("/", customerSession, upload.fields([
   { name: "national_id_image", maxCount: 1 },
-  { name: "selfie_with_id_image", maxCount: 1 }
-]), (req, res) => {
+  { name: "selfie_with_id_image", maxCount: 1 },
+  { name: "payment_proof", maxCount: 1 }
+]), uploadStorage.validateUploadedMedia, customerIdentity(), (req, res) => {
 
   const {
     product_id,
@@ -999,26 +1073,39 @@ router.post("/", upload.fields([
     delivery_contact,
     delivery_address,
     delivery_note,
+    delivery_landmark,
+    delivery_latitude,
+    delivery_longitude,
     shipping_region,
     installment_application
   } = req.body;
   const installmentApplication = parseInstallmentApplication(installment_application);
   if (installmentApplication) {
-    installmentApplication.national_id_image = uploadedFilePath(req, "national_id_image") || installmentApplication.national_id_image;
-    installmentApplication.selfie_with_id_image = uploadedFilePath(req, "selfie_with_id_image") || installmentApplication.selfie_with_id_image;
+    installmentApplication.national_id_image = uploadedFilePath(req, "national_id_image");
+    installmentApplication.selfie_with_id_image = uploadedFilePath(req, "selfie_with_id_image");
   }
 
   const qty = Number(quantity);
   const userId = Number(user_id);
   const cleanVoucherCode = voucher_code ? String(voucher_code).trim() : "";
-  const allowedPaymentMethods = ["cod", "gcash", "maya", "card", INSTALLMENT_PAYMENT_METHOD];
-  const paymentMethod = allowedPaymentMethods.includes(payment_method)
-    ? payment_method
-    : "cod";
+  const paymentMethod = normalizePaymentMethod(payment_method, {
+    allowOffline: true,
+    allowCash: false,
+    allowInstallment: true
+  }) || "cod";
+  let gcashCommit;
+  try {
+    gcashCommit = gcashCommitDetails(req, paymentMethod);
+  } catch (error) {
+    return res.status(error.status || 400).json({ message: error.message });
+  }
   const delivery = {
     recipient_name: cleanText(recipient_name, 255),
     delivery_contact: cleanText(delivery_contact, 50),
     delivery_address: cleanText(delivery_address, 1000),
+    delivery_landmark: cleanText(delivery_landmark, 500),
+    delivery_latitude: delivery_latitude === "" || delivery_latitude == null ? null : Number(delivery_latitude),
+    delivery_longitude: delivery_longitude === "" || delivery_longitude == null ? null : Number(delivery_longitude),
     delivery_note: cleanText(delivery_note, 1000)
   };
   const requestedShippingRegion = cleanText(shipping_region, 40);
@@ -1034,6 +1121,10 @@ router.post("/", upload.fields([
   if (!delivery.recipient_name || !delivery.delivery_contact || !delivery.delivery_address) {
     return res.status(400).json({ message: "Complete delivery details are required" });
   }
+  if (!Number.isFinite(delivery.delivery_latitude) || delivery.delivery_latitude < -90 || delivery.delivery_latitude > 90 ||
+      !Number.isFinite(delivery.delivery_longitude) || delivery.delivery_longitude < -180 || delivery.delivery_longitude > 180) {
+    return res.status(400).json({ message: "Confirm your saved delivery location before placing this order." });
+  }
 
   ensureOrderColumns(req.db, (columnErr) => {
     if (columnErr) return res.status(500).json({ message: columnErr.message });
@@ -1044,7 +1135,7 @@ router.post("/", upload.fields([
 
   const getProduct = "SELECT * FROM products WHERE id=?";
 
-  req.db.query(getProduct, [product_id], (err, result) => {
+  req.db.query(getProduct, [product_id], async (err, result) => {
 
     if (err) return res.status(500).json({ message: err.message });
 
@@ -1078,6 +1169,14 @@ router.post("/", upload.fields([
       : Number(product.price);
     const variantName = selectedVariant ? selectedVariant.name || "Selected Variant" : null;
 
+    if (gcashCommit) {
+      try {
+        await assertUniqueGcashReference(req.db, gcashCommit.reference);
+      } catch (referenceError) {
+        return res.status(referenceError.status || 500).json({ message: referenceError.message });
+      }
+    }
+
     if (qty > stock) {
       return res.status(400).json({
         message: `Only ${stock} item(s) available in stock`
@@ -1087,46 +1186,27 @@ router.post("/", upload.fields([
     const subtotal = unitPrice * qty;
     let discount = 0;
     let voucherApplied = null;
+    let voucherId = null;
 
     let finalTotal = subtotal;
 
-    // VOUCHER (simple)
-    if (cleanVoucherCode) {
-      const getVoucher = "SELECT * FROM vouchers WHERE code=? AND is_active=1";
-
-      req.db.query(getVoucher, [cleanVoucherCode], (err2, v) => {
-        if (err2) return res.status(500).json({ message: err2.message });
-
-        if (!v.length) {
-          return res.status(400).json({ message: "Voucher is not available or inactive." });
-        }
-
-        const voucher = v[0];
-        if (voucher.product_id && Number(voucher.product_id) !== Number(product_id)) {
-          return res.status(400).json({ message: "Voucher is for another product." });
-        }
-        if (Number(voucher.min_amount || 0) > subtotal) {
-          return res.status(400).json({ message: `Voucher requires minimum spend of ${Number(voucher.min_amount).toFixed(2)}.` });
-        }
-        if (Number(voucher.min_quantity || 0) > qty) {
-          return res.status(400).json({ message: `Voucher requires at least ${voucher.min_quantity} item(s).` });
-        }
-
-        if (voucher.discount_type === "percent") {
-          discount = subtotal * Number(voucher.discount_value) / 100;
-        } else {
-          discount = Number(voucher.discount_value);
-        }
-
-        discount = Math.min(discount, subtotal);
-        finalTotal = Math.max(subtotal - discount, 0);
-        voucherApplied = voucher.code;
-
-        createOrder();
-      });
-
-    } else {
+    try {
+      await ensureVoucherTables(req.db);
+      const voucherResult = cleanVoucherCode
+        ? await validateVoucher(req.db, {
+          code: cleanVoucherCode,
+          customer_id: userId,
+          checkout_type: paymentMethod === INSTALLMENT_PAYMENT_METHOD ? "installment" : "regular",
+          items: [{ product_id, quantity: qty, variant_index: requestedVariantIndex }]
+        })
+        : null;
+      discount = Number(voucherResult?.discount || 0);
+      finalTotal = Math.max(subtotal - discount, 0);
+      voucherApplied = voucherResult?.voucher_code || null;
+      voucherId = voucherResult?.voucher_id || null;
       createOrder();
+    } catch (voucherErr) {
+      return res.status(400).json({ message: voucherErr.message });
     }
 
     function createOrder() {
@@ -1187,14 +1267,8 @@ router.post("/", upload.fields([
 
           const insertWithPaymentMethod = `
             INSERT INTO orders
-            (product_id, quantity, total_price, user_id, payment_method, variant_name, variant_price, recipient_name, delivery_contact, delivery_address, delivery_note, shipping_region, shipping_fee)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `;
-
-          const insertBasicOrder = `
-            INSERT INTO orders
-            (product_id, quantity, total_price, user_id, variant_name, variant_price)
-            VALUES (?, ?, ?, ?, ?, ?)
+            (product_id, quantity, total_price, user_id, payment_method, variant_name, variant_price, recipient_name, delivery_contact, delivery_address, delivery_landmark, delivery_latitude, delivery_longitude, delivery_note, shipping_region, shipping_fee, voucher_id, voucher_code, voucher_discount, product_subtotal, final_product_total)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `;
 
           const sendCreatedOrder = (result3, paymentInfo = {}) => {
@@ -1210,12 +1284,11 @@ router.post("/", upload.fields([
               total: finalTotal,
               voucher_applied: voucherApplied,
               payment_method: paymentMethod,
-              payment_status: paymentInfo.payment_status || (paymentMethod === "cod" ? "to_collect" : "pending_verification"),
-              payment_provider: paymentInfo.payment_provider || (ONLINE_PAYMENT_METHODS.includes(paymentMethod) ? "paymongo" : "cod"),
+              payment_status: paymentInfo.payment_status || (paymentMethod === "cod" ? "to_collect" : "pending_payment"),
+              payment_provider: paymentInfo.payment_provider || (ONLINE_PAYMENT_METHODS.includes(paymentMethod) ? "manual_gcash" : "cod"),
               payment_reference: paymentInfo.payment_reference || null,
-              payment_checkout_id: paymentInfo.payment_checkout_id || null,
-              payment_checkout_url: paymentInfo.payment_checkout_url || null,
-              payment_error: paymentInfo.payment_error || paymentInfo.message || null,
+              requires_payment_proof: ONLINE_PAYMENT_METHODS.includes(paymentMethod),
+              payment_error: paymentInfo.payment_error || null,
               payment_message: paymentInfo.message || null,
               variant_name: variantName,
               variant_price: selectedVariant ? unitPrice : null,
@@ -1230,16 +1303,43 @@ router.post("/", upload.fields([
                 });
               }
 
-              const movementActor = inventoryActor(req, userId, delivery.recipient_name, "customer");
-              const stockMovement = inventoryMovementFromOrderLine({
+              const orderLine = {
                 product_id,
                 product_name: product.name,
                 variant_index: selectedVariant ? requestedVariantIndex : null,
                 variant_name: variantName,
                 quantity: qty,
+                unit_price: unitPrice,
+                subtotal,
+                product_image: product.image || product.images,
                 stock_before: stock,
                 stock_after: stock - qty
-              }, result3.insertId, movementActor, "checkout", "customer_order");
+              };
+
+              req.db.query(
+                `INSERT INTO order_items
+                 (order_id, product_id, product_name, variant_index, variant_name, quantity, unit_price, subtotal, product_image)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                  result3.insertId,
+                  orderLine.product_id,
+                  orderLine.product_name,
+                  orderLine.variant_index,
+                  orderLine.variant_name,
+                  orderLine.quantity,
+                  orderLine.unit_price,
+                  orderLine.subtotal,
+                  orderLine.product_image
+                ],
+                (itemErr) => {
+                  if (itemErr) {
+                    return req.db.rollback(() => {
+                      res.status(500).json({ message: itemErr.message });
+                    });
+                  }
+
+              const movementActor = inventoryActor(req, userId, delivery.recipient_name, "customer");
+              const stockMovement = inventoryMovementFromOrderLine(orderLine, result3.insertId, movementActor, "checkout", "customer_order");
 
               recordInventoryMovements(req.db, [stockMovement], (movementErr) => {
                 if (movementErr) {
@@ -1308,52 +1408,45 @@ router.post("/", upload.fields([
                   );
                 }
 
-                createPaymongoCheckout(req, {
-                  id: result3.insertId,
-                  product_name: product.name,
-                  quantity: 1,
-                  unit_price: finalTotal
-                }, paymentMethod)
-                  .then((paymentInfo) => {
-                    const updatePayment = `
-                      UPDATE orders
-                      SET payment_status=?, payment_provider=?, payment_reference=?, payment_checkout_id=?, payment_checkout_url=?, payment_error=NULL
-                      WHERE id=?
-                    `;
+                if (gcashCommit) {
+                  const submitted = {
+                    payment_status: "for_verification",
+                    payment_provider: "manual_gcash",
+                    payment_reference: gcashCommit.reference,
+                    message: "Payment proof submitted. Waiting for admin approval before the order is placed."
+                  };
+                  notifyGcashSubmitted(req.db, userId, result3.insertId);
+                  return sendCreatedOrder(result3, submitted);
+                }
 
-                    req.db.query(updatePayment, [
-                      paymentInfo.payment_status,
-                      paymentInfo.payment_provider || "paymongo",
-                      paymentInfo.payment_reference || null,
-                      paymentInfo.payment_checkout_id || null,
-                      paymentInfo.payment_checkout_url || null,
-                      result3.insertId
-                    ], (paymentErr) => {
-                      if (paymentErr) {
-                        return sendCreatedOrder(result3, {
-                          payment_status: "pending_verification",
-                          payment_provider: "paymongo",
-                          message: paymentErr.message
-                        });
-                      }
-
-                      sendCreatedOrder(result3, paymentInfo);
-                    });
-                  })
-                  .catch((paymongoErr) => {
-                    req.db.query(
-                      "UPDATE orders SET payment_status=?, payment_provider=?, payment_error=?, payment_failed_at=COALESCE(payment_failed_at, NOW()) WHERE id=?",
-                      ["payment_setup_failed", "paymongo", paymongoErr.message, result3.insertId],
-                      () => sendCreatedOrder(result3, {
-                        payment_status: "payment_setup_failed",
-                        payment_provider: "paymongo",
-                        payment_error: paymongoErr.message,
-                        message: paymongoErr.message
-                      })
-                    );
-                  });
+                const gcashInfo = manualGcashPaymentInfo();
+                req.db.query(
+                  "UPDATE orders SET payment_status=?, payment_provider=?, payment_reference=NULL, payment_checkout_id=NULL, payment_checkout_url=NULL, payment_error=NULL WHERE id=?",
+                  [gcashInfo.payment_status, gcashInfo.payment_provider, result3.insertId],
+                  (paymentErr) => sendCreatedOrder(result3, paymentErr ? {
+                    payment_status: "pending_payment",
+                    payment_provider: "manual_gcash",
+                    message: paymentErr.message
+                  } : gcashInfo)
+                );
                 });
               });
+                }
+              );
+          };
+
+          const finishOrderWithGcashProof = (err3, result3) => {
+            if (err3 || !gcashCommit) return finishOrder(err3, result3);
+            req.db.query(`
+              UPDATE orders
+              SET payment_status='for_verification', payment_provider='manual_gcash',
+                  payment_reference=?, gcash_reference=?, payment_proof_image=?,
+                  payment_submitted_at=NOW(), payment_error=NULL
+              WHERE id=?
+            `, [gcashCommit.reference, gcashCommit.reference, gcashCommit.proofPath, result3.insertId], (paymentErr) => {
+              if (paymentErr) return req.db.rollback(() => res.status(500).json({ message: paymentErr.message }));
+              finishOrder(null, result3);
+            });
           };
 
           req.db.query(
@@ -1369,21 +1462,19 @@ router.post("/", upload.fields([
               delivery.recipient_name,
               delivery.delivery_contact,
               delivery.delivery_address,
+              delivery.delivery_landmark,
+              delivery.delivery_latitude,
+              delivery.delivery_longitude,
               delivery.delivery_note,
               shipping.region,
-              shipping.fee
+              shipping.fee,
+              voucherId,
+              voucherApplied,
+              discount,
+              subtotal,
+              productTotal
             ],
-            (err3, result3) => {
-              if (err3 && err3.code === "ER_BAD_FIELD_ERROR") {
-                return req.db.query(
-                  insertBasicOrder,
-                  [product_id, qty, finalTotal, userId, variantName, selectedVariant ? unitPrice : null],
-                  finishOrder
-                );
-              }
-
-              finishOrder(err3, result3);
-            }
+            finishOrderWithGcashProof
           );
         });
       });
@@ -1395,7 +1486,7 @@ router.post("/", upload.fields([
   }
 });
 
-router.get("/", (req, res) => {
+router.get("/", requireAdminOrStaff, (req, res) => {
   ensureOrderColumns(req.db, (columnErr) => {
     if (columnErr) return res.status(500).json({ message: columnErr.message });
     loadOrders();
@@ -1415,6 +1506,13 @@ router.get("/", (req, res) => {
       o.payment_status,
       o.payment_provider,
       o.payment_reference,
+      o.gcash_reference,
+      o.payment_proof_image,
+      o.payment_submitted_at,
+      o.payment_verified_at,
+      o.payment_verified_by,
+      o.payment_verified_by_name,
+      o.payment_rejection_reason,
       o.payment_checkout_id,
       o.payment_checkout_url,
       o.payment_error,
@@ -1466,6 +1564,13 @@ router.get("/", (req, res) => {
     LEFT JOIN products p ON o.product_id = p.id
     LEFT JOIN users u ON o.user_id = u.id
     LEFT JOIN installment_applications ia ON o.installment_application_id = ia.id
+    WHERE NOT (
+      LOWER(COALESCE(o.payment_method, '')) = 'gcash'
+      AND LOWER(COALESCE(o.payment_provider, '')) = 'manual_gcash'
+      AND LOWER(COALESCE(o.payment_status, '')) = 'pending_payment'
+      AND (o.payment_proof_image IS NULL OR o.payment_proof_image = '')
+      AND COALESCE(o.status, 'pending') <> 'cancelled'
+    )
     ORDER BY o.created_at DESC
   `;
 
@@ -1482,6 +1587,13 @@ router.get("/", (req, res) => {
       o.payment_status,
       o.payment_provider,
       o.payment_reference,
+      o.gcash_reference,
+      o.payment_proof_image,
+      o.payment_submitted_at,
+      o.payment_verified_at,
+      o.payment_verified_by,
+      o.payment_verified_by_name,
+      o.payment_rejection_reason,
       o.payment_checkout_id,
       o.payment_checkout_url,
       o.payment_error,
@@ -1524,6 +1636,13 @@ router.get("/", (req, res) => {
     LEFT JOIN products p ON o.product_id = p.id
     LEFT JOIN users u ON o.user_id = u.id
     LEFT JOIN installment_applications ia ON o.installment_application_id = ia.id
+    WHERE NOT (
+      LOWER(COALESCE(o.payment_method, '')) = 'gcash'
+      AND LOWER(COALESCE(o.payment_provider, '')) = 'manual_gcash'
+      AND LOWER(COALESCE(o.payment_status, '')) = 'pending_payment'
+      AND (o.payment_proof_image IS NULL OR o.payment_proof_image = '')
+      AND COALESCE(o.status, 'pending') <> 'cancelled'
+    )
     ORDER BY o.created_at DESC
   `;
 
@@ -1547,7 +1666,7 @@ router.get("/", (req, res) => {
   }
 });
 
-router.get("/customer/:user_id", (req, res) => {
+router.get("/customer/:user_id", customerSession, customerIdentity(), (req, res) => {
   ensureOrderColumns(req.db, (columnErr) => {
     if (columnErr) return res.status(500).json({ message: columnErr.message });
     loadCustomerOrders();
@@ -1566,6 +1685,13 @@ router.get("/customer/:user_id", (req, res) => {
       o.payment_status,
       o.payment_provider,
       o.payment_reference,
+      o.gcash_reference,
+      o.payment_proof_image,
+      o.payment_submitted_at,
+      o.payment_verified_at,
+      o.payment_verified_by,
+      o.payment_verified_by_name,
+      o.payment_rejection_reason,
       o.payment_checkout_id,
       o.payment_checkout_url,
       o.payment_error,
@@ -1625,6 +1751,13 @@ router.get("/customer/:user_id", (req, res) => {
       o.payment_status,
       o.payment_provider,
       o.payment_reference,
+      o.gcash_reference,
+      o.payment_proof_image,
+      o.payment_submitted_at,
+      o.payment_verified_at,
+      o.payment_verified_by,
+      o.payment_verified_by_name,
+      o.payment_rejection_reason,
       o.payment_checkout_id,
       o.payment_checkout_url,
       o.payment_error,
@@ -1688,7 +1821,7 @@ router.get("/customer/:user_id", (req, res) => {
   }
 });
 
-router.post("/:id/cancellation-request", (req, res) => {
+router.post("/:id/cancellation-request", customerSession, customerIdentity(), (req, res) => {
   const orderId = req.params.id;
   const userId = Number(req.body.user_id);
   const reason = cleanText(req.body.reason, 1000);
@@ -1738,7 +1871,7 @@ router.post("/:id/cancellation-request", (req, res) => {
   });
 });
 
-router.put("/:id/cancellation-request", requireAdminOrStaff, (req, res) => {
+router.put("/:id/cancellation-request", requireAdmin, (req, res) => {
   const orderId = req.params.id;
   const decision = String(req.body.decision || "").toLowerCase();
   const adminNote = cleanText(req.body.admin_note, 1000);
@@ -1822,7 +1955,7 @@ router.put("/:id/cancellation-request", requireAdminOrStaff, (req, res) => {
     });
   });
 });
-router.post("/:id/repair-request", (req, res) => {
+router.post("/:id/repair-request", customerSession, customerIdentity(), (req, res) => {
   const orderId = req.params.id;
   const userId = Number(req.body.user_id);
   const issue = cleanText(req.body.issue || req.body.reason, 1000);
@@ -1876,7 +2009,7 @@ router.post("/:id/repair-request", (req, res) => {
   });
 });
 
-router.put("/:id/repair-request", requireAdminOrStaff, (req, res) => {
+router.put("/:id/repair-request", requireAdmin, (req, res) => {
   const orderId = req.params.id;
   const decision = String(req.body.decision || "").toLowerCase();
   const adminNote = cleanText(req.body.admin_note, 1000);
@@ -1945,7 +2078,7 @@ router.put("/:id/repair-status", requireAdminOrStaff, (req, res) => {
     if (columnErr) return res.status(500).json({ message: columnErr.message });
 
     req.db.query(
-      "SELECT id, user_id, repair_request_status FROM orders WHERE id=?",
+      "SELECT id, user_id, repair_request_status, repair_service_status FROM orders WHERE id=?",
       [orderId],
       (selectErr, rows) => {
         if (selectErr) return res.status(500).json({ message: selectErr.message });
@@ -1954,6 +2087,11 @@ router.put("/:id/repair-status", requireAdminOrStaff, (req, res) => {
         const order = rows[0];
         if (order.repair_request_status !== "approved") {
           return res.status(400).json({ message: "Repair request must be approved before updating service status." });
+        }
+        const current = order.repair_service_status || 'approved';
+        const steps = ['approved', 'item_received', 'diagnosing', 'repairing', 'ready_for_pickup', 'completed'];
+        if (req.actorUser.role === 'staff' && status !== current && steps.indexOf(status) !== steps.indexOf(current) + 1) {
+          return res.status(403).json({ message: 'Follow the approved repair progress in order.' });
         }
 
         req.db.query(
@@ -2068,6 +2206,9 @@ router.delete("/:id", requireAdmin, (req, res) => {
 });
 router.put("/:id/status", requireAdminOrStaff, (req, res) => {
   const { status } = req.body;
+  if (req.actorUser.role === 'staff' && !['processing', 'shipped'].includes(status)) {
+    return res.status(403).json({ message: 'Staff can prepare orders and mark them ready. Only admin can cancel or complete deliveries.' });
+  }
   const orderId = req.params.id;
   const adminNote = cleanText(req.body.admin_note, 1000);
 
@@ -2079,7 +2220,7 @@ router.put("/:id/status", requireAdminOrStaff, (req, res) => {
     if (columnErr) return res.status(500).json({ message: columnErr.message });
 
     req.db.query(
-      "SELECT id, user_id, status, delivered_at, warranty_expires_at FROM orders WHERE id=?",
+      "SELECT id, user_id, status, payment_method, payment_status, payment_provider, cancellation_request_status, delivered_at, warranty_expires_at FROM orders WHERE id=?",
       [orderId],
       (selectErr, rows) => {
         if (selectErr) return res.status(500).json({ message: selectErr.message });
@@ -2088,6 +2229,13 @@ router.put("/:id/status", requireAdminOrStaff, (req, res) => {
         const order = rows[0];
         const currentStatus = order.status || "pending";
         const nextStatus = status;
+
+        if (req.actorUser.role === 'staff' && !paymentReadyForFulfillment(order)) {
+          return res.status(400).json({ message: paymentBlockMessage(order) });
+        }
+        if (['processing', 'shipped'].includes(nextStatus) && order.cancellation_request_status === 'pending') {
+          return res.status(400).json({ message: 'Admin must review the pending cancellation request before processing this order.' });
+        }
 
         if (currentStatus === nextStatus) {
           return res.json({
@@ -2098,6 +2246,10 @@ router.put("/:id/status", requireAdminOrStaff, (req, res) => {
 
         if (!canTransitionOrderStatus(currentStatus, nextStatus)) {
           return res.status(400).json({ message: statusTransitionMessage(currentStatus, nextStatus) });
+        }
+
+        if (nextStatus === "processing" && !paymentReadyForFulfillment(order)) {
+          return res.status(400).json({ message: paymentBlockMessage(order) });
         }
 
         const updateSqlByStatus = {

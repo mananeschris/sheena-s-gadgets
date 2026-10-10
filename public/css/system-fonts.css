@@ -1,0 +1,305 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@600;700;800&display=swap");
+
+:root {
+  --font-heading: "Manrope", "Inter", Arial, Helvetica, sans-serif;
+  --font-body: "Inter", Arial, Helvetica, sans-serif;
+  --ink: #080808;
+  --muted: #666;
+  --line: #ddd;
+  --soft: #f6f6f6;
+  --white: #fff;
+  --shadow-soft: 0 18px 50px rgba(8, 8, 8, .08);
+  --shadow-hard: 7px 7px 0 rgba(8, 8, 8, .12);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --transition-fast: 160ms ease;
+}
+
+html {
+  color-scheme: light;
+}
+
+html,
+body,
+input,
+select,
+textarea,
+button,
+table,
+th,
+td,
+.btn,
+.form-control,
+.form-select,
+.customer-shop-page,
+.customer-product-page,
+.checkout-dark-page,
+.customer-profile-page,
+.auth-page,
+.admin-dashboard-page,
+.rider-dashboard-page,
+.pos-grid {
+  font-family: var(--font-body) !important;
+  letter-spacing: 0;
+}
+
+body {
+  color: var(--ink);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.page-title,
+.hero-title,
+.section-title,
+.catalog-title,
+.dashboard-title,
+.auth-title,
+.login-title,
+.modal-title,
+.side-title,
+.panel-title,
+.brand,
+.brand span,
+.logo-text,
+.product-details h1,
+.product-title,
+.admin-dashboard-page .page-title,
+.admin-dashboard-page .toolbar h4,
+.order-hero h1,
+.order-state h1 {
+  font-family: var(--font-heading) !important;
+  letter-spacing: 0;
+}
+
+.price,
+.product-price,
+.mini-price,
+.metric-value,
+.summary-total strong,
+.status-pill,
+.status-badge,
+.stock-pill,
+.role-chip,
+.task-priority,
+.nav-button,
+.sidebar-btn,
+.btn,
+button,
+label,
+small {
+  font-family: var(--font-body) !important;
+}
+
+.brand-with-logo {
+  align-items: center;
+}
+
+.brand-logo {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  background: #fff !important;
+  border: 1px solid rgba(0, 0, 0, 0.14) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1) !important;
+  padding: 2px !important;
+}
+
+.brand-logo-dashboard {
+  width: 74px !important;
+  height: 74px !important;
+  margin-bottom: 12px;
+}
+
+body.auth-page-shell .brand-logo,
+body.customer-profile-page .brand-logo,
+body.rider-dashboard-page .brand-logo {
+  width: 48px !important;
+  height: 48px !important;
+}
+
+body.customer-shop-page .brand-logo,
+body.customer-product-page .brand-logo,
+body.checkout-dark-page .brand-logo,
+body.customer-order-page .brand-logo,
+body.customer-review-page .brand-logo {
+  flex: 0 0 44px;
+}
+
+body.customer-review-page .order-row {
+  align-items: flex-start !important;
+}
+
+body.customer-review-page .order-row > img {
+  width: 92px !important;
+  max-width: 92px !important;
+  height: 92px !important;
+  flex: 0 0 92px !important;
+  object-fit: cover !important;
+  border-radius: 8px !important;
+}
+
+body.customer-review-page .preview-grid {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  align-items: flex-start !important;
+}
+
+body.customer-review-page .preview-grid img {
+  width: 86px !important;
+  max-width: 86px !important;
+  height: 86px !important;
+  flex: 0 0 86px !important;
+  object-fit: cover !important;
+  border-radius: 8px !important;
+}
+
+body.customer-product-page .review-item {
+  display: grid !important;
+  gap: 10px !important;
+  border: 1px solid #dedede !important;
+  border-radius: 10px !important;
+  padding: 14px !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+}
+
+body.customer-product-page .review-images {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(82px, 82px)) !important;
+  gap: 10px !important;
+  margin-top: 4px !important;
+  align-items: start !important;
+}
+
+body.customer-product-page .review-images button {
+  width: 82px !important;
+  height: 82px !important;
+  border: 1px solid #dedede !important;
+  border-radius: 8px !important;
+  background: #f6f6f6 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+}
+
+body.customer-product-page .review-images img {
+  width: 82px !important;
+  max-width: 82px !important;
+  height: 82px !important;
+  max-height: 82px !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  border: 1px solid #dedede !important;
+  border-radius: 8px !important;
+  background: #f6f6f6 !important;
+  padding: 0 !important;
+  display: block !important;
+}
+
+body.customer-product-page .review-videos {
+  display: grid !important;
+  grid-template-columns: minmax(220px, 380px) !important;
+  gap: 10px !important;
+  margin-top: 4px !important;
+}
+
+body.customer-product-page .review-videos video {
+  width: 100% !important;
+  max-width: 380px !important;
+  max-height: 240px !important;
+  border: 1px solid #dedede !important;
+  border-radius: 10px !important;
+  background: #000 !important;
+}
+
+body.customer-product-page .review-media-modal .modal-content {
+  border: 1px solid #111 !important;
+  border-radius: 10px !important;
+}
+
+body.customer-product-page .review-media-modal .modal-body {
+  display: grid !important;
+  place-items: center !important;
+  min-height: 300px !important;
+  background: #050505 !important;
+  padding: 18px !important;
+}
+
+body.customer-product-page .review-media-modal img,
+body.customer-product-page .review-media-modal video {
+  width: auto !important;
+  max-width: 100% !important;
+  max-height: 76vh !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+}
+
+body.customer-review-page .preview-grid video {
+  width: min(100%, 360px) !important;
+  max-height: 220px !important;
+  border: 1px solid #dedede !important;
+  border-radius: 8px !important;
+  background: #000 !important;
+}
+
+@media (max-width: 640px) {
+  .brand-logo {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .brand-logo-dashboard {
+    width: 58px !important;
+    height: 58px !important;
+  }
+
+  body.customer-review-page .order-row {
+    display: grid !important;
+    grid-template-columns: 76px minmax(0, 1fr) !important;
+    gap: 12px !important;
+    align-items: start !important;
+  }
+
+  body.customer-review-page .order-row > img {
+    width: 76px !important;
+    max-width: 76px !important;
+    height: 76px !important;
+    flex-basis: 76px !important;
+  }
+
+  body.customer-review-page .preview-grid img {
+    width: 72px !important;
+    max-width: 72px !important;
+    height: 72px !important;
+    flex-basis: 72px !important;
+  }
+
+  body.customer-product-page .review-images {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 70px)) !important;
+  }
+
+  body.customer-product-page .review-images button {
+    width: 70px !important;
+    height: 70px !important;
+  }
+
+  body.customer-product-page .review-images img {
+    width: 70px !important;
+    max-width: 70px !important;
+    height: 70px !important;
+    max-height: 70px !important;
+  }
+
+  body.customer-product-page .review-videos {
+    grid-template-columns: 1fr !important;
+  }
+}

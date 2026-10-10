@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { orderLabel } = require("./orderReference");
+const { requireAdmin, requireRole } = require("./roleGuard");
 
 function dbQuery(db, sql, params = []) {
   return new Promise((resolve, reject) => {
@@ -78,6 +79,7 @@ function buildStatement(order, paymentRows = [], scheduleRows = []) {
       payment_checkout_id: schedule.payment_checkout_id,
       payment_checkout_url: schedule.payment_checkout_url,
       payment_status: schedule.payment_status,
+      payment_proof_image: schedule.payment_proof_image || null,
       payment_error: schedule.payment_error,
       payment_last_checked_at: schedule.payment_last_checked_at
     };
@@ -173,9 +175,57 @@ function statementSummary(statements) {
   };
 }
 
-router.get("/order/:order_id", async (req, res) => {
+router.get("/admin/plan/:order_id", requireAdmin, async (req, res) => {
   const orderId = Number(req.params.order_id);
-  const userId = Number(req.query.user_id || 0);
+  if (!Number.isInteger(orderId) || orderId <= 0) return res.status(400).json({ message: "Valid order id is required." });
+  try {
+    const orders = await dbQuery(req.db, `
+      SELECT o.*, u.name AS customer_name, u.email AS customer_email,
+             p.name AS product_name, p.image AS product_image
+      FROM orders o
+      LEFT JOIN users u ON o.user_id=u.id
+      LEFT JOIN products p ON o.product_id=p.id
+      WHERE o.id=? LIMIT 1
+    `, [orderId]);
+    if (!orders.length) return res.status(404).json({ message: "Order not found." });
+    const order = orders[0];
+    const applications = await dbQuery(req.db, `
+      SELECT id, order_id, full_name, phone, address, status, preferred_terms,
+             downpayment_amount, downpayment_status, financed_amount, monthly_amount,
+             created_at, reviewed_at, admin_note
+      FROM installment_applications WHERE order_id=? ORDER BY id DESC LIMIT 1
+    `, [orderId]);
+    if (!applications.length && order.payment_method !== "installment") return res.status(404).json({ message: "No installment plan found for this order." });
+    const statements = await loadStatementsForOrders(req.db, orders);
+    const items = await dbQuery(req.db, "SELECT product_id, product_name, variant_name, quantity, unit_price, subtotal, product_image FROM order_items WHERE order_id=? ORDER BY id ASC", [orderId]);
+    res.json({
+      statement: statements[0],
+      plan: {
+        application: applications[0] || null,
+        customer_phone: order.delivery_contact || applications[0]?.phone || "",
+        delivery_address: order.delivery_address || applications[0]?.address || "",
+        product_image: order.product_image || null,
+        variant_name: order.variant_name || null,
+        quantity: order.quantity || 1,
+        items,
+        downpayment: {
+          status: applications[0]?.downpayment_status || (["installment_active", "installment_completed", "installment_downpayment_paid"].includes(order.payment_status) ? "paid" : "pending"),
+          reference: order.gcash_reference || order.payment_reference || null,
+          proof_image: order.payment_proof_image || null,
+          submitted_at: order.payment_submitted_at || null,
+          verified_at: order.payment_verified_at || null,
+          rejection_reason: order.payment_rejection_reason || null
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Unable to load the installment plan." });
+  }
+});
+
+router.get("/order/:order_id", requireRole(['admin', 'staff', 'customer']), async (req, res) => {
+  const orderId = Number(req.params.order_id);
+  const userId = req.actorUser.role === 'customer' ? req.actorUser.id : Number(req.query.user_id || 0);
   if (!Number.isInteger(orderId) || orderId <= 0) {
     return res.status(400).json({ message: "Valid order id is required." });
   }
@@ -211,8 +261,9 @@ router.get("/order/:order_id", async (req, res) => {
   }
 });
 
-router.get("/:user_id", async (req, res) => {
+router.get("/:user_id", requireRole(['admin', 'staff', 'customer']), async (req, res) => {
   const userId = Number(req.params.user_id);
+  if (req.actorUser.role === 'customer' && userId !== req.actorUser.id) return res.status(403).json({ message: 'This statement is not linked to your account.' });
   if (!Number.isInteger(userId) || userId <= 0) {
     return res.status(400).json({ message: "Valid user id is required." });
   }

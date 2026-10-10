@@ -1,0 +1,124 @@
+body.admin-dashboard-page:has(#orders.active) { background: #fff; }
+body.admin-dashboard-page:has(#orders.active) .main { --workspace-ink: #171717; --workspace-muted: #737373; --workspace-line: #e5e5e5; }
+body.admin-dashboard-page:has(#orders.active) .page-title { color: #171717; }
+body.admin-dashboard-page #orders { color: #171717; }
+body.admin-dashboard-page #orders [hidden] { display: none !important; }
+body.admin-dashboard-page #orders > .panel { padding: 0; background: #fff; }
+body.admin-dashboard-page #orders .orders-heading { margin: 0 0 20px; padding: 0 0 18px; border-color: #e5e5e5; }
+body.admin-dashboard-page #orders .orders-heading h4 { font-size: 20px; color: #171717; }
+.orders-heading-copy { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+#orderTotalLabel { font-size: 11px; color: #737373; }
+.orders-tools { display: flex; gap: 8px; }
+body.admin-dashboard-page #orders .btn { border-color: #dedede; color: #404040; background: #fff; }
+body.admin-dashboard-page #orders .btn:hover { background: #f5f5f5; border-color: #aaa; color: #171717; }
+body.admin-dashboard-page #orders .btn-dark { background: #171717; border-color: #171717; color: #fff; }
+body.admin-dashboard-page #orders .btn-dark:hover { background: #333; border-color: #333; }
+body.admin-dashboard-page #orders .btn:focus-visible { outline-color: #171717; }
+body.admin-dashboard-page #orders .orders-icon-button { display: inline-grid; place-items: center; width: 34px; min-width: 34px; height: 34px; min-height: 34px; padding: 0; }
+body.admin-dashboard-page #orders .orders-icon-button svg { width: 16px; height: 16px; }
+.orders-status-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; padding-bottom: 20px; border-bottom: 1px solid #e5e5e5; }
+body.admin-dashboard-page #orders .orders-status-tabs button { display: flex; align-items: center; justify-content: center; gap: 8px; height: 42px; min-width: 0; padding: 8px; border: 1px solid #e5e5e5; border-radius: 5px; background: #fff; color: #737373; font-size: 11px; font-weight: 500; transition: background-color .15s, color .15s; }
+body.admin-dashboard-page #orders .orders-status-tabs button:hover { color: #171717; background: #f5f5f5; }
+body.admin-dashboard-page #orders .orders-status-tabs button[aria-pressed="true"] { color: #fff; background: #171717; border-color: #171717; }
+.orders-status-tabs svg { width: 15px; height: 15px; flex: 0 0 15px; }
+.orders-status-tabs strong { font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.orders-status-tabs button:focus-visible { outline: 2px solid #171717; outline-offset: 2px; }
+.orders-filterbar { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(150px, .65fr); gap: 10px; margin: 20px 0 14px; }
+.orders-search { position: relative; min-width: 0; }
+.orders-search > svg { position: absolute; top: 12px; left: 12px; width: 16px; height: 16px; color: #8a8a8a; }
+body.admin-dashboard-page #orders .orders-search input { padding-left: 37px; }
+body.admin-dashboard-page #orders .form-control, body.admin-dashboard-page #orders .form-select { border-color: #dedede; color: #404040; min-width: 0; font-size: 12px; height: 40px; }
+body.admin-dashboard-page #orders .form-control:focus, body.admin-dashboard-page #orders .form-select:focus { border-color: #8a8a8a; box-shadow: 0 0 0 2px #ededed; }
+.orders-list-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; min-height: 32px; font-size: 11px; color: #737373; }
+body.admin-dashboard-page #orders #orderReviewShortcut { gap: 7px; color: #966b19; border-color: #e8dbc0; background: #fff; }
+#orderReviewShortcut strong { font-size: 10px; font-weight: 600; }
+body.admin-dashboard-page #orders .admin-order-board { display: grid; gap: 14px; }
+body.admin-dashboard-page #orders .admin-order-card { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; border: 1px solid #e5e5e5; border-radius: 6px; padding: 18px; background: #fff; box-shadow: none; transform: none !important; }
+body.admin-dashboard-page #orders .admin-order-card.pending { border-left: 1px solid #e5e5e5; }
+.orders-record-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+body.admin-dashboard-page #orders .admin-order-id { display: flex; flex-direction: row; align-items: center; gap: 12px; flex-wrap: wrap; min-width: 0; }
+body.admin-dashboard-page #orders .admin-order-id strong { font-size: 12px; font-weight: 650; color: #171717; }
+body.admin-dashboard-page #orders .admin-order-id span { font-size: 10px; color: #8a8a8a; }
+body.admin-dashboard-page #orders .admin-order-status { padding: 0; min-width: 134px; max-width: 180px; border: 0; background: none; flex-shrink: 0; }
+body.admin-dashboard-page #orders .admin-order-status .status-badge { display: inline-flex; justify-content: center; min-width: 110px; min-height: 30px; padding: 5px 10px; border: 1px solid #e5e5e5; background: #fafafa; color: #404040; font-size: 11px; }
+body.admin-dashboard-page #orders .admin-order-status .pending { border-left: 3px solid #ba8b35; }
+body.admin-dashboard-page #orders .admin-order-status .processing, body.admin-dashboard-page #orders .admin-order-status .shipped { border-left: 3px solid #6889ba; }
+body.admin-dashboard-page #orders .admin-order-status .delivered { border-left: 3px solid #397962; }
+body.admin-dashboard-page #orders .admin-order-status .cancelled { border-left: 3px solid #a13d48; }
+body.admin-dashboard-page #orders .admin-order-status .form-select { width: 134px; height: 32px; min-height: 32px; padding-top: 5px; padding-bottom: 5px; font-size: 11px; background-color: #fff; }
+body.admin-dashboard-page #orders .pending .admin-order-status .form-select { border-left: 3px solid #ba8b35; }
+body.admin-dashboard-page #orders .processing .admin-order-status .form-select, body.admin-dashboard-page #orders .shipped .admin-order-status .form-select { border-left: 3px solid #6889ba; }
+body.admin-dashboard-page #orders .delivered .admin-order-status .form-select { border-left: 3px solid #397962; }
+body.admin-dashboard-page #orders .cancelled .admin-order-status .form-select { border-left: 3px solid #a13d48; }
+body.admin-dashboard-page #orders .admin-order-status small { font-size: 10px; overflow-wrap: anywhere; }
+body.admin-dashboard-page #orders .admin-order-main { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1.1fr) minmax(110px, .7fr); gap: 20px; align-items: start; }
+body.admin-dashboard-page #orders .admin-order-product { grid-template-columns: 56px minmax(0, 1fr); gap: 12px; min-width: 0; }
+body.admin-dashboard-page #orders .admin-order-product img { width: 56px; height: 56px; object-fit: contain; background: #fafafa; border: 1px solid #ededed; border-radius: 4px; }
+body.admin-dashboard-page #orders .admin-order-product strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: #171717; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+body.admin-dashboard-page #orders .admin-order-product span { font-size: 11px; line-height: 1.5; color: #737373; overflow-wrap: anywhere; }
+body.admin-dashboard-page #orders .link-button { color: #737373; font-size: 10px; padding: 0; border: 0; background: transparent; }
+body.admin-dashboard-page #orders .link-button svg { width: 12px; height: 12px; }
+body.admin-dashboard-page #orders .admin-order-customer { min-width: 0; }
+body.admin-dashboard-page #orders .admin-order-customer strong { color: #404040; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+body.admin-dashboard-page #orders .admin-order-customer span, body.admin-dashboard-page #orders .admin-order-customer small { color: #737373; font-size: 10px; line-height: 1.5; overflow-wrap: anywhere; }
+body.admin-dashboard-page #orders .admin-order-payment, body.admin-dashboard-page #orders .admin-order-total { padding: 0; border: 0; background: transparent; min-width: 0; }
+body.admin-dashboard-page #orders .admin-order-payment strong { font-size: 12px; color: #404040; line-height: 1.5; overflow-wrap: anywhere; }
+body.admin-dashboard-page #orders .admin-order-payment span, body.admin-dashboard-page #orders .admin-order-payment small { font-size: 10px; line-height: 1.5; color: #737373; overflow-wrap: anywhere; }
+body.admin-dashboard-page #orders .admin-order-payment.review strong { color: #966b19; }
+body.admin-dashboard-page #orders .admin-order-payment.rejected strong { color: #a13d48; }
+body.admin-dashboard-page #orders .admin-order-payment.paid strong { color: #14634c; }
+body.admin-dashboard-page #orders .admin-order-total { text-align: right; }
+body.admin-dashboard-page #orders .admin-order-total strong { color: #171717; font-size: 16px; font-weight: 650; line-height: 1.5; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+body.admin-dashboard-page #orders .admin-order-total span, body.admin-dashboard-page #orders .admin-order-total small { font-size: 10px; line-height: 1.5; color: #737373; }
+body.admin-dashboard-page #orders .admin-order-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; gap: 14px; border-color: #ededed; }
+body.admin-dashboard-page #orders .admin-order-notes { flex: 1; min-width: 0; font-size: 11px; color: #737373; }
+body.admin-dashboard-page #orders .admin-order-notes > .border { border: 0 !important; background: transparent; padding: 0 !important; margin: 0 !important; }
+body.admin-dashboard-page #orders .admin-order-notes .delivery-mini { border: 0; background: transparent; padding: 0; margin: 0 !important; }
+body.admin-dashboard-page #orders .delivery-unassigned .delivery-meta { display: none; }
+body.admin-dashboard-page #orders .admin-order-notes strong { font-size: 11px; font-weight: 600; }
+body.admin-dashboard-page #orders .order-actions { gap: 7px; }
+body.admin-dashboard-page #orders .order-actions .btn { font-size: 11px; min-height: 32px; padding: 6px 9px; }
+body.admin-dashboard-page #orders .order-actions .orders-icon-button { width: 32px; min-width: 32px; padding: 0; color: #8a8a8a; }
+body.admin-dashboard-page #orders .order-actions .orders-icon-button:hover { color: #a13d48; border-color: #a13d48; }
+.order-more-actions .dropdown-menu { min-width: 160px; border: 1px solid #e5e5e5; border-radius: 5px; padding: 5px; }
+.order-more-actions .dropdown-item { display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 7px 10px; border: 0; background: #fff; color: #404040; font-size: 12px; }
+.order-more-actions .dropdown-item:hover, .order-more-actions .dropdown-item:focus { background: #f5f5f5; }
+.order-more-actions .dropdown-item svg { width: 14px; height: 14px; }
+.order-modal-actions { border-top: 1px solid #e5e5e5; padding-top: 14px; }
+.order-modal-actions .orders-icon-button { width: 34px; padding: 0; }
+body.admin-dashboard-page #orders .admin-empty-state { border: 0; border-radius: 0; min-height: 200px; align-content: center; gap: 12px; background: #fafafa; }
+body.admin-dashboard-page #orders .admin-empty-state > svg { width: 26px; height: 26px; color: #737373; }
+body.admin-dashboard-page #orders .admin-empty-state strong { font-size: 14px; font-weight: 500; }
+@media (max-width: 1000px) {
+  body.admin-dashboard-page #orders .orders-status-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body.admin-dashboard-page #orders .admin-order-main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+}
+@media (max-width: 620px) {
+  body.admin-dashboard-page #orders .orders-filterbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .orders-search { grid-column: 1 / -1; }
+  body.admin-dashboard-page #orders .orders-heading { align-items: start; }
+  body.admin-dashboard-page #orders .orders-heading-copy { display: grid; gap: 4px; }
+  body.admin-dashboard-page #orders .orders-heading h4 { font-size: 18px; }
+  .orders-tools { gap: 5px; }
+  body.admin-dashboard-page #orders .orders-status-tabs button { flex-wrap: wrap; gap: 5px; height: 52px; padding: 6px; font-size: 10px; }
+  body.admin-dashboard-page #orders .orders-status-tabs svg { width: 13px; height: 13px; flex-basis: 13px; }
+  body.admin-dashboard-page #orders .orders-status-tabs { gap: 5px; }
+  body.admin-dashboard-page #orders .admin-order-card { padding: 14px; }
+  body.admin-dashboard-page #orders .orders-record-heading { align-items: start; }
+  body.admin-dashboard-page #orders .admin-order-id { display: grid; gap: 4px; }
+  body.admin-dashboard-page #orders .admin-order-status { min-width: 120px; max-width: 132px; }
+  body.admin-dashboard-page #orders .admin-order-status .form-select { width: 120px; }
+  body.admin-dashboard-page #orders .admin-order-product { grid-column: 1 / -1; }
+  body.admin-dashboard-page #orders .admin-order-total { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; border-top: 1px solid #ededed; padding-top: 12px; }
+  body.admin-dashboard-page #orders .admin-order-total small { flex-basis: 100%; text-align: left; }
+  body.admin-dashboard-page #orders .admin-order-footer { align-items: start; gap: 10px; }
+  body.admin-dashboard-page #orders .admin-order-notes { flex-basis: 100%; }
+  body.admin-dashboard-page #orders .admin-order-notes:empty { display: none; }
+  body.admin-dashboard-page #orders .order-actions { flex: 1; }
+  body.admin-dashboard-page #orders .order-actions .btn { flex: 0 1 auto; }
+  body.admin-dashboard-page #orders .order-actions .orders-icon-button { flex: 0 0 32px; }
+  body.admin-dashboard-page #orders .order-more-actions { margin-left: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.admin-dashboard-page #orders .orders-status-tabs button { transition: none; }
+}

@@ -4,604 +4,122 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout | Sheena's Gadgets & Accessories Shop</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/sheena-mark.svg">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    :root {
-      --ink: #080808;
-      --muted: #666;
-      --line: #ddd;
-      --soft: #f6f6f6;
-      --white: #fff;
-    }
-
-    body {
-      background: #000;
-      color: var(--white);
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    .checkout-shell {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 420px;
-    }
-
-    .checkout-main {
-      padding: 28px clamp(18px, 5vw, 64px);
-    }
-
-    .checkout-side {
-      background: var(--ink);
-      color: var(--white);
-      padding: 28px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 34px;
-    }
-
-    .brand {
-      color: var(--ink);
-      text-decoration: none;
-      font-size: 22px;
-      font-weight: 900;
-    }
-
-    .page-title {
-      font-size: clamp(34px, 5vw, 64px);
-      line-height: .95;
-      font-weight: 900;
-      margin-bottom: 12px;
-    }
-
-    .page-copy {
-      color: var(--muted);
-      max-width: 640px;
-      margin-bottom: 28px;
-      line-height: 1.6;
-    }
-
-    .panel {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 18px;
-      background: #070707;
-    }
-
-    .checkout-promise {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin: 22px 0 24px;
-    }
-
-    .promise-card {
-      border: 1px solid var(--ink);
-      border-radius: 8px;
-      background: #070707;
-      padding: 14px;
-      min-height: 94px;
-      display: grid;
-      align-content: space-between;
-    }
-
-    .promise-card span {
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .promise-card strong {
-      display: block;
-      margin-top: 10px;
-      line-height: 1.22;
-      font-weight: 900;
-    }
-
-    .panel h4,
-    .panel h5 {
-      font-weight: 900;
-    }
-
-    .product-preview {
-      display: grid;
-      grid-template-columns: 170px 1fr;
-      gap: 18px;
-      align-items: start;
-    }
-
-    .product-preview img {
-      width: 100%;
-      aspect-ratio: 1 / .9;
-      object-fit: cover;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--soft);
-    }
-
-    .stock-pill {
-      display: inline-flex;
-      border: 1px solid var(--ink);
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 12px;
-      font-weight: 900;
-      margin-bottom: 10px;
-    }
-
-    .stock-pill.low,
-    .stock-pill.out {
-      background: var(--ink);
-      color: var(--white);
-    }
-
-    .form-control,
-    .form-select {
-      border-radius: 6px;
-      border-color: #bbb;
-    }
-
-    .btn {
-      border-radius: 6px;
-      font-weight: 900;
-    }
-
-    .btn-dark {
-      background: var(--ink);
-      border-color: var(--ink);
-    }
-
-    .side-title {
-      font-size: 26px;
-      font-weight: 900;
-      margin-bottom: 22px;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 12px 0;
-      border-bottom: 1px solid #2d2d2d;
-      color: #d7d7d7;
-    }
-
-    .summary-row strong {
-      color: var(--white);
-      text-align: right;
-    }
-
-    .summary-total {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 20px 0;
-      font-size: 22px;
-      font-weight: 900;
-    }
-
-    .payment-box {
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 14px;
-      background: #111;
-      margin-top: 14px;
-    }
-
-    .saved-address-control {
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 14px;
-      background: #111;
-      margin-bottom: 4px;
-    }
-
-    .saved-address-control small {
-      display: block;
-      margin-top: 8px;
-      color: #999;
-      font-weight: 700;
-    }
-
-    .save-address-row {
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 14px;
-      background: #0f0f0f;
-      display: grid;
-      grid-template-columns: minmax(220px, 1fr) minmax(180px, 260px);
-      gap: 12px;
-      align-items: center;
-    }
-
-    .save-address-check {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0;
-      font-weight: 900;
-      line-height: 1.25;
-    }
-
-    .save-address-check span {
-      color: var(--white);
-    }
-
-    .save-address-row .form-control:disabled {
-      background: #202020;
-      color: #aaa;
-      border-color: #333;
-    }
-
-    @media (max-width: 720px) {
-      .save-address-row {
-        grid-template-columns: 1fr;
-      }
-    }
-    .panel-note {
-      color: var(--muted);
-      margin-top: -8px;
-      margin-bottom: 16px;
-      line-height: 1.5;
-    }
-
-    .variant-list {
-      display: grid;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .variant-choice {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      border-radius: 6px;
-      white-space: normal;
-      text-align: left;
-    }
-
-    .variant-choice span {
-      font-size: 12px;
-      font-weight: 700;
-      opacity: .72;
-    }
-
-    .modal-content {
-      border: 1px solid var(--ink);
-      border-radius: 8px;
-    }
-
-    .installment-summary {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
-      background: var(--soft);
-    }
-
-    .installment-summary-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 7px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .installment-summary-row:last-child {
-      border-bottom: 0;
-    }
-
-    @media (max-width: 980px) {
-      .checkout-shell {
-        grid-template-columns: 1fr;
-      }
-
-      .checkout-side {
-        position: static;
-        height: auto;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .product-preview {
-        grid-template-columns: 1fr;
-      }
-    }
-    .voucher-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .voucher-card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .voucher-card strong,
-    .voucher-card span {
-      display: block;
-    }
-
-    .voucher-card span {
-      color: #666;
-      font-size: 13px;
-    }  </style>
-  <link rel="stylesheet" href="/css/ui-polish.css">
-  <style id="checkout-dark-overrides">
-    body {
-      background: #000;
-      color: var(--white);
-    }
-
-    .checkout-shell {
-      background:
-        linear-gradient(90deg, rgba(255, 255, 255, .04) 1px, transparent 1px),
-        linear-gradient(rgba(255, 255, 255, .04) 1px, transparent 1px),
-        #030303 !important;
-      background-size: 44px 44px !important;
-    }
-
-    .checkout-main {
-      background: transparent !important;
-      color: #fff !important;
-    }
-
-    .topbar .brand,
-    .page-title,
-    .panel h4,
-    .panel h5,
-    .product-preview h3,
-    .product-preview h4,
-    .form-label,
-    .promise-card strong {
-      color: #fff !important;
-    }
-
-    .topbar .brand::before {
-      background: #fff !important;
-      color: #080808 !important;
-      border-color: #fff !important;
-    }
-
-    .topbar .btn-outline-dark {
-      background: transparent !important;
-      border-color: #fff !important;
-      color: #fff !important;
-    }
-
-    .topbar .btn-outline-dark:hover,
-    .topbar .btn-outline-dark:focus {
-      background: #fff !important;
-      color: #080808 !important;
-    }
-
-    .page-copy,
-    .panel-note,
-    .text-muted,
-    .promise-card span,
-    .voucher-card span {
-      color: #cfcfcf !important;
-    }
-
-    .panel,
-    .promise-card {
-      background: rgba(7, 7, 7, .96) !important;
-      border-color: rgba(255, 255, 255, .18) !important;
-      color: #fff !important;
-      box-shadow: 0 18px 55px rgba(0, 0, 0, .42), inset 0 1px 0 rgba(255, 255, 255, .06) !important;
-    }
-
-    .product-preview img {
-      border-color: rgba(255, 255, 255, .18) !important;
-      background: #151515 !important;
-    }
-
-    .stock-pill {
-      border-color: #fff !important;
-      color: #fff !important;
-      background: #050505 !important;
-    }
-
-    .stock-pill.ok {
-      background: #fff !important;
-      color: #080808 !important;
-    }
-
-    .form-control,
-    .form-select,
-    textarea.form-control,
-    input[type=file].form-control {
-      background: #fff !important;
-      border-color: #fff !important;
-      color: #080808 !important;
-    }
-
-    .input-group .btn-outline-dark,
-    .variant-choice.btn-outline-dark,
-    .voucher-card .btn-outline-dark {
-      background: transparent !important;
-      border-color: #fff !important;
-      color: #fff !important;
-    }
-
-    .input-group .btn-outline-dark:hover,
-    .variant-choice.btn-outline-dark:hover,
-    .voucher-card .btn-outline-dark:hover {
-      background: #fff !important;
-      color: #080808 !important;
-    }
-
-    .variant-choice.btn-dark {
-      background: #fff !important;
-      border-color: #fff !important;
-      color: #080808 !important;
-    }
-
-    .voucher-card,
-    .installment-summary {
-      background: #070707 !important;
-      border-color: rgba(255, 255, 255, .18) !important;
-      color: #fff !important;
-    }
-
-    .installment-summary-row {
-      border-color: rgba(255, 255, 255, .16) !important;
-    }
-
-    .checkout-side {
-      background: #000 !important;
-      border-left: 1px solid rgba(255, 255, 255, .12);
-    }
-
-    .payment-box {
-      background: #101010 !important;
-      border-color: rgba(255, 255, 255, .2) !important;
-    }
-
-    .modal-content {
-      background: #050505 !important;
-      color: #fff !important;
-      border-color: rgba(255, 255, 255, .28) !important;
-    }
-    .modal .btn-close {
-      filter: invert(1) grayscale(100%);
-      opacity: .9;
-    }
-
-
-    .modal-header,
-    .modal-footer {
-      border-color: rgba(255, 255, 255, .18) !important;
-    }
-
-    .modal .btn-outline-dark {
-      background: transparent !important;
-      border-color: #fff !important;
-      color: #fff !important;
-    }
-
-    .modal .btn-dark {
-      background: #fff !important;
-      border-color: #fff !important;
-      color: #080808 !important;
-    }
-  </style>
-  <link rel="stylesheet" href="/css/checkout-dark.css?v=checkout-ui-20260804">
-  <link rel="stylesheet" href="/css/ideal-ui.css?v=ideal-ui-20260908f">
+<link rel="stylesheet" href="/css/ui-polish.css?v=recovery-1">
+<link rel="stylesheet" href="/css/checkout-dark.css?v=checkout-refine-1">
+<link rel="stylesheet" href="/css/system-fonts.css?v=font-1">
+<link rel="stylesheet" href="/css/store-footer.css?v=footer-2">
+<link rel="stylesheet" href="/css/app-dialogs.css?v=1">
+<link rel="stylesheet" href="/css/customer-typography.css?v=customer-suite-1">
+<link rel="stylesheet" href="/css/customer-checkout.css?v=checkout-2">
+<link rel="stylesheet" href="/css/checkout-modals.css?v=4">
 </head>
 
-<body class="checkout-dark-page">
+<body id="checkoutPage" class="checkout-dark-page">
+    <header id="checkoutHeader" class="topbar checkout-header">
+      <a href="/customer/shop.html" class="brand brand-with-logo" aria-label="Sheena's Gadgets & Accessories Shop home"><img class="brand-logo" src="/assets/sheena-mark.svg?v=sg-2" alt=""><span class="checkout-brand-copy"><strong>Sheena's</strong><small>Gadgets &amp; Accessories Shop</small></span></a>
+      <a href="/customer/shop.html" class="checkout-shop-link" aria-label="Continue shopping" title="Continue shopping">
+        <i data-lucide="arrow-left" aria-hidden="true"></i>
+      </a>
+    </header>
+<div class="checkout-intro">
+  <h1 class="page-title">Checkout</h1>
+  <ol class="checkout-progress" aria-label="Checkout progress">
+    <li id="checkoutDetailsStep" class="is-current" aria-current="step"><span>1</span>Order details</li>
+    <li id="checkoutPaymentStep"><span>2</span>Payment</li>
+    <li id="checkoutConfirmationStep"><span>3</span>Confirmation</li>
+  </ol>
+</div>
 <div class="checkout-shell">
   <main class="checkout-main">
-    <div class="topbar">
-      <a href="/customer/shop.html" class="brand brand-with-logo"><img class="brand-logo" src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a>
-      <a href="/customer/shop.html" class="btn btn-outline-dark">Continue Shopping</a>
-    </div>
-
-    <h1 class="page-title">Secure Checkout</h1>
-    <p class="page-copy">Review your items, delivery details, discount code, and payment choice before placing your order.</p>
-
-    <div class="checkout-promise" aria-label="Checkout benefits">
-      <div class="promise-card"><span>Store Deals</span><strong>Apply vouchers and bundle savings when available.</strong></div>
-      <div class="promise-card"><span>Secure Payments</span><strong>Choose COD, GCash, Maya, card, or installment.</strong></div>
-      <div class="promise-card"><span>Order Tracking</span><strong>Follow your order status from placed to completed.</strong></div>
-    </div>
-
     <section class="panel">
-      <h4 class="mb-3">Order Items</h4>
-      <div id="productInfo">Loading product...</div>
+      <h2 class="checkout-section-title"><i data-lucide="shopping-bag" aria-hidden="true"></i>Your Items</h2>
+      <div id="productInfo" aria-live="polite" aria-busy="true">Loading items...</div>
     </section>
 
     <section class="panel">
-      <h5 class="mb-3">Quantity and Voucher</h5>
+      <h2 id="quantitySectionTitle" class="checkout-section-title"><i data-lucide="badge-percent" aria-hidden="true"></i>Quantity & Savings</h2>
 
       <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label">Quantity</label>
-          <input type="number" id="qty" class="form-control" min="1" value="1" oninput="updateSummary()">
+        <div class="field-third">
+          <label class="form-label" for="qty">Quantity</label>
+          <div class="checkout-quantity-stepper"><button id="checkoutDecreaseQty" type="button" title="Decrease quantity" aria-label="Decrease quantity" onclick="changeCheckoutQuantity(-1)" disabled><i data-lucide="minus" aria-hidden="true"></i></button><input type="number" id="qty" class="form-control" min="1" step="1" inputmode="numeric" value="1" oninput="updateSummary()"><button id="checkoutIncreaseQty" type="button" title="Increase quantity" aria-label="Increase quantity" onclick="changeCheckoutQuantity(1)" disabled><i data-lucide="plus" aria-hidden="true"></i></button></div>
         </div>
 
-        <div class="col-md-8">
-          <label class="form-label">Voucher Code</label>
+        <div class="field-wide">
+          <label class="form-label" for="voucher">Voucher Code</label>
           <div class="input-group">
             <input type="text" id="voucher" class="form-control" placeholder="Optional discount code" oninput="updateSummary()">
-            <button class="btn btn-outline-dark" onclick="previewVoucherNote()">Apply</button>
+            <button class="btn btn-outline-dark" type="button" onclick="previewVoucherNote()">Apply</button>
+            <button id="clearCheckoutVoucher" class="checkout-voucher-clear" type="button" title="Remove voucher" aria-label="Remove voucher" onclick="clearCheckoutVoucher()" hidden><i data-lucide="x" aria-hidden="true"></i></button>
           </div>
           <small class="text-muted">Voucher savings are confirmed when you place your order.</small>
-          <div id="voucherList" class="voucher-list mt-3">Loading vouchers...</div>
+          <small id="voucherFeedback" class="voucher-feedback" role="status"></small>
+          <div id="voucherList" class="voucher-list mt-3" hidden></div>
         </div>
       </div>
     </section>
 
     <section class="panel">
-      <h5 class="mb-3">Delivery Information</h5>
-      <p class="panel-note">Use the address where you want your gadget delivered or released.</p>
+      <h2 class="checkout-section-title"><i data-lucide="map-pin" aria-hidden="true"></i>Delivery Details</h2>
       <div class="row g-3">
-        <div class="col-12">
+        <div class="field-full">
           <div class="saved-address-control">
-            <label class="form-label" for="savedAddressSelect">Saved Address</label>
-            <select id="savedAddressSelect" class="form-select" onchange="applySavedAddress(this.value)">
+            <label class="form-label" for="savedAddressSelect">Default Saved Address</label>
+            <select id="savedAddressSelect" class="form-select" disabled>
               <option value="">Loading saved addresses...</option>
             </select>
-            <small>Manage your saved delivery details in your Profile.</small>
           </div>
         </div>
-        <div class="col-md-6">
-          <label class="form-label">Recipient Name</label>
-          <input id="customerName" class="form-control" placeholder="Receiver name" oninput="updateDeliverySummary()">
+        <div class="field-half">
+          <label class="form-label" for="customerName">Recipient Name</label>
+          <input id="customerName" class="form-control" autocomplete="name" placeholder="Receiver name" oninput="updateDeliverySummary()">
         </div>
-        <div class="col-md-6">
-          <label class="form-label">Contact Number</label>
-          <input id="customerContact" class="form-control" placeholder="Mobile number" oninput="updateDeliverySummary()">
+        <div class="field-half">
+          <label class="form-label" for="customerContact">Contact Number</label>
+          <input id="customerContact" type="tel" autocomplete="tel" class="form-control" placeholder="Mobile number" oninput="updateDeliverySummary()">
         </div>
-        <div class="col-12">
-          <label class="form-label">Delivery Address</label>
-          <textarea id="customerAddress" class="form-control" rows="3" placeholder="Complete delivery address" oninput="updateDeliverySummary()"></textarea>
+        <div class="field-full">
+          <label class="form-label" for="customerAddress">Saved Delivery Address</label>
+          <textarea id="customerAddress" class="form-control" autocomplete="street-address" rows="2" placeholder="Complete delivery address" oninput="updateDeliverySummary()"></textarea>
         </div>
-        <div class="col-md-6">
-          <label class="form-label">Delivery Area</label>
+        <input id="deliveryLandmark" type="hidden">
+        <div class="field-full">
+          <div id="deliveryLocationReview" class="delivery-location-review" aria-live="polite">
+            <div class="delivery-location-review-head"><div><strong id="deliveryLocationTitle">Delivery pin required</strong><span id="deliveryLocationAddress">Add a delivery pin in Account Settings to continue.</span></div><span id="deliveryLocationBadge" class="delivery-location-badge">Pin required</span></div>
+            <div id="deliveryLocationMapPreview" class="delivery-location-map-preview"></div>
+            <div id="deliveryLocationLandmarkText" class="delivery-location-landmark"></div>
+            <div class="delivery-location-review-actions">
+              <button id="confirmDeliveryLocationBtn" class="btn btn-dark" type="button" onclick="confirmDeliveryLocation()" disabled>Confirm Location</button>
+              <a class="btn btn-outline-dark" href="/customer/profile.html?returnTo=%2Fcheckout.html#addresses"><i data-lucide="map-pinned" aria-hidden="true"></i><span>Change Location in Account Settings</span></a>
+            </div>
+            <small id="deliveryLocationHelp">Set a delivery pin in your profile before continuing.</small>
+          </div>
+          <input id="deliveryLatitude" type="hidden">
+          <input id="deliveryLongitude" type="hidden">
+        </div>
+        <div class="field-half">
+          <label class="form-label" for="shippingRegion">Delivery Area</label>
           <select id="shippingRegion" class="form-select" onchange="updateDeliverySummary()">
             <option value="">Choose delivery area</option>
             <option value="local">Local / Nearby Sogod-Bacacay - Free</option>
-            <option value="luzon">Luzon - PHP 180 to PHP 220</option>
-            <option value="visayas">Visayas - PHP 190 to PHP 270</option>
+            <option value="luzon">Luzon - ₱180 to ₱220</option>
+            <option value="visayas">Visayas - ₱190 to ₱270</option>
           </select>
           <small id="shippingHint" class="text-muted">Local nearby delivery is free. Luzon and Visayas have shipping fees.</small>
         </div>
-        <div class="col-md-6">
-          <label class="form-label">Delivery Note</label>
-          <textarea id="deliveryNote" class="form-control" rows="2" placeholder="Optional delivery note" oninput="updateDeliverySummary()"></textarea>
-        </div>
-        <div class="col-12">
-          <div class="save-address-row">
-            <label class="save-address-check" for="saveDeliveryAddress">
-              <input id="saveDeliveryAddress" class="form-check-input" type="checkbox" onchange="toggleSaveAddressLabel()">
-              <span>Save this address for next checkout</span>
-            </label>
-            <input id="saveAddressLabel" class="form-control" placeholder="Address label" value="Home" disabled>
-          </div>
+        <div class="field-half">
+          <label class="form-label" for="deliveryNote">Delivery Note (Optional)</label>
+          <input id="deliveryNote" class="form-control" placeholder="Landmark or delivery instructions" oninput="updateDeliverySummary()">
         </div>
       </div>
     </section>
   </main>
 
   <aside class="checkout-side">
-    <h2 class="side-title">Checkout Summary</h2>
+    <div id="checkoutSummary" class="checkout-summary">
+    <h2 class="side-title">Order Summary</h2>
 
     <div class="summary-row">
       <span>Item</span>
@@ -613,11 +131,11 @@
     </div>
     <div class="summary-row">
       <span>Subtotal</span>
-      <strong id="subtotalText">PHP 0.00</strong>
+      <strong id="subtotalText">₱0.00</strong>
     </div>
-    <div class="summary-row">
+    <div class="summary-row" id="summaryDiscountRow" hidden>
       <span>Voucher Discount</span>
-      <strong id="discountText">PHP 0.00</strong>
+      <strong id="discountText">₱0.00</strong>
     </div>
     <div class="summary-row">
       <span>Delivery Area</span>
@@ -627,134 +145,166 @@
       <span>Shipping Fee</span>
       <strong id="shippingFeeText">Select area</strong>
     </div>
-    <div class="summary-row">
-      <span>Deliver To</span>
-      <strong id="summaryRecipient">-</strong>
-    </div>
-    <div class="summary-row">
-      <span>Contact</span>
-      <strong id="summaryContact">-</strong>
-    </div>
-    <div class="summary-row">
-      <span>Address</span>
-      <strong id="summaryAddress">-</strong>
-    </div>
+    <details class="checkout-delivery-summary"><summary><i data-lucide="truck" aria-hidden="true"></i>Delivery details</summary><div class="summary-row"><span>Deliver To</span><strong id="summaryRecipient">-</strong></div><div class="summary-row"><span>Contact</span><strong id="summaryContact">-</strong></div><div class="summary-row"><span>Address</span><strong id="summaryAddress">-</strong></div></details>
     <div class="summary-total">
       <span>Total</span>
-      <strong id="totalText">PHP 0.00</strong>
+      <strong id="totalText" aria-live="polite">₱0.00</strong>
+    </div>
     </div>
 
-    <label class="form-label">Payment Method</label>
+    <h2 class="checkout-payment-title"><i data-lucide="wallet" aria-hidden="true"></i>Payment</h2>
+    <label class="form-label" for="payment_method">Payment Method</label>
     <select id="payment_method" class="form-select mb-3" onchange="togglePaymentUI()">
       <option value="cod">Cash on Delivery</option>
       <option value="gcash">GCash</option>
-      <option value="maya">Maya</option>
-      <option value="card">Card</option>
       <option id="installmentOption" value="installment">Installment</option>
     </select>
 
     <div id="paymentUI" class="payment-box"></div>
     <small id="summaryNote" class="d-block mt-3 text-muted"></small>
 
-    <button id="placeOrderBtn" class="btn btn-light w-100 mt-4" onclick="placeOrder()">
+    <button id="placeOrderBtn" class="btn btn-light checkout-full-width mt-4" onclick="placeOrder()" disabled>
       Place Order
     </button>
   </aside>
 </div>
 
-<div class="modal fade" id="installmentModal" tabindex="-1">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
+<div class="modal fade checkout-installment-modal" id="installmentModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content installment-modal-card">
       <div class="modal-header">
-        <h5 class="modal-title">Installment Plan Request</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div>
+          <span class="modal-eyebrow">For Review</span>
+          <h5 class="modal-title">Installment Plan Request</h5>
+        </div>
+        <button type="button" class="btn-close" aria-label="Close installment form" data-bs-dismiss="modal" onclick="closeInstallmentModal()"></button>
       </div>
       <div class="modal-body">
-        <p class="text-muted">Complete your verification details for review. If approved, your secure downpayment link will appear before the monthly plan starts.</p>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">Full Name</label>
-            <input id="installmentFullName" class="form-control">
+        <div class="installment-modal-intro">
+          <div>
+            <strong>Submit your details for admin review.</strong>
+            <span>Once approved, your downpayment instructions will appear in your profile before the monthly plan starts.</span>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Birthday</label>
-            <input id="installmentBirthday" type="date" class="form-control">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Phone Number</label>
-            <input id="installmentPhone" class="form-control">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">National ID Number</label>
-            <input id="installmentIdNumber" class="form-control">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">National ID Photo</label>
-            <input id="installmentIdPhoto" type="file" accept="image/*" class="form-control">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Selfie with National ID</label>
-            <input id="installmentSelfiePhoto" type="file" accept="image/*" class="form-control">
-          </div>
-          <div class="col-12">
-            <label class="form-label">Complete Address</label>
-            <textarea id="installmentAddress" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Terms</label>
-            <select id="installmentTerms" class="form-select" onchange="updateInstallmentEstimate()">
-              <option value="3">3 months</option>
-              <option value="6">6 months</option>
-              <option value="12">12 months</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Downpayment Method</label>
-            <select id="installmentDownpaymentMethod" class="form-select">
-              <option value="gcash">GCash</option>
-              <option value="maya">Maya</option>
-              <option value="card">Card</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Downpayment</label>
-            <input id="installmentDownpayment" type="number" min="1" step="0.01" class="form-control" oninput="updateInstallmentEstimate()">
-          </div>
+          <span class="installment-step-chip">For Review Only</span>
         </div>
 
-        <div class="installment-summary mt-3">
-          <div class="installment-summary-row"><span>Order Total</span><strong id="installmentOrderTotal">PHP 0.00</strong></div>
-          <div class="installment-summary-row"><span>Minimum Downpayment</span><strong id="installmentMinimum">PHP 0.00</strong></div>
-          <div class="installment-summary-row"><span>Financed Balance</span><strong id="installmentBalance">PHP 0.00</strong></div>
-          <div class="installment-summary-row"><span>Monthly Payment</span><strong id="installmentMonthly">PHP 0.00</strong></div>
+        <div class="installment-modal-layout">
+          <div class="installment-form-grid">
+            <div class="field-half">
+              <label class="form-label" for="installmentFullName">Full Name</label>
+              <input id="installmentFullName" class="form-control" autocomplete="name" placeholder="Juan Dela Cruz">
+            </div>
+            <div class="field-half">
+              <label class="form-label" for="installmentBirthday">Birthday</label>
+              <input id="installmentBirthday" type="date" class="form-control">
+            </div>
+            <div class="field-half">
+              <label class="form-label" for="installmentPhone">Phone Number</label>
+              <input id="installmentPhone" class="form-control" placeholder="09XXXXXXXXX">
+            </div>
+            <div class="field-half">
+              <label class="form-label" for="installmentIdNumber">National ID Number</label>
+              <input id="installmentIdNumber" class="form-control" placeholder="Enter your National ID number">
+            </div>
+            <div class="field-half upload-field">
+              <label class="form-label" for="installmentIdPhoto">National ID Photo</label>
+              <input id="installmentIdPhoto" type="file" accept="image/*" class="form-control">
+            </div>
+            <div class="field-half upload-field">
+              <label class="form-label" for="installmentSelfiePhoto">Selfie with National ID</label>
+              <input id="installmentSelfiePhoto" type="file" accept="image/*" class="form-control">
+            </div>
+            <div class="field-full">
+              <label class="form-label" for="installmentAddress">Complete Address</label>
+              <textarea id="installmentAddress" class="form-control" rows="3" placeholder="House no., street, barangay, city/municipality, province"></textarea>
+            </div>
+            <div class="field-third">
+              <label class="form-label" for="installmentTerms">Terms</label>
+              <select id="installmentTerms" class="form-select" onchange="updateInstallmentEstimate()">
+                <option value="3">3 months</option>
+                <option value="6">6 months</option>
+                <option value="12">12 months</option>
+              </select>
+            </div>
+            <div class="field-third">
+              <label class="form-label" for="installmentDownpaymentMethod">Preferred Downpayment Method</label>
+              <select id="installmentDownpaymentMethod" class="form-select">
+                <option value="gcash">GCash</option>
+              </select>
+            </div>
+            <div class="field-third">
+              <label class="form-label" for="installmentDownpayment">Estimated Downpayment After Approval</label>
+              <input id="installmentDownpayment" type="number" min="1" step="0.01" class="form-control" readonly>
+            </div>
+          </div>
+
+          <div class="installment-summary installment-estimate-card">
+            <div class="installment-summary-head">
+              <span>Plan Estimate</span>
+              <strong>Computed preview</strong>
+            </div>
+            <div class="installment-summary-row"><span>Order Total</span><strong id="installmentOrderTotal">₱0.00</strong></div>
+            <div class="installment-summary-row"><span>Minimum Downpayment</span><strong id="installmentMinimum">₱0.00</strong></div>
+            <div class="installment-summary-row"><span>Financed Balance</span><strong id="installmentBalance">₱0.00</strong></div>
+            <div class="installment-summary-row"><span>Monthly Payment</span><strong id="installmentMonthly">₱0.00</strong></div>
+            <p class="installment-summary-note">No downpayment is collected until admin approves your installment request.</p>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-dark" onclick="saveInstallmentPlan()">Use This Plan</button>
+        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" onclick="closeInstallmentModal()">Cancel</button>
+        <button type="button" class="btn btn-dark" onclick="saveInstallmentPlan()">Prepare Request</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="successModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
+<footer class="store-footer">
+  <div class="store-footer-inner">
+    <div class="store-footer-brand"><a class="store-footer-logo" href="/customer/shop.html"><img src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a><p class="store-footer-copy">Flexible payment options are available depending on customer needs: cash on delivery and GCash.</p><div class="store-footer-badges"><span class="store-footer-chip">Cash</span><span class="store-footer-chip">GCash</span><span class="store-footer-chip">COD</span></div></div>
+    <div class="store-footer-col"><h3 class="store-footer-title">Shop</h3><a class="store-footer-link" href="/customer/shop.html#products">All Products</a><a class="store-footer-link" href="/customer/shop.html#products">Phones</a><a class="store-footer-link" href="/customer/shop.html#products">Accessories</a><a class="store-footer-link" href="/customer/shop.html#products">New Arrivals</a></div>
+    <div class="store-footer-col"><h3 class="store-footer-title">Customer Care</h3><a class="store-footer-link" href="/customer/profile.html#orders">Track Orders</a><a class="store-footer-link" href="/customer/profile.html#addresses">Address Book</a><a class="store-footer-link" href="/customer/profile.html#repairs">Repairs & Warranty</a><a class="store-footer-link" href="/customer/profile.html#payments">Payments</a></div>
+    <div class="store-footer-col"><h3 class="store-footer-title">Company</h3><a class="store-footer-link" href="/about.html">About Us</a><a class="store-footer-link" href="/terms.html">Terms & Conditions</a><a class="store-footer-link" href="/privacy.html">Privacy Policy</a><span class="store-footer-text">Bacacay and Tabaco, Albay</span></div>
+  </div>
+  <div class="store-footer-bottom"><span>&copy; 2026 <strong>Sheena's Gadgets & Accessories Shop</strong>. All rights reserved.</span><span>Rider delivery • Service and replacement support</span></div>
+</footer>
+
+<div class="modal fade checkout-result-modal" id="successModal" tabindex="-1" aria-labelledby="orderSuccessTitle" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Order Successful</h5>
+        <span id="orderSuccessIcon" class="checkout-result-icon"><i data-lucide="check" aria-hidden="true"></i></span>
+        <div><p class="checkout-modal-eyebrow">Checkout confirmation</p><h5 id="orderSuccessTitle" class="modal-title">Order Submitted</h5></div>
       </div>
       <div class="modal-body">
-        <p id="orderSuccessText" class="mb-0" style="white-space: pre-line;"></p>
+        <div id="orderSuccessText"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-dark" onclick="redirectShop()">Back to Shop</button>
+        <button id="orderSuccessView" type="button" class="btn btn-outline-dark" hidden><i data-lucide="package-search" aria-hidden="true"></i>View Order</button>
+        <button id="orderSuccessAction" type="button" class="btn btn-dark" onclick="redirectShop()">Back to Shop</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade checkout-gcash-zoom-modal" id="gcashQrZoomModal" tabindex="-1" aria-labelledby="gcashQrZoomTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="gcashQrZoomTitle" class="modal-title">GCash payment QR</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close QR zoom"></button>
+      </div>
+      <div class="modal-body">
+        <img id="gcashQrZoomImage" alt="Enlarged store GCash payment QR code">
       </div>
     </div>
   </div>
 </div>
 
 <script src="/js/order-reference.js"></script>
+<script src="/js/delivery-chat.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/app-dialogs.js?v=checkout-review-2"></script>
 <script>
 const checkout = JSON.parse(localStorage.getItem("checkout"));
 const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
@@ -774,17 +324,87 @@ const canInitializeCheckout = Boolean(checkout && currentUser && currentUser.rol
 let selectedProduct = null;
 let checkoutItems = [];
 let vouchers = [];
+let applicableVouchers = [];
+let voucherRefreshTimer = null;
+let voucherRefreshSequence = 0;
 let savedAddresses = [];
 let customerAccount = currentUser ? { ...currentUser } : null;
 let successModal = null;
 let installmentModal = null;
+let gcashQrZoomModal = null;
 let orderPreview = { subtotal: 0, discount: 0, shipping: 0, shipping_region: "", total: 0 };
+let voucherValidation = null;
 let variants = [];
 let installmentPlan = null;
+let gcashConfig = {
+    account_name: "SH*** M** C.",
+  account_number: "",
+  qr_image: "/assets/gcash-store-qr-code.png"
+};
+let gcashCheckoutStep = "details";
+let confirmedDeliveryLocation = false;
+let activeDeliveryAddress = null;
 let selectedVariantIndex = normalizeVariantIndex(checkout?.variant_index);
+let checkoutProductState = "loading";
+
+function escapeCheckoutHtml(value) {
+  return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function refreshCheckoutIcons() {
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function setCheckoutIconLabel(element, text, icon) {
+  if (!element) return;
+  element.innerHTML = `<i data-lucide="${icon}" aria-hidden="true"></i><span>${escapeCheckoutHtml(text)}</span>`;
+  refreshCheckoutIcons();
+}
+
+function setCheckoutProgress(stage) {
+  const stages = ["details", "payment", "confirmation"];
+  const index = stages.indexOf(stage);
+  ["checkoutDetailsStep", "checkoutPaymentStep", "checkoutConfirmationStep"].forEach((id, position) => {
+    const item = document.getElementById(id);
+    item.classList.toggle("is-current", position === index);
+    item.classList.toggle("is-complete", position < index);
+    if (position === index) item.setAttribute("aria-current", "step");
+    else item.removeAttribute("aria-current");
+  });
+}
+
+function syncCheckoutQuantityControls() {
+  const input = document.getElementById("qty");
+  const stock = selectedProduct ? activeStock() : 0;
+  const quantity = Number(input.value);
+  input.disabled = !selectedProduct || stock <= 0;
+  document.getElementById("checkoutDecreaseQty").disabled = !selectedProduct || quantity <= 1 || stock <= 0;
+  document.getElementById("checkoutIncreaseQty").disabled = !selectedProduct || quantity >= stock || stock <= 0;
+  document.getElementById("clearCheckoutVoucher").hidden = !document.getElementById("voucher").value;
+}
+
+function changeCheckoutQuantity(change) {
+  if (!selectedProduct || activeStock() <= 0 || isCartCheckout) return;
+  const input = document.getElementById("qty");
+  const quantity = Number(input.value);
+  input.value = Math.max(1, Math.min(activeStock(), (Number.isFinite(quantity) ? Math.floor(quantity) : 1) + change));
+  updateSummary();
+}
+
+function clearCheckoutVoucher() {
+  document.getElementById("voucher").value = "";
+  document.getElementById("voucherFeedback").textContent = "";
+  voucherValidation = null;
+  updateSummary();
+  document.getElementById("voucher").focus();
+}
+
+function checkoutPhotoHtml(image, name) {
+  return `<span class="checkout-photo"><span class="checkout-empty-photo" ${image ? "hidden" : ""} aria-label="Image unavailable"><i data-lucide="image-off" aria-hidden="true"></i></span>${image ? `<img src="${escapeCheckoutHtml(image)}" alt="${escapeCheckoutHtml(name)}" onerror="this.hidden=true;this.previousElementSibling.hidden=false">` : ""}</span>`;
+}
 
 function money(value) {
-  return `PHP ${Number(value || 0).toLocaleString(undefined, {
+  return `₱${Number(value || 0).toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   })}`;
@@ -954,7 +574,7 @@ function buildCheckoutItem(rawItem, products) {
     product_id: product.id,
     variant_index: checkoutVariantValue(variantIndex),
     name: product.name,
-    image: images[0] || "https://via.placeholder.com/600x460?text=Product",
+    image: images[0] || "",
     variant_name: variant ? variant.name : "Default",
     quantity,
     stock,
@@ -964,6 +584,7 @@ function buildCheckoutItem(rawItem, products) {
 }
 
 function renderCartCheckout(products) {
+  document.body.classList.add("checkout-cart-mode");
   checkoutItems = checkout.items
     .map(item => buildCheckoutItem(item, products))
     .filter(Boolean);
@@ -974,14 +595,16 @@ function renderCartCheckout(products) {
     return;
   }
 
-  document.querySelector(".panel h4").innerText = "Cart Items";
+  const firstSectionTitle = document.querySelector(".panel .checkout-section-title");
+  setCheckoutIconLabel(firstSectionTitle, "Cart Items", "shopping-bag");
+  setCheckoutIconLabel(document.getElementById("quantitySectionTitle"), "Savings", "badge-percent");
   document.getElementById("productInfo").innerHTML = checkoutItems.map(item => `
     <div class="product-preview mb-3">
-      <img src="${item.image}" alt="${item.name}">
+      ${checkoutPhotoHtml(item.image, item.name)}
       <div>
         <span class="stock-pill ${stockLabel(item.stock).className}">${stockLabel(item.stock).text}</span>
-        <h3 class="fw-bold">${item.name}</h3>
-        <p class="text-muted mb-2">${item.variant_name} - Qty ${item.quantity}</p>
+        <h3 class="fw-bold"><a href="/customer/product.html?id=${Number(item.product_id)}">${escapeCheckoutHtml(item.name)}</a></h3>
+        <p class="text-muted mb-2">${escapeCheckoutHtml(item.variant_name)} &middot; Qty ${item.quantity}</p>
         <h4>${money(item.subtotal)}</h4>
       </div>
     </div>
@@ -989,9 +612,7 @@ function renderCartCheckout(products) {
 
   document.getElementById("summaryItem").innerText = `${checkoutItems.length} cart item${checkoutItems.length === 1 ? "" : "s"}`;
   document.getElementById("summaryVariantRow").style.display = "none";
-  document.getElementById("qty").closest(".col-md-4").style.display = "none";
-  document.getElementById("voucher").disabled = true;
-  document.querySelector("#voucher + button").disabled = true;
+  document.getElementById("qty").closest(".field-third").style.display = "none";
   const paymentSelect = document.getElementById("payment_method");
   document.getElementById("installmentOption").disabled = true;
   document.querySelectorAll("#payment_method option").forEach(option => {
@@ -1000,6 +621,7 @@ function renderCartCheckout(products) {
   if (paymentSelect && paymentSelect.value === "installment") {
     paymentSelect.value = "cod";
   }
+  refreshCheckoutIcons();
   updateSummary();
 }
 function activePrice() {
@@ -1017,9 +639,55 @@ function getDeliveryDetails() {
     recipient_name: document.getElementById("customerName").value.trim(),
     delivery_contact: document.getElementById("customerContact").value.trim(),
     delivery_address: document.getElementById("customerAddress").value.trim(),
+    delivery_landmark: document.getElementById("deliveryLandmark").value.trim(),
+    delivery_latitude: document.getElementById("deliveryLatitude").value === "" ? null : Number(document.getElementById("deliveryLatitude").value),
+    delivery_longitude: document.getElementById("deliveryLongitude").value === "" ? null : Number(document.getElementById("deliveryLongitude").value),
     delivery_note: document.getElementById("deliveryNote").value.trim(),
     shipping_region: normalizeShippingRegion(document.getElementById("shippingRegion")?.value || "")
   };
+}
+
+function selectedCheckoutType() {
+  const method = document.getElementById("payment_method")?.value || "cod";
+  return method === "installment" ? "installment" : "regular";
+}
+
+function checkoutItemsForVoucher() {
+  if (isCartCheckout) {
+    return checkoutItems.map(item => ({
+      product_id: item.product_id,
+      quantity: item.quantity,
+      variant_index: item.variant_index
+    }));
+  }
+
+  return [{
+    product_id: checkout.product_id,
+    quantity: Number(document.getElementById("qty")?.value || checkout.quantity || 1),
+    variant_index: checkoutVariantValue(selectedVariantIndex)
+  }];
+}
+
+function voucherItemsSignature() {
+  return JSON.stringify(checkoutItemsForVoucher().map(item => ({
+    product_id: Number(item.product_id),
+    quantity: Number(item.quantity),
+    variant_index: item.variant_index ?? null
+  })));
+}
+
+function appliedVoucherForCurrentCode() {
+  const code = document.getElementById("voucher")?.value.trim().toUpperCase() || "";
+  if (!code || !voucherValidation?.valid) return null;
+  const subtotal = isCartCheckout
+    ? checkoutItems.reduce((sum, item) => sum + item.subtotal, 0)
+    : activePrice() * Math.max(Number(document.getElementById("qty")?.value || 1), 1);
+  return String(voucherValidation.normalized_code || voucherValidation.voucher_code || "").toUpperCase() === code
+    && Number(voucherValidation.order_subtotal || 0).toFixed(2) === Number(subtotal || 0).toFixed(2)
+    && (!voucherValidation._itemsSignature || voucherValidation._itemsSignature === voucherItemsSignature())
+    && String(voucherValidation.checkout_type || "regular") === selectedCheckoutType()
+    ? voucherValidation
+    : null;
 }
 
 function updateDeliverySummary() {
@@ -1080,9 +748,17 @@ function syncInstallmentFromDelivery(force = false) {
 
 function applyAccountFallback() {
   const account = customerAccount || currentUser || {};
+  activeDeliveryAddress = null;
+  confirmedDeliveryLocation = false;
   fillIfEmpty("customerName", account.name || "");
   fillIfEmpty("customerContact", account.phone || "");
   fillIfEmpty("customerAddress", accountAddressLine(account));
+  document.getElementById("customerAddress").readOnly = true;
+  document.getElementById("deliveryLandmark").value = "";
+  document.getElementById("deliveryLatitude").value = "";
+  document.getElementById("deliveryLongitude").value = "";
+  renderDeliveryLocationReview(null);
+  syncPlaceOrderButton();
   setShippingRegionFromText(accountAddressLine(account), false);
   syncInstallmentFromDelivery(false);
   updateDeliverySummary();
@@ -1098,12 +774,74 @@ function syncCheckoutAccount(user) {
 
 function applyAddress(address) {
   if (!address) return;
+  activeDeliveryAddress = address;
+  confirmedDeliveryLocation = false;
   document.getElementById("customerName").value = address.recipient_name || currentUser?.name || "";
   document.getElementById("customerContact").value = address.phone || "";
   document.getElementById("customerAddress").value = fullAddressLine(address) || address.address || "";
+  document.getElementById("customerAddress").readOnly = true;
+  document.getElementById("deliveryLandmark").value = address.landmark || "";
+  document.getElementById("deliveryLatitude").value = address.latitude ?? "";
+  document.getElementById("deliveryLongitude").value = address.longitude ?? "";
   setShippingRegionFromText(address.province || fullAddressLine(address), true);
+  renderDeliveryLocationReview(address);
   syncInstallmentFromDelivery(true);
   updateDeliverySummary();
+}
+
+function renderDeliveryLocationReview(address = activeDeliveryAddress) {
+  const hasCoordinates = address?.latitude !== null && address?.latitude !== undefined && address?.latitude !== "" &&
+    address?.longitude !== null && address?.longitude !== undefined && address?.longitude !== "";
+  const lat = hasCoordinates ? Number(address.latitude) : NaN;
+  const lng = hasCoordinates ? Number(address.longitude) : NaN;
+  const validPin = Number.isFinite(lat) && lat >= -90 && lat <= 90 && Number.isFinite(lng) && lng >= -180 && lng <= 180;
+  const locationAddress = document.getElementById("deliveryLocationAddress");
+  const title = document.getElementById("deliveryLocationTitle");
+  const badge = document.getElementById("deliveryLocationBadge");
+  const button = document.getElementById("confirmDeliveryLocationBtn");
+  const help = document.getElementById("deliveryLocationHelp");
+  const landmark = document.getElementById("deliveryLocationLandmarkText");
+  const preview = document.getElementById("deliveryLocationMapPreview");
+  const addressLine = fullAddressLine(address || {}) || address?.address || "";
+
+  if (title) title.textContent = validPin ? "Review your delivery location" : "Delivery pin required";
+  if (locationAddress) locationAddress.textContent = validPin
+    ? addressLine || "Saved delivery location"
+    : "Add a delivery pin in Account Settings to continue.";
+  if (landmark) {
+    landmark.textContent = validPin && address?.landmark ? `Landmark: ${address.landmark}` : "";
+    landmark.style.display = validPin && address?.landmark ? "block" : "none";
+  }
+  if (button) {
+    button.disabled = !validPin || confirmedDeliveryLocation;
+    setCheckoutIconLabel(button, confirmedDeliveryLocation ? "Location Confirmed" : "Confirm Location", confirmedDeliveryLocation ? "check-check" : "map-pin-check");
+  }
+  if (badge) {
+    badge.textContent = confirmedDeliveryLocation ? "Confirmed" : validPin ? "Review needed" : "Pin required";
+    badge.classList.toggle("confirmed", confirmedDeliveryLocation);
+  }
+  if (help) help.textContent = validPin
+    ? confirmedDeliveryLocation ? "This confirmed pin will be attached to this order." : "Confirm this saved location before continuing. Change it in Account Settings if needed."
+    : "Set and save a delivery pin in Account Settings before placing an order.";
+  if (preview) {
+    preview.style.display = validPin ? "block" : "none";
+    if (validPin) {
+      const pad = 0.006;
+      const bbox = `${lng - pad},${lat - pad},${lng + pad},${lat + pad}`;
+      preview.innerHTML = `<iframe title="Saved delivery pin preview" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}"></iframe>`;
+    } else preview.innerHTML = "";
+  }
+}
+
+function confirmDeliveryLocation() {
+  const delivery = getDeliveryDetails();
+  if (!activeDeliveryAddress || !Number.isFinite(delivery.delivery_latitude) || !Number.isFinite(delivery.delivery_longitude) || !delivery.delivery_address) {
+    alert("Set and save a delivery pin in Account Settings before continuing.");
+    return;
+  }
+  confirmedDeliveryLocation = true;
+  renderDeliveryLocationReview(activeDeliveryAddress);
+  syncPlaceOrderButton();
 }
 
 async function loadCustomerProfile() {
@@ -1123,18 +861,17 @@ function renderSavedAddressOptions() {
   if (!select) return;
 
   if (!savedAddresses.length) {
-    select.innerHTML = `<option value="">No saved address yet - type manually</option>`;
+    select.innerHTML = `<option value="">No saved location - use Account Settings</option>`;
+    select.disabled = true;
     applyAccountFallback();
     return;
   }
 
-  select.innerHTML = `<option value="">Type a different address</option>` + savedAddresses.map(address => `
-    <option value="${address.id}">${address.is_default ? "Default - " : ""}${address.label || "Address"} / ${address.recipient_name || "Customer"}</option>
-  `).join("");
-
   const defaultAddress = savedAddresses.find(address => Number(address.is_default || 0) === 1) || savedAddresses[0];
+  select.innerHTML = `<option value="${defaultAddress.id}">${defaultAddress.label || "Address"} / ${defaultAddress.recipient_name || "Customer"}</option>`;
+  select.value = String(defaultAddress.id);
+  select.disabled = true;
   if (defaultAddress) {
-    select.value = String(defaultAddress.id);
     applyAddress(defaultAddress);
   }
 }
@@ -1208,7 +945,8 @@ async function loadSavedAddresses() {
     renderSavedAddressOptions();
   } catch (error) {
     savedAddresses = [];
-    select.innerHTML = `<option value="">Saved addresses unavailable - type manually</option>`;
+    select.innerHTML = `<option value="">Saved location unavailable</option>`;
+    select.disabled = true;
     applyAccountFallback();
   }
 }
@@ -1218,8 +956,16 @@ function prefillDeliveryInfo() {
 }
 
 async function loadProduct() {
+  checkoutProductState = "loading";
+  document.getElementById("productInfo").textContent = "Loading items...";
+  document.getElementById("productInfo").setAttribute("aria-busy", "true");
+  syncPlaceOrderButton();
+  try {
   const res = await fetch("/products");
+  if (!res.ok) throw new Error("Items are unavailable right now.");
   const products = await res.json();
+  if (!Array.isArray(products)) throw new Error("Unable to load checkout items.");
+  checkoutProductState = "ready";
 
   if (isCartCheckout) {
     renderCartCheckout(products);
@@ -1242,7 +988,7 @@ async function loadProduct() {
   }
 
   if (variants.length && (selectedVariantIndex === null || !variants[selectedVariantIndex])) {
-    selectedVariantIndex = 0;
+    selectedVariantIndex = resolveCheckoutVariant({}, variants).index;
   }
 
   const images = productImages(selectedProduct);
@@ -1253,28 +999,28 @@ async function loadProduct() {
   document.getElementById("summaryVariant").innerText = variant ? variant.name : "-";
   document.getElementById("productInfo").innerHTML = `
     <div class="product-preview">
-      <img src="${images[0] || "https://via.placeholder.com/600x460?text=Product"}" alt="${selectedProduct.name}">
+      ${checkoutPhotoHtml(images[0], selectedProduct.name)}
       <div>
         <span class="stock-pill ${stock.className}">${stock.text}</span>
-        <h3 class="fw-bold">${selectedProduct.name}</h3>
-        <p class="text-muted">${selectedProduct.description || "No description available."}</p>
-        ${variants.length ? `
-          <label class="form-label">Variant</label>
-          <div class="variant-list">
-            ${variants.map((variant, index) => `
-              <button type="button"
-                class="btn variant-choice ${index === selectedVariantIndex ? "btn-dark" : "btn-outline-dark"}"
-                ${Number(variant.stock || 0) <= 0 ? "disabled" : ""}
-                onclick="changeVariant(${index})">
-                <strong>${variant.name}</strong>
-                <span>${money(variant.price)} / ${Number(variant.stock || 0) <= 5 ? "Limited pieces" : "Available today"}</span>
-              </button>
-            `).join("")}
-          </div>
-        ` : ""}
+        <h3 class="fw-bold"><a href="/customer/product.html?id=${Number(selectedProduct.id)}">${escapeCheckoutHtml(selectedProduct.name)}</a></h3>
         <h4 id="activePrice">${money(activePrice())}</h4>
       </div>
     </div>
+        ${variants.length ? `
+          <div class="checkout-variant-group"><span id="checkoutVariantHeading" class="form-label">Variant</span>
+          <div class="variant-list" role="group" aria-labelledby="checkoutVariantHeading">
+            ${variants.map((variant, index) => `
+              <button type="button"
+                class="btn variant-choice ${index === selectedVariantIndex ? "btn-dark" : "btn-outline-dark"}"
+                aria-pressed="${index === selectedVariantIndex}"
+                ${Number(variant.stock || 0) <= 0 ? "disabled" : ""}
+                onclick="changeVariant(${index})">
+                <strong>${escapeCheckoutHtml(variant.name)}</strong>
+                <span>${money(variant.price)} &middot; ${Number(variant.stock || 0) <= 0 ? "Out of stock" : `${Number(variant.stock)} available`}</span>
+              </button>
+            `).join("")}
+          </div></div>
+        ` : ""}
   `;
 
   const qtyInput = document.getElementById("qty");
@@ -1283,6 +1029,17 @@ async function loadProduct() {
     qtyInput.value = Math.min(Math.max(Number(checkout.quantity || 1), 1), activeStock() || 1);
   }
   updateSummary();
+  refreshCheckoutIcons();
+  } catch (error) {
+    checkoutProductState = "error";
+    selectedProduct = null;
+    checkoutItems = [];
+    document.getElementById("productInfo").innerHTML = `<div class="checkout-load-error"><span>Unable to load your items.</span><button type="button" onclick="loadProduct()"><i data-lucide="rotate-cw" aria-hidden="true"></i>Try again</button></div>`;
+    syncPlaceOrderButton();
+    refreshCheckoutIcons();
+  } finally {
+    document.getElementById("productInfo").setAttribute("aria-busy", "false");
+  }
 }
 
 function changeVariant(value) {
@@ -1302,11 +1059,13 @@ function changeVariant(value) {
   document.querySelectorAll("#productInfo .btn").forEach(button => {
     button.classList.remove("btn-dark");
     button.classList.add("btn-outline-dark");
+    button.setAttribute("aria-pressed", "false");
   });
   const selectedButton = document.querySelectorAll("#productInfo .btn")[selectedVariantIndex];
   if (selectedButton) {
     selectedButton.classList.add("btn-dark");
     selectedButton.classList.remove("btn-outline-dark");
+    selectedButton.setAttribute("aria-pressed", "true");
   }
 
   const quantity = Number(qty.value || checkout.quantity || 1);
@@ -1324,16 +1083,24 @@ function changeVariant(value) {
 }
 
 function updateSummary() {
+  syncCheckoutQuantityControls();
+  const applied = appliedVoucherForCurrentCode();
+  document.getElementById("summaryDiscountRow").hidden = !applied || Number(applied.discount || 0) <= 0;
+  document.getElementById("voucherFeedback").textContent = applied ? `Saved ${money(applied.discount)} with ${applied.voucher_code || applied.normalized_code}.` : "";
+  scheduleApplicableVoucherRefresh();
   if (isCartCheckout) {
     const subtotal = checkoutItems.reduce((sum, item) => sum + item.subtotal, 0);
     const invalidItem = checkoutItems.find(item => item.quantity <= 0 || item.quantity > item.stock || item.stock <= 0);
     const note = document.getElementById("summaryNote");
     const button = document.getElementById("placeOrderBtn");
+    const voucherResult = appliedVoucherForCurrentCode();
+    const discount = Math.min(Number(voucherResult?.discount || 0), subtotal);
 
     const shipping = shippingPreview(subtotal);
-    orderPreview = { subtotal, discount: 0, shipping: shipping.fee, shipping_region: shipping.region, total: subtotal + shipping.fee };
+    orderPreview = { subtotal, discount, shipping: shipping.fee, shipping_region: shipping.region, total: Math.max(subtotal - discount, 0) + shipping.fee };
+    updateGcashAmount();
     document.getElementById("subtotalText").innerText = money(orderPreview.subtotal);
-    document.getElementById("discountText").innerText = money(0);
+    document.getElementById("discountText").innerText = money(discount);
     renderShippingSummary(shipping);
     document.getElementById("totalText").innerText = money(orderPreview.total);
 
@@ -1350,7 +1117,11 @@ function updateSummary() {
       return;
     }
 
-    note.innerText = "Cart review complete. Choose a payment method to continue.";
+    note.innerText = voucherResult
+      ? `Voucher "${voucherResult.voucher_code}" applied. You saved ${money(discount)}.`
+      : document.getElementById("payment_method").value === "gcash"
+        ? gcashCheckoutStep === "details" ? "Order details ready. Submit to continue to GCash payment." : "Send payment and submit its reference and proof to finish."
+        : "Cart review complete. Choose a payment method to continue.";
     button.disabled = false;
     togglePaymentUI();
     return;
@@ -1364,15 +1135,17 @@ function updateSummary() {
   const note = document.getElementById("summaryNote");
   const button = document.getElementById("placeOrderBtn");
 
-  const voucherResult = voucherPreview(subtotal, quantity);
+  const voucherResult = appliedVoucherForCurrentCode();
+  const discount = Math.min(Number(voucherResult?.discount || 0), subtotal);
   const shipping = shippingPreview(subtotal);
   orderPreview = {
     subtotal,
-    discount: voucherResult.discount,
+    discount,
     shipping: shipping.fee,
     shipping_region: shipping.region,
-    total: voucherResult.total + shipping.fee
+    total: Math.max(subtotal - discount, 0) + shipping.fee
   };
+  updateGcashAmount();
 
   document.getElementById("subtotalText").innerText = money(orderPreview.subtotal);
   document.getElementById("discountText").innerText = money(orderPreview.discount);
@@ -1401,60 +1174,24 @@ function updateSummary() {
     return;
   }
 
-  if (voucherResult.invalid) {
-    note.innerText = voucherResult.message;
-    button.disabled = true;
-    return;
-  }
-
   if (!shipping.region) {
     note.innerText = "Choose delivery area to compute shipping fee.";
     button.disabled = true;
     return;
   }
 
-  note.innerText = voucherResult.message;
+  note.innerText = voucherResult
+    ? `Voucher "${voucherResult.voucher_code}" applied. You saved ${money(discount)}.`
+    : document.getElementById("payment_method").value === "gcash"
+      ? gcashCheckoutStep === "details" ? "Order details ready. Submit to continue to GCash payment." : "Send payment and submit its reference and proof to finish."
+      : "Review complete. Choose a payment method to continue.";
   button.disabled = false;
+  syncPlaceOrderButton();
 }
 
-function findVoucherByCode(code) {
-  return vouchers.find(voucher => String(voucher.code || "").toLowerCase() === String(code || "").trim().toLowerCase());
-}
-
-function voucherPreview(subtotal, quantity) {
-  const code = document.getElementById("voucher")?.value.trim();
-  if (!code) return { discount: 0, total: subtotal, message: "Review complete. Choose a payment method to continue.", invalid: false };
-
-  const voucher = findVoucherByCode(code);
-  if (!voucher) return { discount: 0, total: subtotal, message: `Voucher "${code}" is not available.`, invalid: true };
-
-  const voucherProductId = Number(voucher.product_id || 0);
-  if (voucherProductId && Number(checkout.product_id) !== voucherProductId) {
-    return { discount: 0, total: subtotal, message: `Voucher "${voucher.code}" is for another product.`, invalid: true };
-  }
-
-  if (Number(voucher.min_amount || 0) > subtotal) {
-    return { discount: 0, total: subtotal, message: `Voucher "${voucher.code}" needs minimum spend of ${money(voucher.min_amount)}.`, invalid: true };
-  }
-
-  if (Number(voucher.min_quantity || 0) > quantity) {
-    return { discount: 0, total: subtotal, message: `Voucher "${voucher.code}" needs at least ${voucher.min_quantity} item(s).`, invalid: true };
-  }
-
-  let discount = voucher.discount_type === "percent"
-    ? subtotal * Number(voucher.discount_value || 0) / 100
-    : Number(voucher.discount_value || 0);
-  discount = Math.min(discount, subtotal);
-  return {
-    discount,
-    total: Math.max(subtotal - discount, 0),
-    message: `Voucher "${voucher.code}" applied. You saved ${money(discount)}.`,
-    invalid: false
-  };
-}
 function voucherLabel(voucher) {
   const discount = voucher.discount_type === "percent"
-    ? `${Number(voucher.discount_value || 0)}% off`
+    ? `${Number(voucher.discount_value || 0)}% off${Number(voucher.max_discount_amount || 0) > 0 ? `, max ${money(voucher.max_discount_amount)}` : ""}`
     : `${money(voucher.discount_value)} off`;
   const rules = [];
   if (Number(voucher.min_amount || 0) > 0) rules.push(`Min spend ${money(voucher.min_amount)}`);
@@ -1465,15 +1202,13 @@ function voucherLabel(voucher) {
 function renderVouchers() {
   const list = document.getElementById("voucherList");
   if (!list) return;
-  if (isCartCheckout) {
-    list.innerHTML = `<div class="text-muted">Vouchers are available for single-item checkout first.</div>`;
+  if (!applicableVouchers.length) {
+    list.hidden = true;
+    list.innerHTML = "";
     return;
   }
-  if (!vouchers.length) {
-    list.innerHTML = `<div class="text-muted">No active vouchers right now.</div>`;
-    return;
-  }
-  list.innerHTML = vouchers.slice(0, 6).map(voucher => {
+  list.hidden = false;
+  list.innerHTML = applicableVouchers.slice(0, 6).map(voucher => {
     const label = voucherLabel(voucher);
     return `
       <div class="voucher-card">
@@ -1487,10 +1222,48 @@ function renderVouchers() {
   }).join("");
 }
 
+function scheduleApplicableVoucherRefresh() {
+  clearTimeout(voucherRefreshTimer);
+  voucherRefreshTimer = setTimeout(refreshApplicableVouchers, 250);
+}
+
+async function refreshApplicableVouchers() {
+  const sequence = ++voucherRefreshSequence;
+  const items = checkoutItemsForVoucher();
+  if (!vouchers.length || !items.length || (!isCartCheckout && !selectedProduct)) {
+    applicableVouchers = [];
+    renderVouchers();
+    return;
+  }
+
+  const checkoutType = selectedCheckoutType();
+  const results = await Promise.all(vouchers.map(async voucher => {
+    try {
+      const res = await fetch("/vouchers/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: voucher.code,
+          customer_id: currentUser.id,
+          checkout_type: checkoutType,
+          items
+        })
+      });
+      const data = await res.json();
+      return data.valid ? voucher : null;
+    } catch (error) {
+      return null;
+    }
+  }));
+
+  if (sequence !== voucherRefreshSequence) return;
+  applicableVouchers = results.filter(Boolean);
+  renderVouchers();
+}
+
 function useVoucher(code) {
   document.getElementById("voucher").value = code;
   previewVoucherNote();
-  updateSummary();
 }
 
 async function loadVouchers() {
@@ -1502,47 +1275,229 @@ async function loadVouchers() {
     vouchers = [];
   }
   renderVouchers();
-  updateSummary();
+  if (selectedProduct || checkoutItems.length) scheduleApplicableVoucherRefresh();
 }
-function previewVoucherNote() {
-  updateSummary();
-}
-
-function togglePaymentUI() {
-  const method = document.getElementById("payment_method").value;
-  const ui = document.getElementById("paymentUI");
-
-  if (isCartCheckout) {
-    if (["gcash", "maya", "card"].includes(method)) {
-      ui.innerHTML = `<strong>Secure Online Checkout</strong><span class="d-block text-white-50 mt-1">Your selected items can be paid in one secure online checkout session.</span>`;
-    } else {
-      ui.innerHTML = `<span class="text-white-50">Cash will be collected when your cart order is delivered or released.</span>`;
+async function previewVoucherNote() {
+  const code = document.getElementById("voucher")?.value.trim();
+  const note = document.getElementById("summaryNote");
+  const feedback = document.getElementById("voucherFeedback");
+  const signature = voucherItemsSignature();
+  const checkoutType = selectedCheckoutType();
+  if (!code) {
+    voucherValidation = null;
+    updateSummary();
+    return;
+  }
+  try {
+    if (note) note.innerText = "Checking voucher...";
+    feedback.textContent = "Checking voucher...";
+    const res = await fetch("/vouchers/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        code,
+        customer_id: currentUser.id,
+        checkout_type: selectedCheckoutType(),
+        items: checkoutItemsForVoucher()
+      })
+    });
+    const data = await res.json();
+    if (document.getElementById("voucher").value.trim().toUpperCase() !== code.toUpperCase() || signature !== voucherItemsSignature() || checkoutType !== selectedCheckoutType()) return;
+    if (!res.ok || !data.valid) {
+      voucherValidation = null;
+      updateSummary();
+      if (note) note.innerText = data.message || "Voucher is not available.";
+      feedback.textContent = data.message || "Voucher is not available.";
+      return;
     }
+    voucherValidation = { ...data, _itemsSignature: signature };
+  } catch (error) {
+    voucherValidation = null;
+    updateSummary();
+    feedback.textContent = "Unable to validate voucher. Please try again.";
+    return;
+  }
+  updateSummary();
+}
+
+function syncPlaceOrderButton() {
+  const button = document.getElementById("placeOrderBtn");
+  const method = document.getElementById("payment_method")?.value || "cod";
+  if (!button) return;
+  const paymentStage = method === "gcash" ? gcashCheckoutStep === "payment" : confirmedDeliveryLocation;
+  setCheckoutProgress(paymentStage ? "payment" : "details");
+  document.body.classList.toggle("checkout-gcash-payment-step", method === "gcash" && gcashCheckoutStep === "payment");
+  if (checkoutProductState !== "ready") {
+    setCheckoutIconLabel(button, checkoutProductState === "error" ? "Items Unavailable" : "Loading Items...", "package");
+    button.disabled = true;
+    return;
+  }
+  const quantity = Number(document.getElementById("qty").value);
+  const validItems = isCartCheckout
+    ? checkoutItems.length > 0 && checkoutItems.every(item => Number.isInteger(item.quantity) && item.quantity > 0 && item.quantity <= item.stock)
+    : selectedProduct && Number.isInteger(quantity) && quantity > 0 && quantity <= activeStock();
+  const ready = validItems && confirmedDeliveryLocation && Boolean(shippingPreview().region);
+
+  if (!isCartCheckout && method === "installment") {
+    setCheckoutIconLabel(button, installmentPlan ? "Submit Installment Request" : "Apply for Installment First", "clipboard-check");
+    button.disabled = !installmentPlan || !ready;
     return;
   }
 
+  const label = !confirmedDeliveryLocation
+    ? "Confirm Your Location First"
+    : method === "gcash"
+    ? gcashCheckoutStep === "details" ? "Submit Order Details" : "Submit Proof & Place Order"
+    : "Place Order";
+  setCheckoutIconLabel(button, label, !confirmedDeliveryLocation ? "map-pin" : method === "gcash" && gcashCheckoutStep === "payment" ? "upload" : "arrow-right");
+  button.disabled = !ready;
+}
+
+function renderGcashPaymentUI(ui) {
+  if (gcashCheckoutStep === "details") {
+    ui.innerHTML = `
+      <div class="checkout-gcash-start">
+        <strong>Pay with GCash</strong>
+        <span>Submit your order details first. Your QR and payment amount will appear in the next step.</span>
+        <small>No order is created until you submit your payment reference and proof.</small>
+      </div>
+    `;
+    return;
+  }
+
+  ui.innerHTML = `
+    <div class="checkout-gcash-payment">
+      <div class="checkout-gcash-heading">
+        <div><strong>Pay with GCash</strong><span>Scan the QR and send the exact checkout total.</span></div>
+      </div>
+      <div class="checkout-gcash-details">
+        <div class="checkout-gcash-qr-stage">
+        <img id="checkoutGcashQr" class="checkout-gcash-qr" alt="Store GCash payment QR code">
+        <button type="button" class="checkout-gcash-zoom-button" aria-label="Zoom GCash QR code" title="Zoom GCash QR code" onclick="openGcashQrZoom()"><i data-lucide="zoom-in" aria-hidden="true"></i></button>
+        </div>
+        <div class="checkout-gcash-account">
+          <span>Amount to send</span><strong id="checkoutGcashAmount">${money(orderPreview.total)}</strong>
+          <span>Account name</span><strong id="checkoutGcashName"></strong>
+          <span>GCash number</span><strong id="checkoutGcashNumber"></strong>
+        </div>
+      </div>
+      <button type="button" class="checkout-gcash-back" onclick="backToGcashDetails()"><i data-lucide="arrow-left" aria-hidden="true"></i>Back to order details</button>
+      <label class="form-label" for="gcashReferenceInput">GCash reference number</label>
+      <input id="gcashReferenceInput" class="form-control" inputmode="text" autocomplete="off" maxlength="50" placeholder="Enter the reference from your receipt">
+      <label class="form-label mt-2" for="gcashProofInput">Payment screenshot</label>
+      <input id="gcashProofInput" class="form-control" type="file" accept="image/jpeg,image/png,image/webp">
+      <small class="checkout-gcash-hint">JPG, PNG, or WEBP, up to 5 MB. Your order is created only after you submit this proof.</small>
+      <small id="gcashSubmitError" class="checkout-gcash-error" role="alert"></small>
+    </div>
+  `;
+  const qr = document.getElementById("checkoutGcashQr");
+  qr.src = gcashConfig.qr_image || "/assets/gcash-store-qr-code.png";
+  document.getElementById("checkoutGcashName").textContent = gcashConfig.account_name || "Store GCash account";
+  document.getElementById("checkoutGcashNumber").textContent = gcashConfig.account_number || "See number in GCash QR";
+  refreshCheckoutIcons();
+}
+
+function updateGcashAmount() {
+  const amount = document.getElementById("checkoutGcashAmount");
+  if (amount) amount.textContent = money(orderPreview.total);
+}
+
+function openGcashQrZoom() {
+  const qr = document.getElementById("checkoutGcashQr");
+  const zoomImage = document.getElementById("gcashQrZoomImage");
+  if (!qr?.src || !zoomImage || !gcashQrZoomModal) return;
+  zoomImage.src = qr.src;
+  gcashQrZoomModal.show();
+}
+
+function setCheckoutSummaryVisible(visible) {
+  document.getElementById("checkoutSummary").hidden = !visible;
+}
+
+function showGcashPaymentStep() {
+  gcashCheckoutStep = "payment";
+  renderGcashPaymentUI(document.getElementById("paymentUI"));
+  updateGcashAmount();
+  document.getElementById("summaryNote").innerText = "After sending payment, enter its reference and upload proof to submit your order.";
+  syncPlaceOrderButton();
+  document.getElementById("paymentUI").scrollIntoView({ behavior: "smooth", block: "start" });
+  document.getElementById("gcashReferenceInput").focus({ preventScroll: true });
+}
+
+function backToGcashDetails() {
+  gcashCheckoutStep = "details";
+  renderGcashPaymentUI(document.getElementById("paymentUI"));
+  document.getElementById("summaryNote").innerText = "Order details ready. Submit to continue to GCash payment.";
+  syncPlaceOrderButton();
+}
+
+async function loadCheckoutGcashConfig() {
+  try {
+    const res = await fetch("/payments/gcash/config");
+    const data = await res.json();
+    if (!res.ok || !data) return;
+    gcashConfig = { ...gcashConfig, ...data };
+    const qr = document.getElementById("checkoutGcashQr");
+    if (qr) qr.src = gcashConfig.qr_image || "/assets/gcash-store-qr-code.png";
+    const name = document.getElementById("checkoutGcashName");
+    const number = document.getElementById("checkoutGcashNumber");
+    if (name) name.textContent = gcashConfig.account_name || "Store GCash account";
+    if (number) number.textContent = gcashConfig.account_number || "See number in GCash QR";
+  } catch (error) {
+    console.warn("Unable to load GCash payment details", error);
+  }
+}
+
+function validateGcashCommit() {
+  const method = document.getElementById("payment_method").value;
+  if (method !== "gcash") return true;
+  const referenceInput = document.getElementById("gcashReferenceInput");
+  const proofInput = document.getElementById("gcashProofInput");
+  const error = document.getElementById("gcashSubmitError");
+  const reference = String(referenceInput?.value || "").trim().replace(/\s+/g, "");
+  let message = "";
+  if (!/^[A-Za-z0-9-]{8,50}$/.test(reference)) message = "Enter a valid GCash reference number (8 to 50 letters or numbers).";
+  else if (!proofInput?.files?.[0]) message = "Upload your GCash payment screenshot to continue.";
+  else if (proofInput.files[0].size > 5 * 1024 * 1024) message = "The payment screenshot must be 5 MB or smaller.";
+  else if (!["image/jpeg", "image/png", "image/webp"].includes(proofInput.files[0].type)) message = "Payment proof must be JPG, PNG, or WEBP.";
+  if (error) error.textContent = message;
+  if (message) {
+    (referenceInput?.value && message.includes("Upload") ? proofInput : referenceInput)?.focus();
+    return false;
+  }
+  return true;
+}
+
+function togglePaymentUI() {
+  scheduleApplicableVoucherRefresh();
+  const method = document.getElementById("payment_method").value;
+  const ui = document.getElementById("paymentUI");
+
   if (method === "gcash") {
-    ui.innerHTML = `
-      <strong>Secure Online Checkout</strong>
-      <span class="d-block text-white-50 mt-1">After placing the order, you will continue to a secure GCash checkout page.</span>
-    `;
-  } else if (method === "maya") {
-    ui.innerHTML = `
-      <strong>Secure Online Checkout</strong>
-      <span class="d-block text-white-50 mt-1">After placing the order, you will continue to a secure Maya checkout page.</span>
-    `;
-  } else if (method === "card") {
-    ui.innerHTML = `
-      <strong>Secure Online Checkout</strong>
-      <span class="d-block text-white-50 mt-1">After placing the order, you will continue to a secure card checkout page.</span>
-    `;
-  } else if (method === "installment") {
+    setCheckoutSummaryVisible(false);
+    if (gcashCheckoutStep === "details" || !ui.querySelector("#gcashProofInput")) renderGcashPaymentUI(ui);
+    updateGcashAmount();
+    syncPlaceOrderButton();
+    return;
+  }
+
+  gcashCheckoutStep = "details";
+  setCheckoutSummaryVisible(true);
+
+  if (isCartCheckout) {
+    ui.innerHTML = `<span class="text-white-50">Payment will be collected when your order is delivered or released.</span>`;
+    syncPlaceOrderButton();
+    return;
+  }
+
+  if (method === "installment") {
     if (!installmentPlan) {
       ui.innerHTML = `
         <strong>Installment Checkout</strong>
-        <span class="d-block text-white-50 mt-1">Submit your request first. Once approved, your secure downpayment link will appear in your order details.</span>
-        <button type="button" class="btn btn-sm btn-light mt-3" onclick="openInstallmentModal()">Apply for Installment</button>
+        <span class="d-block text-white-50 mt-1">Submit your request first. Once approved, upload your GCash downpayment proof on the order page.</span>
+        <button type="button" class="btn btn-sm btn-dark mt-3" onclick="openInstallmentModal()"><i data-lucide="clipboard-list" aria-hidden="true"></i>Apply for Installment</button>
       `;
+      syncPlaceOrderButton();
       return;
     }
 
@@ -1550,11 +1505,14 @@ function togglePaymentUI() {
       <strong>Installment Request Ready</strong>
       <span class="d-block text-white-50 mt-1">After approval: ${money(installmentPlan.downpayment_amount)} downpayment via ${installmentPlan.downpayment_method.toUpperCase()}.</span>
       <span class="d-block text-white-50 mt-1">Estimated ${installmentPlan.terms}-month plan: ${money(installmentPlan.monthly_amount)} per month.</span>
-      <button type="button" class="btn btn-sm btn-light mt-3" onclick="openInstallmentModal()">Edit Plan</button>
+      <span class="d-block text-white-50 mt-1">Click Submit Installment Request below to send this to admin review.</span>
+      <button type="button" class="btn btn-sm btn-dark mt-3" onclick="openInstallmentModal()"><i data-lucide="pencil" aria-hidden="true"></i>Edit Plan</button>
     `;
   } else {
     ui.innerHTML = `<span class="text-white-50">Payment will be collected when your order is delivered or released.</span>`;
   }
+
+  syncPlaceOrderButton();
 }
 
 function minimumDownpayment() {
@@ -1571,15 +1529,33 @@ function openInstallmentModal() {
   installmentModal.show();
 }
 
+function closeInstallmentModal() {
+  const modalEl = document.getElementById("installmentModal");
+  if (installmentModal) {
+    installmentModal.hide();
+  }
+  setTimeout(() => {
+    modalEl?.classList.remove("show");
+    if (modalEl) {
+      modalEl.style.display = "none";
+      modalEl.setAttribute("aria-hidden", "true");
+      modalEl.removeAttribute("aria-modal");
+      modalEl.removeAttribute("role");
+    }
+    document.body.classList.remove("modal-open");
+    document.body.style.removeProperty("overflow");
+    document.body.style.removeProperty("padding-right");
+    document.querySelectorAll(".modal-backdrop").forEach(backdrop => backdrop.remove());
+  }, 50);
+}
+
 function updateInstallmentEstimate(resetDownpayment = false) {
   const minimum = minimumDownpayment();
   const downpaymentInput = document.getElementById("installmentDownpayment");
-  if (resetDownpayment && (!downpaymentInput.value || Number(downpaymentInput.value) < minimum)) {
-    downpaymentInput.value = minimum.toFixed(2);
-  }
+  downpaymentInput.value = minimum.toFixed(2);
 
   const terms = Number(document.getElementById("installmentTerms").value || 3);
-  const downpayment = Number(downpaymentInput.value || 0);
+  const downpayment = minimum;
   const balance = Math.max(orderPreview.total - downpayment, 0);
   const monthly = balance / terms;
 
@@ -1591,8 +1567,8 @@ function updateInstallmentEstimate(resetDownpayment = false) {
 
 function saveInstallmentPlan() {
   const terms = Number(document.getElementById("installmentTerms").value);
-  const downpayment = Number(document.getElementById("installmentDownpayment").value);
   const minimum = minimumDownpayment();
+  const downpayment = minimum;
 
   const fields = {
     full_name: document.getElementById("installmentFullName").value.trim(),
@@ -1618,7 +1594,6 @@ function saveInstallmentPlan() {
     "address",
     "valid_id_number",
     "terms",
-    "downpayment_amount",
     "downpayment_method"
   ];
   const missing = required.some(field => !fields[field]);
@@ -1632,16 +1607,6 @@ function saveInstallmentPlan() {
     return;
   }
 
-  if (downpayment < minimum) {
-    alert(`Downpayment must be at least ${money(minimum)}.`);
-    return;
-  }
-
-  if (downpayment >= orderPreview.total) {
-    alert("Downpayment must be lower than the order total.");
-    return;
-  }
-
   installmentPlan = {
     ...fields,
     financed_amount: orderPreview.total - downpayment,
@@ -1650,6 +1615,7 @@ function saveInstallmentPlan() {
 
   installmentModal.hide();
   togglePaymentUI();
+  syncPlaceOrderButton();
 }
 
 function validateCustomerInfo() {
@@ -1662,6 +1628,12 @@ function validateCustomerInfo() {
 
   if (!delivery.shipping_region) {
     alert("Please choose delivery area: Local Sogod/Bacacay, Luzon, or Visayas.");
+    return false;
+  }
+
+  if (!confirmedDeliveryLocation || !Number.isFinite(delivery.delivery_latitude) || !Number.isFinite(delivery.delivery_longitude)) {
+    alert("Review and confirm your saved delivery location before continuing.");
+    document.getElementById("deliveryLocationReview")?.scrollIntoView({ behavior: "smooth", block: "center" });
     return false;
   }
 
@@ -1703,15 +1675,32 @@ async function placeCartOrder(delivery) {
   const paymentMethod = document.getElementById("payment_method").value;
   const button = document.getElementById("placeOrderBtn");
 
+  if (!validateGcashCommit()) return;
+
   const invalidItem = checkoutItems.find(item => item.quantity <= 0 || item.quantity > item.stock || item.stock <= 0);
   if (invalidItem) {
     alert(`${invalidItem.name} has limited availability.`);
     return;
   }
 
-  const proceed = confirm(
-    `Place one cart order with ${checkoutItems.length} item(s)?\n\nRecipient: ${delivery.recipient_name}\nContact: ${delivery.delivery_contact}\nAddress: ${delivery.delivery_address}\nShipping: ${money(orderPreview.shipping)}\nTotal: ${money(orderPreview.total)}`
-  );
+  const proceed = await AppDialog.confirm({
+    variant: 'checkout-review', confirmIcon: paymentMethod === 'gcash' ? 'upload' : 'shopping-bag',
+    preview: checkoutConfirmationPreview(),
+    eyebrow: "Final review",
+    title: paymentMethod === "gcash" ? "Submit GCash payment proof?" : "Place this cart order?",
+    message: paymentMethod === "gcash"
+      ? "Submitting your reference number and screenshot creates the order and sends it to admin approval."
+      : "Check your delivery details before confirming.",
+    details: [
+      { label: "Recipient", icon: 'user', value: delivery.recipient_name },
+      { label: "Contact", icon: 'phone', value: delivery.delivery_contact },
+      { label: "Address", icon: 'map-pin', value: delivery.delivery_address },
+      { label: "Payment", icon: 'wallet', value: checkoutPaymentLabel(paymentMethod) },
+      { label: "Shipping", icon: 'truck', value: money(orderPreview.shipping) },
+      { label: "Order total", icon: 'receipt', value: money(orderPreview.total) }
+    ],
+    confirmText: paymentMethod === "gcash" ? "Submit Proof" : "Place Order"
+  });
   if (!proceed) return;
 
   button.disabled = true;
@@ -1719,40 +1708,47 @@ async function placeCartOrder(delivery) {
 
   await saveDeliveryAddressIfRequested(delivery);
 
-  const res = await fetch("/orders/cart", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  const cartPayload = {
       items: checkoutItems.map(item => ({
         product_id: item.product_id,
         variant_index: item.variant_index,
         quantity: item.quantity
       })),
       payment_method: paymentMethod,
+      voucher_code: document.getElementById("voucher").value.trim(),
       recipient_name: delivery.recipient_name,
       delivery_contact: delivery.delivery_contact,
       delivery_address: delivery.delivery_address,
+      delivery_landmark: delivery.delivery_landmark,
+      delivery_latitude: delivery.delivery_latitude,
+      delivery_longitude: delivery.delivery_longitude,
       delivery_note: delivery.delivery_note,
       shipping_region: delivery.shipping_region,
       user_id: currentUser.id
-    })
-  });
+  };
+  const requestHeaders = {};
+  let requestBody;
+  if (paymentMethod === "gcash") {
+    requestBody = new FormData();
+    Object.entries(cartPayload).forEach(([key, value]) => requestBody.append(key, typeof value === "string" ? value : JSON.stringify(value)));
+    requestBody.append("gcash_reference", document.getElementById("gcashReferenceInput").value.trim());
+    requestBody.append("payment_proof", document.getElementById("gcashProofInput").files[0]);
+  } else {
+    requestHeaders["Content-Type"] = "application/json";
+    requestBody = JSON.stringify(cartPayload);
+  }
+  const res = await fetch("/orders/cart", { method: "POST", headers: requestHeaders, body: requestBody });
 
   const result = await res.json();
   if (!res.ok) {
     button.disabled = false;
-    button.innerText = "Place Order";
+    syncPlaceOrderButton();
     alert(result.message || "Unable to create cart order.");
     return;
   }
 
   removeCheckedOutCartItems();
   localStorage.removeItem("checkout");
-
-  if (result.payment_checkout_url) {
-    window.location.href = result.payment_checkout_url;
-    return;
-  }
 
   showCartSuccess(result);
 }
@@ -1766,12 +1762,22 @@ async function placeOrder() {
   if (!validateCustomerInfo()) return;
 
   if (isCartCheckout) {
+    if (payment_method === "gcash" && gcashCheckoutStep === "details") {
+      const invalidItem = checkoutItems.find(item => item.quantity <= 0 || item.quantity > item.stock || item.stock <= 0);
+      if (invalidItem) {
+        alert(`${invalidItem.name} has limited availability.`);
+        return;
+      }
+      showGcashPaymentStep();
+      return;
+    }
     await placeCartOrder(delivery);
     return;
   }
 
   if (payment_method === "installment" && !installmentPlan) {
-    alert("Please complete the installment application popup first.");
+    openInstallmentModal();
+    alert("Please complete the installment application form first.");
     return;
   }
 
@@ -1785,9 +1791,35 @@ async function placeOrder() {
     return;
   }
 
-  const proceed = confirm(
-    `Place this order?\n\nRecipient: ${delivery.recipient_name}\nContact: ${delivery.delivery_contact}\nAddress: ${delivery.delivery_address}\nShipping: ${money(orderPreview.shipping)}\nTotal: ${money(orderPreview.total)}`
-  );
+  if (payment_method === "gcash" && gcashCheckoutStep === "details") {
+    showGcashPaymentStep();
+    return;
+  }
+  if (!validateGcashCommit()) return;
+
+  const isInstallmentOrder = payment_method === "installment";
+  const proceed = await AppDialog.confirm({
+    variant: 'checkout-review', confirmIcon: isInstallmentOrder ? 'clipboard-check' : payment_method === 'gcash' ? 'upload' : 'shopping-bag',
+    preview: checkoutConfirmationPreview(),
+    eyebrow: isInstallmentOrder ? "Application review" : "Final review",
+    title: isInstallmentOrder
+      ? "Submit installment request?"
+      : payment_method === "gcash" ? "Submit GCash payment proof?" : "Place this order?",
+    message: isInstallmentOrder
+      ? "Your application and order details will be sent to the admin for review."
+      : payment_method === "gcash"
+        ? "Submitting your reference number and screenshot creates the order and sends it to admin approval."
+        : "Check your delivery details before confirming.",
+    details: [
+      { label: "Recipient", icon: 'user', value: delivery.recipient_name },
+      { label: "Contact", icon: 'phone', value: delivery.delivery_contact },
+      { label: "Address", icon: 'map-pin', value: delivery.delivery_address },
+      { label: "Payment", icon: 'wallet', value: checkoutPaymentLabel(payment_method) },
+      { label: "Shipping", icon: 'truck', value: money(orderPreview.shipping) },
+      { label: "Order total", icon: 'receipt', value: money(orderPreview.total) }
+    ],
+    confirmText: isInstallmentOrder ? "Submit Request" : payment_method === "gcash" ? "Submit Proof" : "Place Order"
+  });
   if (!proceed) return;
 
   button.disabled = true;
@@ -1806,6 +1838,9 @@ async function placeOrder() {
     form.append("recipient_name", delivery.recipient_name);
     form.append("delivery_contact", delivery.delivery_contact);
     form.append("delivery_address", delivery.delivery_address);
+    form.append("delivery_landmark", delivery.delivery_landmark);
+    form.append("delivery_latitude", delivery.delivery_latitude);
+    form.append("delivery_longitude", delivery.delivery_longitude);
     form.append("delivery_note", delivery.delivery_note);
     form.append("shipping_region", delivery.shipping_region);
     form.append("installment_application", JSON.stringify(installmentPlan));
@@ -1817,6 +1852,27 @@ async function placeOrder() {
       method: "POST",
       body: form
     });
+  } else if (payment_method === "gcash") {
+    const form = new FormData();
+    Object.entries({
+      product_id: checkout.product_id,
+      quantity,
+      voucher_code: voucher,
+      payment_method,
+      variant_index: selectedVariantIndex ?? "",
+      recipient_name: delivery.recipient_name,
+      delivery_contact: delivery.delivery_contact,
+      delivery_address: delivery.delivery_address,
+      delivery_landmark: delivery.delivery_landmark,
+      delivery_latitude: delivery.delivery_latitude,
+      delivery_longitude: delivery.delivery_longitude,
+      delivery_note: delivery.delivery_note,
+      shipping_region: delivery.shipping_region,
+      user_id: currentUser.id,
+      gcash_reference: document.getElementById("gcashReferenceInput").value.trim()
+    }).forEach(([key, value]) => form.append(key, value));
+    form.append("payment_proof", document.getElementById("gcashProofInput").files[0]);
+    res = await fetch("/orders", { method: "POST", body: form });
   } else {
     res = await fetch("/orders", {
       method: "POST",
@@ -1830,6 +1886,9 @@ async function placeOrder() {
         recipient_name: delivery.recipient_name,
         delivery_contact: delivery.delivery_contact,
         delivery_address: delivery.delivery_address,
+        delivery_landmark: delivery.delivery_landmark,
+        delivery_latitude: delivery.delivery_latitude,
+        delivery_longitude: delivery.delivery_longitude,
         delivery_note: delivery.delivery_note,
         shipping_region: delivery.shipping_region,
         user_id: currentUser.id
@@ -1842,50 +1901,97 @@ async function placeOrder() {
   if (!res.ok) {
     alert(result.message);
     button.disabled = false;
-    button.innerText = "Place Order";
+    syncPlaceOrderButton();
     return;
   }
 
   removeCheckedOutCartItems();
   localStorage.removeItem("checkout");
 
-  if (result.payment_checkout_url) {
-    window.location.href = result.payment_checkout_url;
-    return;
-  }
-
-  if (result.payment_message) {
-    alert(result.payment_message);
-  }
-
   showSuccess(result);
 }
 
-function showCartSuccess(order) {
-  document.getElementById("orderSuccessText").innerText =
-    `Order ID: ${orderReference(order.order_id)}\nItems: ${order.item_count || order.items?.length || checkoutItems.length}\nSubtotal: ${money(order.subtotal)}\n${shippingSuccessLine(order)}\nTotal: ${money(order.total)}\nPayment: ${String(order.payment_method || "cod").toUpperCase()} (${order.payment_status})\nDeliver To: ${order.delivery?.recipient_name || "Customer"}`;
+function setOrderConfirmation(order, isInstallmentRequest = false) {
+  setCheckoutProgress("confirmation");
+  const requiresGcashProof = Boolean(order.requires_payment_proof && order.payment_method === "gcash");
+  const title = document.getElementById("orderSuccessTitle");
+  const action = document.getElementById("orderSuccessAction");
+  const isWaitingApproval = order.payment_status === "for_verification";
+  document.getElementById('orderSuccessIcon').innerHTML = `<i data-lucide="${isWaitingApproval || isInstallmentRequest ? 'clock-3' : 'check'}" aria-hidden="true"></i>`;
+  const view = document.getElementById('orderSuccessView');
+  view.hidden = !order.order_id || requiresGcashProof || isInstallmentRequest;
+  view.onclick = () => openCreatedOrder(order.order_id);
 
+  title.innerText = isInstallmentRequest
+    ? "Installment Request Submitted"
+    : requiresGcashProof
+      ? isWaitingApproval ? "Waiting for Admin Approval" : "Order Submitted"
+      : "Order Successful";
+
+  if (requiresGcashProof) {
+    setCheckoutIconLabel(action, 'View Order Status', 'package-search');
+    action.onclick = () => openCreatedOrder(order.order_id);
+  } else {
+    setCheckoutIconLabel(action, 'Back to Shop', 'arrow-right');
+    action.onclick = redirectShop;
+  }
+
+  return requiresGcashProof
+    ? "Your GCash proof has been submitted. The order will be placed after admin approves the payment, then it will wait for processing."
+    : isInstallmentRequest
+      ? "Admin will review your installment request. Upload your GCash downpayment proof after approval."
+      : "Your order has been placed.";
+}
+
+function openCreatedOrder(orderId) {
+  window.location.href = `/customer/order.html?order_id=${encodeURIComponent(orderId)}`;
+}
+
+function checkoutPaymentLabel(method) {
+  return { cod: 'Cash on Delivery', gcash: 'GCash', installment: 'Installment' }[method] || method || 'Cash on Delivery';
+}
+
+function checkoutConfirmationItems() {
+  return isCartCheckout ? checkoutItems : [{ name: selectedProduct?.name || 'Your item', image: selectedProduct ? productImages(selectedProduct)[0] : '', quantity: document.getElementById('qty').value, variant_name: selectedVariant()?.name }];
+}
+
+function checkoutConfirmationPreview() {
+  return { items: checkoutConfirmationItems().map(item => ({
+    name: item.product_name || item.name,
+    image: item.product_image || item.image,
+    description: [item.variant_name, `Qty ${item.quantity || 1}`].filter(Boolean).join(' / ')
+  })) };
+}
+
+function renderOrderConfirmation(order, nextStep) {
+  const items = checkoutConfirmationItems();
+  const payment = order.payment_method || 'cod';
+  const paymentState = { to_collect: 'Pay on delivery', for_verification: 'Pending review', installment_application_pending: 'Application pending', paid: 'Payment received' }[order.payment_status] || 'Awaiting payment';
+  const row = (label, value) => `<div class="checkout-result-row"><span>${escapeCheckoutHtml(label)}</span><strong>${escapeCheckoutHtml(value)}</strong></div>`;
+  const recipient = order.delivery?.recipient_name || document.getElementById('customerName').value || 'Customer';
+  const address = order.delivery?.delivery_address || order.delivery?.address || document.getElementById('customerAddress').value;
+  const phone = order.delivery?.delivery_contact || document.getElementById('customerContact').value;
+  document.getElementById('orderSuccessText').innerHTML = `
+    <div class="checkout-receipt-reference"><span><i data-lucide="receipt" aria-hidden="true"></i>Order reference</span><strong>${escapeCheckoutHtml(orderReference(order.order_id))}</strong></div>
+    <div class="checkout-receipt-products">${items.map(item => { const name = item.product_name || item.name || 'Your item'; return `<div class="checkout-result-product">${checkoutPhotoHtml(item.product_image || item.image, name)}<div><strong>${escapeCheckoutHtml(name)}</strong><span>${escapeCheckoutHtml([item.variant_name, `Qty ${item.quantity || 1}`].filter(Boolean).join(' / '))}</span></div></div>`; }).join('')}</div>
+    <div class="checkout-receipt-delivery"><span class="checkout-receipt-section-title"><i data-lucide="map-pin" aria-hidden="true"></i>Delivery details</span><strong>${escapeCheckoutHtml(recipient)}</strong><span>${escapeCheckoutHtml(phone)}</span><p>${escapeCheckoutHtml(address)}</p></div>
+    <div class="checkout-receipt-payment"><span><i data-lucide="wallet" aria-hidden="true"></i>${escapeCheckoutHtml(checkoutPaymentLabel(payment))}</span><strong>${escapeCheckoutHtml(paymentState)}</strong></div>
+    <div class="checkout-result-costs">${row('Subtotal', money(order.subtotal))}${Number(order.discount) > 0 ? row('Discount', `-${money(order.discount)}`) : ''}${row('Shipping', money(order.shipping_fee || 0))}<div class="checkout-result-total"><span>Total<strong class="checkout-total-caption">${escapeCheckoutHtml(paymentState)}</strong></span><strong>${money(order.total)}</strong></div></div>
+    <p class="checkout-result-message">${escapeCheckoutHtml(nextStep)}</p>
+    `;
   successModal.show();
+  refreshCheckoutIcons();
+}
 
-  setTimeout(() => {
-    window.location.href = "/customer/shop.html";
-  }, 3800);
+function showCartSuccess(order) {
+  const nextStep = setOrderConfirmation(order);
+  renderOrderConfirmation(order, nextStep);
 }
 function showSuccess(order) {
-  document.getElementById("orderSuccessText").innerText =
-    `Order ID: ${orderReference(order.order_id)}
-Subtotal: ${money(order.subtotal)}
-Discount: ${money(order.discount)}
-${shippingSuccessLine(order)}
-Total: ${money(order.total)}
-Payment: ${order.payment_method.toUpperCase()} (${order.payment_status})
-Deliver To: ${order.delivery?.recipient_name || "Customer"}`;
-
-  successModal.show();
-
-  setTimeout(() => {
-    window.location.href = "/customer/shop.html";
-  }, 3200);
+  const isInstallmentRequest = order.payment_method === "installment" &&
+    order.payment_status === "installment_application_pending";
+  const nextStep = setOrderConfirmation(order, isInstallmentRequest);
+  renderOrderConfirmation(order, nextStep);
 }
 
 function redirectShop() {
@@ -1897,13 +2003,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   successModal = new bootstrap.Modal(document.getElementById("successModal"));
   installmentModal = new bootstrap.Modal(document.getElementById("installmentModal"));
+  gcashQrZoomModal = new bootstrap.Modal(document.getElementById("gcashQrZoomModal"));
   prefillDeliveryInfo();
   loadCustomerProfile();
   loadSavedAddresses();
   togglePaymentUI();
+  loadCheckoutGcashConfig();
   loadProduct();
   loadVouchers();
 });
+
+window.addEventListener("focus", () => {
+  if (canInitializeCheckout && currentUser?.id) loadSavedAddresses();
+});
 </script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>refreshCheckoutIcons();</script>
+  <script src="/js/shop-assistant.js?v=1"></script>
 </body>
 </html>

@@ -1,0 +1,67 @@
+#notificationsSection { min-width: 0; }
+#notificationsSection svg { width: 16px; height: 16px; flex: 0 0 16px; }
+#notificationsSection .page-head { display: flex; flex-direction: row !important; align-items: center !important; flex-wrap: wrap; gap: 16px; }
+#notificationsSection .profile-notification-summary { display: flex; align-items: center; gap: 7px; margin-top: 7px; }
+#notificationsSection .profile-notification-summary p { margin: 0 !important; font-size: 12px !important; color: #6a786f !important; }
+#notificationsSection .notification-badge { display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+#notificationsSection .notification-actions { display: flex; width: auto; gap: 7px; flex-wrap: nowrap; }
+#notificationsSection .profile-notification-icon-button, #notificationsSection .profile-notification-command { display: inline-flex; justify-content: center; align-items: center; gap: 7px; min-height: 34px; padding: 7px 11px; border: 1px solid #dde6df; border-radius: 4px; background: #fff; color: #526b5d; font-size: 12px; font-weight: 500; line-height: 1.4; white-space: nowrap; }
+#notificationsSection .profile-notification-icon-button { width: 34px; height: 34px; flex: 0 0 34px; padding: 0; }
+#notificationsSection .profile-notification-icon-button:hover, #notificationsSection .profile-notification-command:hover { background: #edf5f0; color: #14634c; border-color: #c8ded1; }
+#notificationsSection button:disabled { opacity: .45; cursor: default; }
+#notificationsSection .notification-tabs { display: flex !important; flex-wrap: wrap; gap: 6px !important; border: 0 !important; border-bottom: 1px solid #dde6df !important; border-radius: 0 !important; padding: 4px 0 16px !important; background: none !important; box-shadow: none !important; margin: 0 0 18px !important; overflow: visible !important; }
+#notificationsSection .notification-filter { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 0 !important; min-height: 34px !important; padding: 8px 10px !important; border: 1px solid transparent !important; border-radius: 4px !important; background: #fff !important; color: #6a786f !important; font-size: 12px !important; font-weight: 500 !important; white-space: nowrap !important; text-transform: none; }
+#notificationsSection .notification-filter.active { border-color: #c8ded1 !important; background: #edf5f0 !important; color: #14634c !important; }
+#notificationsSection .profile-notification-filter-count { display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 4px; border-radius: 3px; background: #f0f2f1; font-size: 10px; }
+#notificationsSection .notification-filter.active .profile-notification-filter-count { background: #d6e9de; }
+#notificationsSection .notification-toolbar { display: flex !important; justify-content: space-between; align-items: center; flex-wrap: nowrap; gap: 16px; padding: 0 !important; margin: 0 0 20px !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+#notificationsSection .profile-notification-search { display: flex; gap: 9px; align-items: center; flex: 1; min-width: 0; min-height: 38px; padding: 0 8px 0 12px; border: 1px solid #dde6df; border-radius: 4px; color: #6a786f; }
+#notificationsSection .profile-notification-search:focus-within { border-color: #14634c; }
+#notificationsSection .profile-notification-search .form-control { min-width: 0; flex: 1; padding: 9px 0 !important; border: 0 !important; box-shadow: none !important; background: none !important; font-size: 12px !important; }
+#notificationsSection .profile-notification-search .profile-notification-icon-button { width: 28px; height: 28px; flex-basis: 28px; border: 0; }
+#notificationsSection #profileNotificationResultCount { font-size: 11px; color: #6a786f; white-space: nowrap; }
+#notificationsSection #profileNotificationFeedback { padding: 10px 12px; background: #fff4f3; border-left: 2px solid #a13d48; color: #a13d48; font-size: 12px; }
+#notificationsSection .notification-list { display: grid; gap: 24px; }
+#notificationsSection .profile-notification-day { display: grid; gap: 10px; min-width: 0; padding: 0; border: 0; background: none; }
+#notificationsSection .profile-notification-day-title { color: #6a786f; font-size: 12px; font-weight: 600; margin: 0 0 2px; }
+#notificationsSection .profile-notification-card { display: grid !important; grid-template-columns: 64px minmax(0, 1fr) !important; align-items: start; gap: 16px !important; padding: 18px !important; border: 1px solid #dde6df !important; border-radius: 6px !important; background: #fff !important; box-shadow: none !important; animation: none !important; }
+#notificationsSection .profile-notification-card.unread { border-left: 3px solid #4b9270 !important; background: #f8fbf9 !important; padding-left: 16px !important; }
+#notificationsSection .profile-notification-visual { position: relative; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 4px; overflow: hidden; background: #edf3ef; color: #527362; }
+#notificationsSection .profile-notification-visual > svg { width: 24px; height: 24px; }
+#notificationsSection .profile-notification-visual .notification-product-image { position: absolute; width: 100% !important; height: 100% !important; min-width: 0 !important; object-fit: cover; border-radius: 4px !important; }
+#notificationsSection [hidden] { display: none !important; }
+#notificationsSection .notification-content { display: block; min-width: 0; }
+#notificationsSection .notification-meta { display: flex; align-items: center; flex-wrap: nowrap; gap: 8px; margin-bottom: 7px; color: #91a097; font-size: 10px; font-weight: 400; }
+#notificationsSection .notification-type { padding: 0; border: 0; border-radius: 0; background: none; color: #6a786f; font-size: 10px; font-weight: 500; text-transform: none; }
+#notificationsSection .notification-meta time { margin-left: auto; white-space: nowrap; }
+#notificationsSection .profile-notification-unread-dot { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: #4b9270; }
+#notificationsSection .notification-product-name { margin: 0 0 4px !important; color: #20342a !important; font-size: 14px !important; font-weight: 600 !important; line-height: 1.5; overflow-wrap: anywhere; }
+#notificationsSection .profile-notification-event { margin: 0 0 4px; color: #526b5d; font-size: 12px; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+#notificationsSection .notification-message { margin: 0; color: #78847c; font-size: 12px; font-weight: 400; line-height: 1.6; white-space: pre-line; overflow-wrap: anywhere; }
+#notificationsSection .notification-card-actions { display: flex; align-items: center; justify-content: flex-start !important; flex-wrap: nowrap; gap: 10px; margin-top: 10px; }
+#notificationsSection .profile-notification-open { display: inline-flex; gap: 5px; align-items: center; min-height: 32px; color: #14634c; font-size: 12px; font-weight: 600; text-decoration: none; }
+#notificationsSection .profile-notification-open:hover { text-decoration: underline; }
+#notificationsSection .profile-notification-utilities { display: flex; gap: 5px; margin-left: auto; }
+#notificationsSection .profile-notification-utilities .profile-notification-icon-button { border-color: transparent; background: transparent; }
+#notificationsSection .profile-notification-utilities .profile-notification-icon-button:hover { background: #edf5f0; }
+#notificationsSection .profile-notification-empty { display: grid; justify-items: center; gap: 12px; padding: 48px 12px; text-align: center; }
+#notificationsSection .profile-notification-empty > svg { width: 30px; height: 30px; color: #91a097; }
+#notificationsSection .profile-notification-empty h3 { margin: 0; color: #344d3e; font-size: 17px; }
+#notificationsSection .profile-notification-empty p { margin: 0; color: #6a786f; font-size: 13px; }
+#notificationsSection :is(button, a):focus-visible { outline: 2px solid #14634c; outline-offset: 3px; }
+@media (max-width: 700px) {
+  #notificationsSection .notification-toolbar { flex-wrap: wrap; gap: 8px; }
+  #notificationsSection .profile-notification-search { flex-basis: 100%; }
+  #notificationsSection .profile-notification-card { grid-template-columns: 52px minmax(0, 1fr) !important; padding: 14px !important; gap: 12px !important; }
+  #notificationsSection .profile-notification-card.unread { padding-left: 12px !important; }
+  #notificationsSection .profile-notification-visual { width: 52px; height: 52px; }
+}
+@media (max-width: 480px) {
+  #notificationsSection .page-head { gap: 12px; }
+  #notificationsSection .notification-actions { width: 100%; }
+  #notificationsSection .notification-actions .profile-notification-command { margin-right: auto; }
+  #notificationsSection .notification-tabs { flex-wrap: nowrap; overflow-x: auto !important; max-width: 100%; }
+  #notificationsSection .notification-filter { flex: 0 0 auto; padding: 7px 8px !important; font-size: 11px !important; }
+  #notificationsSection .profile-notification-card { grid-template-columns: 42px minmax(0, 1fr) !important; gap: 10px !important; }
+  #notificationsSection .profile-notification-visual { width: 42px; height: 42px; }
+}

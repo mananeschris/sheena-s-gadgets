@@ -1,0 +1,29 @@
+body.admin-dashboard-page:not([data-session-ready]) .app-shell { visibility: hidden; }
+#adminSessionLoading { position: fixed; inset: 0; display: grid; place-content: center; gap: 12px; text-align: center; background: #fff; color: #555; z-index: 2000; font-size: 14px; }
+body[data-session-ready] #adminSessionLoading { display: none; }
+.admin-security-modal .modal-content { border-radius: 8px; color: #171717; }
+.admin-security-modal .modal-title { font-size: 20px; font-weight: 600; }
+.admin-security-modal .modal-header { gap: 12px; }
+.admin-security-modal .modal-header > svg { width: 22px; height: 22px; }
+.admin-security-modal .modal-body { display: grid; gap: 16px; }
+.admin-security-modal .form-label { font-size: 13px; margin-bottom: 6px; }
+.admin-security-modal .form-control { min-height: 44px; font-size: 14px; }
+.admin-security-modal .btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 42px; font-size: 13px; border-radius: 4px; white-space: normal; }
+.admin-security-modal .btn svg { width: 17px; height: 17px; }
+body.admin-dashboard-page .admin-security-modal .btn-dark { background: #171717; border-color: #171717; color: #fff; }
+body.admin-dashboard-page .admin-security-modal .btn-dark:hover { background: #333; border-color: #333; }
+body.admin-dashboard-page .admin-security-modal .form-control { min-height: 44px; font-size: 14px; color: #171717; border-color: #d9d9d9; background: #fff; }
+body.admin-dashboard-page .admin-security-modal .form-control:focus { border-color: #888; box-shadow: 0 0 0 2px #ededed; }
+.admin-security-modal .modal-footer { flex-wrap: wrap; }
+.security-status-list { margin: 0; }
+.security-status-list > div { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid #e8e8e8; padding: 12px 0; font-size: 13px; }
+.security-status-list dt { font-weight: 500; color: #666; }
+.security-status-list dd { margin: 0; font-weight: 600; text-align: right; }
+.admin-security-message { margin: 0; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.admin-security-message:empty { display: none; }
+.security-error { color: #a3343f; }
+.security-success { color: #14634c; }
+.admin-security-modal .security-code { text-align: center; font-size: 22px; font-variant-numeric: tabular-nums; }
+.security-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.security-warning-time { font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; margin: 0; }
+@media (max-width: 480px) { .admin-security-modal .modal-footer .btn { flex: 1; } .security-actions .btn { width: 100%; } }

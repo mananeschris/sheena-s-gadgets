@@ -72,7 +72,7 @@ router.use((req, res, next) => {
   });
 });
 
-router.get("/customer/:user_id", (req, res) => {
+router.get("/customer/:user_id", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), (req, res) => {
   const sql = `
     SELECT *
     FROM notifications
@@ -83,11 +83,61 @@ router.get("/customer/:user_id", (req, res) => {
 
   req.db.query(sql, [req.params.user_id], (err, rows) => {
     if (err) return res.status(500).json({ message: err.message });
-    res.json(rows);
+    const getOrderId = (row) => {
+      try {
+        const url = new URL(row.action_url || "", "http://localhost");
+        const fromUrl = Number(url.searchParams.get("order_id") || url.searchParams.get("order"));
+        if (fromUrl > 0) return fromUrl;
+        const pathReference = url.pathname.match(/\/(?:orders?|order-details)\/(\d+)(?:\/|$)/i);
+        if (Number(pathReference?.[1]) > 0) return Number(pathReference[1]);
+      } catch (_) {}
+      const text = `${row.title || ""} ${row.message || ""}`;
+      const reference = text.match(/\b(?:order(?:\s*(?:id|#|number))?\s*[:#-]?|order[_ ]?id\s*[:=#-]?|ord[-#]?)\s*#?\s*(\d{1,10})\b/i);
+      return Number(reference?.[1] || 0);
+    };
+    const replaceOrderReferences = (value, productName) => String(value || "").replace(
+      /\b(?:order(?:\s*(?:id|#|number))?\s*[:#-]?|order_id\s*[:=#-]?|orderid\s*[:=#-]?|ord[-#]?)\s*#?\s*\d{1,10}\b/gi,
+      () => productName || "your order"
+    );
+    const orderIds = new Set();
+    rows.forEach((row) => {
+      const id = getOrderId(row);
+      if (id > 0) orderIds.add(id);
+    });
+
+    if (!orderIds.size) return res.json(rows);
+    req.db.query(
+      "SELECT order_id, product_name, product_image FROM order_items WHERE order_id IN (?) ORDER BY id ASC",
+      [[...orderIds]],
+      (itemsErr, items) => {
+        if (itemsErr) return res.status(500).json({ message: itemsErr.message });
+        const productsByOrder = new Map();
+        items.forEach((item) => {
+          if (!productsByOrder.has(Number(item.order_id))) productsByOrder.set(Number(item.order_id), []);
+          productsByOrder.get(Number(item.order_id)).push(item);
+        });
+        res.json(rows.map((row) => {
+          const products = productsByOrder.get(getOrderId(row)) || [];
+          let image = products[0]?.product_image || "";
+          try {
+            const parsed = JSON.parse(image);
+            image = Array.isArray(parsed) ? parsed[0] || "" : typeof parsed === "string" ? parsed : image;
+          } catch (_) {}
+          const orderProductName = products.length === 1 ? products[0].product_name : products.length > 1 ? `${products[0].product_name} and ${products.length - 1} more` : "";
+          return {
+            ...row,
+            title: replaceOrderReferences(row.title, orderProductName),
+            message: replaceOrderReferences(row.message, orderProductName),
+            order_product_name: orderProductName,
+            order_product_image: image
+          };
+        }));
+      }
+    );
   });
 });
 
-router.get("/customer/:user_id/unread-count", (req, res) => {
+router.get("/customer/:user_id/unread-count", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), (req, res) => {
   req.db.query(
     "SELECT COUNT(*) AS count FROM notifications WHERE user_id=? AND is_read=0",
     [req.params.user_id],
@@ -98,10 +148,10 @@ router.get("/customer/:user_id/unread-count", (req, res) => {
   );
 });
 
-router.put("/:id/read", (req, res) => {
+router.put("/:id/read", require('./customerAccess').customerSession, (req, res) => {
   req.db.query(
-    "UPDATE notifications SET is_read=1 WHERE id=?",
-    [req.params.id],
+    "UPDATE notifications SET is_read=1 WHERE id=? AND user_id=?",
+    [req.params.id, req.actorUser.id],
     (err, result) => {
       if (err) return res.status(500).json({ message: err.message });
       if (result.affectedRows === 0) return res.status(404).json({ message: "Notification not found." });
@@ -110,7 +160,7 @@ router.put("/:id/read", (req, res) => {
   );
 });
 
-router.put("/customer/:user_id/read-all", (req, res) => {
+router.put("/customer/:user_id/read-all", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), (req, res) => {
   req.db.query(
     "UPDATE notifications SET is_read=1 WHERE user_id=?",
     [req.params.user_id],
@@ -121,7 +171,7 @@ router.put("/customer/:user_id/read-all", (req, res) => {
   );
 });
 
-router.delete("/customer/:user_id/read", (req, res) => {
+router.delete("/customer/:user_id/read", require('./customerAccess').customerSession, require('./customerAccess').customerIdentity(), (req, res) => {
   req.db.query(
     "DELETE FROM notifications WHERE user_id=? AND is_read=1",
     [req.params.user_id],
@@ -132,10 +182,10 @@ router.delete("/customer/:user_id/read", (req, res) => {
   );
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", require('./customerAccess').customerSession, (req, res) => {
   req.db.query(
-    "DELETE FROM notifications WHERE id=?",
-    [req.params.id],
+    "DELETE FROM notifications WHERE id=? AND user_id=?",
+    [req.params.id, req.actorUser.id],
     (err, result) => {
       if (err) return res.status(500).json({ message: err.message });
       if (result.affectedRows === 0) return res.status(404).json({ message: "Notification not found." });

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payment Result</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/sheena-mark.svg">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root {
@@ -60,8 +61,9 @@
       border-color: var(--ink);
     }
   </style>
-  <link rel="stylesheet" href="/css/ui-polish.css">
-  <link rel="stylesheet" href="/css/ideal-ui.css?v=ideal-ui-20260908f">
+<link rel="stylesheet" href="/css/main.css?v=main-20260911b">
+<link rel="stylesheet" href="/css/system-fonts.css?v=font-1">
+<link rel="stylesheet" href="/css/customer-typography.css?v=customer-suite-1">
 </head>
 <body class="payment-result-page">
   <main class="result-panel">
@@ -80,12 +82,16 @@
       paid: "Paid",
       installment_downpayment_paid: "Downpayment Paid",
       installment_active: "Installment Active",
-      pending_verification: "Pending Verification",
+      pending_verification: "Checking GCash",
       installment_downpayment_pending: "Downpayment Pending",
       expired: "Expired",
       installment_downpayment_expired: "Downpayment Expired",
       failed: "Failed",
       installment_downpayment_failed: "Downpayment Failed",
+      pending_downpayment: "Pending Downpayment",
+      payment_failed: "Payment Failed",
+      active: "Active",
+      ready_for_release: "Ready for Release",
       cancelled: "Cancelled"
     };
 
@@ -147,7 +153,7 @@
         if (status === "paid" || data.status === "paid") {
           message.innerText = `Installment payment was confirmed. You can view your order or profile activity now.`;
         } else if (data.needs_checkout) {
-          message.innerText = data.message || "This installment needs a new payment checkout link.";
+          message.innerText = data.message || "You can upload a new GCash proof for this installment.";
         } else {
           message.innerText = data.message || `Installment payment status is ${statusLabel(status)}.`;
         }
@@ -162,6 +168,8 @@
       const params = new URLSearchParams(window.location.search);
       const orderId = params.get("order_id");
       const scheduleId = params.get("schedule_id");
+      const layawayId = params.get("layaway_id");
+      const layawayPaymentId = params.get("layaway_payment_id");
       const result = params.get("result") || "success";
       const pill = document.getElementById("statusPill");
       const title = document.getElementById("title");
@@ -170,6 +178,31 @@
 
       if (scheduleId) {
         await refreshSchedulePayment(scheduleId, orderId, result);
+        return;
+      }
+
+      if (layawayId) {
+        orderLink.href = "/customer/profile.html#layaways";
+        orderLink.innerText = "View Profile";
+        try {
+          const userId = currentCustomerId();
+          const query = userId ? `?user_id=${encodeURIComponent(userId)}` : "";
+          const endpoint = layawayPaymentId
+            ? `/layaways/payments/${encodeURIComponent(layawayPaymentId)}/status${query}`
+            : `/layaways/${encodeURIComponent(layawayId)}/payment-status${query}`;
+          const res = await fetch(endpoint);
+          const data = await res.json();
+          const status = data.payment_status || data.status || (result === "cancelled" ? "cancelled" : "pending_verification");
+          pill.innerText = statusLabel(data.status || status);
+          title.innerText = isPaidStatus(status) || data.status === "active" ? "Layaway activated" : titleForStatus(status, result);
+          message.innerText = res.ok
+            ? (data.message || `Layaway payment status is ${statusLabel(status)}.`)
+            : (data.message || "Unable to refresh layaway payment status right now.");
+        } catch (error) {
+          pill.innerText = "Pending";
+          title.innerText = result === "cancelled" ? "Payment not completed yet" : "Payment needs checking";
+          message.innerText = error.message;
+        }
         return;
       }
 
@@ -183,7 +216,7 @@
       orderLink.href = `/customer/order.html?order_id=${encodeURIComponent(orderId)}`;
 
       try {
-        const res = await fetch(`/payments/paymongo/status/${orderId}`);
+        const res = await fetch(`/payments/gcash/status/${orderId}`);
         const data = await res.json();
         const status = data.payment_status || (result === "cancelled" ? "cancelled" : "pending_verification");
 
@@ -198,7 +231,7 @@
         if (isPaidStatus(status)) {
           message.innerText = `${orderLabel(orderId)} payment was confirmed. You can view the order activity now.`;
         } else if (data.needs_checkout) {
-          message.innerText = data.message || `${orderLabel(orderId)} needs a new payment checkout link.`;
+          message.innerText = data.message || `${orderLabel(orderId)} needs a new GCash proof upload.`;
         } else {
           message.innerText = data.message || `${orderLabel(orderId)} payment status is ${statusLabel(status)}.`;
         }

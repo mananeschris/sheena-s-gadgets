@@ -18,6 +18,15 @@
     return String(value)
   }
 
+  function paymentMethodLabel(value) {
+    var method = safeText(value ? value : "cod").toLowerCase()
+    if (method === "gcash" || (method && ["cod", "cash", "installment", "manual", "pos"].indexOf(method) < 0)) return "GCash"
+    if (method === "cod") return "Cash on Delivery"
+    if (method === "cash") return "Cash"
+    if (method === "installment") return "Installment"
+    return safeText(value).toUpperCase()
+  }
+
   function setText(id, value) {
     var element = byId(id)
     if (element) element.innerText = value
@@ -103,7 +112,7 @@
     var installmentPaid = 0
     var installmentReceivables = 0
     var repairCount = 0
-    var gatewayFailed = 0
+    var paymentFailed = 0
     var paymentMap = new Map()
     var statusMap = new Map()
     var productMap = new Map()
@@ -112,7 +121,7 @@
     orders.forEach(function (order) {
       var total = numberValue(order.total_price)
       var payStatus = safeText(paymentStatus(order))
-      var method = safeText(order.payment_method ? order.payment_method : "cod").toUpperCase()
+      var method = paymentMethodLabel(order.payment_method)
       var statusLabel = ORDER_STATUS_LABELS[orderStatus(order)] ? ORDER_STATUS_LABELS[orderStatus(order)] : orderStatus(order)
       var date = new Date(order.created_at)
       var key = Number.isNaN(date.getTime()) ? "No date" : date.toISOString().slice(0, reportRange() === "all" ? 7 : 10)
@@ -124,11 +133,11 @@
       if (payStatus === "installment_completed") paidRevenue += total
       if (payStatus === "to_collect") codToCollect += total
       if (payStatus === "pending_verification") pendingOnline += total
-      if (payStatus === "awaiting_gateway_setup") pendingOnline += total
-      if (payStatus === "payment_setup_failed") gatewayFailed += 1
-      if (payStatus === "installment_downpayment_failed") gatewayFailed += 1
+      if (payStatus === "awaiting_payment_setup") pendingOnline += total
+      if (payStatus === "payment_setup_failed") paymentFailed += 1
+      if (payStatus === "installment_downpayment_failed") paymentFailed += 1
 
-      if (method === "INSTALLMENT") {
+      if (method === "Installment") {
         if (payStatus === "installment_downpayment_paid") installmentDownpayments += numberValue(order.installment_downpayment)
         if (payStatus === "installment_active") installmentDownpayments += numberValue(order.installment_downpayment)
         if (payStatus === "installment_completed") installmentDownpayments += numberValue(order.installment_downpayment)
@@ -195,7 +204,7 @@
       receivables: receivables,
       installmentReceivables: installmentReceivables,
       repairCount: repairCount,
-      gatewayFailed: gatewayFailed,
+      paymentFailed: paymentFailed,
       paymentRows: paymentRows,
       statusRows: statusRows,
       topProducts: topProducts,
@@ -205,7 +214,7 @@
   function makeMetric(label, id) {
     var box = createElement("div", "metric")
     box.appendChild(createElement("div", "metric-label", label))
-    box.appendChild(createElement("div", "metric-value", "PHP 0"))
+    box.appendChild(createElement("div", "metric-value", "₱0"))
     box.lastChild.id = id
     return box
   }
@@ -330,7 +339,7 @@
       "Average order value: " + money(average),
       "Pending online amount: " + money(summary.pendingOnline),
       "Installment receivables: " + money(summary.installmentReceivables),
-      "Gateway failed orders: " + summary.gatewayFailed,
+      "Payment failed orders: " + summary.paymentFailed,
       "Repair-related orders: " + summary.repairCount
     ]
     lines.forEach(function (line) {
@@ -356,7 +365,7 @@
       var row = document.createElement("tr")
       row.appendChild(createElement("td", "", orderReference(order)))
       row.appendChild(createElement("td", "", orderDate(order.created_at)))
-      row.appendChild(createElement("td", "", safeText(order.payment_method ? order.payment_method : "cod").toUpperCase()))
+      row.appendChild(createElement("td", "", paymentMethodLabel(order.payment_method)))
       var statusLabel = PAYMENT_STATUS_LABELS[paymentStatus(order)] ? PAYMENT_STATUS_LABELS[paymentStatus(order)] : paymentStatus(order)
       row.appendChild(createElement("td", "", statusLabel))
       row.appendChild(createElement("td", "", money(order.total_price)))
@@ -412,7 +421,7 @@
       ["Pending Online", summary.pendingOnline.toFixed(2)],
       ["Receivables", summary.receivables.toFixed(2)],
       ["Installment Receivables", summary.installmentReceivables.toFixed(2)],
-      ["Gateway Failed", summary.gatewayFailed],
+      ["Payment Failed", summary.paymentFailed],
       ["Repair Related Orders", summary.repairCount],
       [],
       ["Payment Method", "Amount", "Orders"]
@@ -439,7 +448,7 @@
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     }).slice(0, 20).forEach(function (order) {
       var statusLabel = PAYMENT_STATUS_LABELS[paymentStatus(order)] ? PAYMENT_STATUS_LABELS[paymentStatus(order)] : paymentStatus(order)
-      rows.push([orderReference(order), orderDate(order.created_at), safeText(order.payment_method ? order.payment_method : "cod").toUpperCase(), statusLabel, numberValue(order.total_price).toFixed(2)])
+      rows.push([orderReference(order), orderDate(order.created_at), paymentMethodLabel(order.payment_method), statusLabel, numberValue(order.total_price).toFixed(2)])
     })
   }
 

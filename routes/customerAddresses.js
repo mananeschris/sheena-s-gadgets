@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const { customerSession, customerIdentity } = require('./customerAccess');
+router.use(customerSession, customerIdentity());
 
 function dbQuery(db, sql, params = []) {
   return new Promise((resolve, reject) => {
@@ -28,6 +30,9 @@ async function ensureAddressTable(db) {
       recipient_name VARCHAR(255) NOT NULL,
       phone VARCHAR(50) NOT NULL,
       address TEXT NOT NULL,
+      landmark TEXT NULL,
+      latitude DECIMAL(10,7) NULL,
+      longitude DECIMAL(10,7) NULL,
       city VARCHAR(120) NULL,
       province VARCHAR(120) NULL,
       postal_code VARCHAR(30) NULL,
@@ -44,6 +49,9 @@ async function ensureAddressTable(db) {
     ["recipient_name", "ADD COLUMN recipient_name VARCHAR(255) NOT NULL"],
     ["phone", "ADD COLUMN phone VARCHAR(50) NOT NULL"],
     ["address", "ADD COLUMN address TEXT NOT NULL"],
+    ["landmark", "ADD COLUMN landmark TEXT NULL"],
+    ["latitude", "ADD COLUMN latitude DECIMAL(10,7) NULL"],
+    ["longitude", "ADD COLUMN longitude DECIMAL(10,7) NULL"],
     ["city", "ADD COLUMN city VARCHAR(120) NULL"],
     ["province", "ADD COLUMN province VARCHAR(120) NULL"],
     ["postal_code", "ADD COLUMN postal_code VARCHAR(30) NULL"],
@@ -65,6 +73,9 @@ function normalizeAddressPayload(body) {
     recipient_name: cleanText(body.recipient_name, 255),
     phone: cleanText(body.phone || body.delivery_contact, 50),
     address: cleanText(body.address || body.delivery_address, 1000),
+    landmark: cleanText(body.landmark, 500),
+    latitude: body.latitude === "" || body.latitude == null ? null : Number(body.latitude),
+    longitude: body.longitude === "" || body.longitude == null ? null : Number(body.longitude),
     city: cleanText(body.city, 120),
     province: cleanText(body.province, 120),
     postal_code: cleanText(body.postal_code, 30),
@@ -76,6 +87,10 @@ function validateAddress(payload) {
   if (!payload.user_id) return "Signed-in customer is required.";
   if (!payload.recipient_name || !payload.phone || !payload.address) {
     return "Recipient name, phone, and address are required.";
+  }
+  if (!Number.isFinite(payload.latitude) || payload.latitude < -90 || payload.latitude > 90 ||
+      !Number.isFinite(payload.longitude) || payload.longitude < -180 || payload.longitude > 180) {
+    return "Choose and confirm a delivery pin on the map.";
   }
   return null;
 }
@@ -89,30 +104,7 @@ async function makeDefaultIfNeeded(db, userId, addressId, requestedDefault) {
   await dbQuery(db, "UPDATE customer_addresses SET is_default=1 WHERE user_id=? AND id=?", [userId, addressId]);
 }
 
-async function seedDefaultFromUser(db, userId) {
-  const existing = await dbQuery(db, "SELECT id FROM customer_addresses WHERE user_id=? LIMIT 1", [userId]);
-  if (existing.length) return;
-
-  const users = await dbQuery(db, "SELECT name, phone, address, city, province, postal_code FROM users WHERE id=? AND role='customer' LIMIT 1", [userId]);
-  const user = users[0];
-  if (!user || !user.address || !user.phone) return;
-
-  await dbQuery(db, `
-    INSERT INTO customer_addresses (user_id, label, recipient_name, phone, address, city, province, postal_code, is_default)
-    VALUES (?, 'Home', ?, ?, ?, ?, ?, ?, 1)
-  `, [
-    userId,
-    user.name || "Customer",
-    user.phone,
-    user.address,
-    user.city || null,
-    user.province || null,
-    user.postal_code || null
-  ]);
-}
-
 async function listAddresses(db, userId) {
-  await seedDefaultFromUser(db, userId);
   return dbQuery(db, `
     SELECT *
     FROM customer_addresses
@@ -130,7 +122,7 @@ router.use(async (req, res, next) => {
   }
 });
 
-router.get("/:user_id", async (req, res) => {
+router.get("/:user_id", customerIdentity(), async (req, res) => {
   const userId = toUserId(req.params.user_id);
   if (!userId) return res.status(400).json({ message: "Valid customer id is required." });
 
@@ -149,14 +141,17 @@ router.post("/", async (req, res) => {
 
   try {
     const result = await dbQuery(req.db, `
-      INSERT INTO customer_addresses (user_id, label, recipient_name, phone, address, city, province, postal_code, is_default)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO customer_addresses (user_id, label, recipient_name, phone, address, landmark, latitude, longitude, city, province, postal_code, is_default)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       payload.user_id,
       payload.label,
       payload.recipient_name,
       payload.phone,
       payload.address,
+      payload.landmark || null,
+      payload.latitude,
+      payload.longitude,
       payload.city || null,
       payload.province || null,
       payload.postal_code || null,
@@ -180,13 +175,16 @@ router.put("/:id", async (req, res) => {
   try {
     const result = await dbQuery(req.db, `
       UPDATE customer_addresses
-      SET label=?, recipient_name=?, phone=?, address=?, city=?, province=?, postal_code=?, is_default=?
+      SET label=?, recipient_name=?, phone=?, address=?, landmark=?, latitude=?, longitude=?, city=?, province=?, postal_code=?, is_default=?
       WHERE id=? AND user_id=?
     `, [
       payload.label,
       payload.recipient_name,
       payload.phone,
       payload.address,
+      payload.landmark || null,
+      payload.latitude,
+      payload.longitude,
       payload.city || null,
       payload.province || null,
       payload.postal_code || null,
@@ -205,7 +203,7 @@ router.put("/:id", async (req, res) => {
 
 router.put("/:id/default", async (req, res) => {
   const addressId = Number(req.params.id);
-  const userId = toUserId(req.body.user_id || req.query.user_id);
+  const userId = toUserId(req.body?.user_id || req.query.user_id);
   if (!Number.isInteger(addressId) || addressId <= 0 || !userId) {
     return res.status(400).json({ message: "Valid customer and address id are required." });
   }
@@ -223,7 +221,7 @@ router.put("/:id/default", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const addressId = Number(req.params.id);
-  const userId = toUserId(req.body.user_id || req.query.user_id);
+  const userId = toUserId(req.body?.user_id || req.query.user_id);
   if (!Number.isInteger(addressId) || addressId <= 0 || !userId) {
     return res.status(400).json({ message: "Valid customer and address id are required." });
   }

@@ -1,0 +1,60 @@
+/* One inbox surface for catalog, product details, and order tracking. */
+body #notificationPanel {
+  position: fixed !important; top: 88px !important; right: max(16px, calc((100% - 1240px) / 2)) !important; left: auto !important; bottom: auto !important;
+  display: grid !important; grid-template-rows: auto auto minmax(0, 1fr); gap: 12px !important;
+  width: min(480px, calc(100% - 32px)) !important; max-height: min(78svh, calc(100svh - 108px)) !important;
+  margin: 0 !important; padding: 16px !important; overflow: hidden !important; background: #fff !important; color: #20342a !important;
+  border: 1px solid #dbe5de !important; border-radius: 8px !important; box-shadow: 0 14px 40px #172c211f !important; z-index: 1400 !important; letter-spacing: 0;
+}
+body #notificationPanel.d-none, body #notificationPanel.customer-notification-panel [hidden] { display: none !important; }
+#customerStoreNav #notificationButton[aria-expanded=true]::after { opacity: 0 !important; visibility: hidden !important; }
+#notificationPanel * { min-width: 0; }
+#notificationPanel button { transform: none !important; cursor: pointer; }
+#notificationPanel button:disabled { opacity: .45; cursor: not-allowed; }
+#notificationPanel button:focus-visible { outline: 2px solid #14634c; outline-offset: 2px; }
+body #notificationPanel .notification-head { display: grid !important; grid-template-columns: minmax(0, 1fr) 32px !important; gap: 12px !important; margin: 0 !important; padding: 0 0 12px !important; border-bottom: 1px solid #e4eae6; }
+#notificationPanel .notification-heading { display: grid; gap: 3px; }
+#notificationPanel .notification-kicker { color: #547160; font-size: 10px; font-weight: 650; line-height: 1.4; }
+#notificationPanel .notification-heading h2 { margin: 0; color: #20342a; font-size: 20px; font-weight: 700; line-height: 1.4; }
+#notificationPanel .notification-summary { color: #78847c; font-size: 12px; line-height: 1.5; }
+#notificationPanel .notification-close { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 4px; background: none; color: #627567; }
+#notificationPanel .notification-close:hover { background: #eff6f2; color: #14634c; }
+#notificationPanel .notification-close svg { width: 18px; height: 18px; }
+body #notificationPanel .notification-actions { grid-column: 1 / -1; display: flex !important; flex-wrap: wrap; justify-content: flex-start !important; gap: 7px !important; }
+body #notificationPanel .notification-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 6px 9px; border: 1px solid #d5ddd8; border-radius: 5px; background: #fff; color: #344d3e; font-size: 11px; font-weight: 600; box-shadow: none; }
+#notificationPanel .notification-actions svg { width: 14px; height: 14px; }
+body #notificationPanel .notification-filters { display: flex; gap: 5px; padding: 3px; border: 1px solid #e0e6e2; border-radius: 6px; background: #f4f7f5; }
+#notificationPanel .notification-filters button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 34px; padding: 6px 10px; border: 0; border-radius: 4px; background: none; color: #56635b; font-size: 12px; font-weight: 600; }
+#notificationPanel .notification-filters button.active { background: #fff; color: #20342a; box-shadow: 0 1px 4px #172c211f; }
+#notificationPanel .notification-filters button span { min-width: 20px; padding: 2px 5px; border-radius: 4px; background: #e6ede8; color: #41584a; font-size: 10px; text-align: center; }
+body #notificationPanel .notification-list { display: grid !important; align-content: start; gap: 8px !important; min-height: 0 !important; max-height: none !important; margin: 0 !important; padding: 1px 2px 1px 1px !important; overflow: auto !important; overflow-x: hidden !important; overscroll-behavior: contain; }
+body #notificationPanel .customer-notification-item { display: grid !important; grid-template-columns: 42px minmax(0, 1fr) !important; align-items: start !important; gap: 10px !important; min-width: 0; padding: 11px !important; margin: 0 !important; border: 1px solid #e0e5e2 !important; border-radius: 6px !important; background: #fff !important; box-shadow: none !important; }
+#notificationPanel .customer-notification-item.clickable { cursor: pointer; }
+body #notificationPanel .customer-notification-item:hover { border-color: #aab9af !important; background: #fbfcfb !important; }
+body #notificationPanel .customer-notification-item.unread { border-color: #b7cbbd !important; background: #f8fbf9 !important; box-shadow: inset 3px 0 0 #4b8d66 !important; }
+body #notificationPanel .notification-product-image { display: block; width: 42px !important; height: 42px !important; min-width: 0 !important; border: 1px solid #e0e5e2; border-radius: 5px; background: #f5f7f5; object-fit: contain !important; }
+body #notificationPanel .notification-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 6px; background: #edf1ee; color: #46554b; }
+#notificationPanel .notification-icon svg { width: 18px; height: 18px; }
+#notificationPanel .notification-order .notification-icon { background: #e9f0fa; color: #315b8a; }
+#notificationPanel .notification-payment .notification-icon { background: #e5f3ef; color: #24715e; }
+#notificationPanel .notification-installment .notification-icon { background: #f3edf8; color: #704a8a; }
+#notificationPanel .notification-repair .notification-icon { background: #fff2df; color: #8a5b20; }
+#notificationPanel .notification-content { min-width: 0; overflow-wrap: anywhere; }
+body #notificationPanel .notification-meta { display: flex !important; flex-wrap: wrap; align-items: center; gap: 7px !important; margin: 0 !important; color: #6d7771 !important; font-size: 10px !important; line-height: 1.4; }
+body #notificationPanel .notification-type { padding: 3px 6px !important; border: 0 !important; border-radius: 4px !important; background: #edf1ee !important; color: #46554b !important; font-size: 9px !important; letter-spacing: 0 !important; }
+#notificationPanel .notification-unread-dot { width: 7px; height: 7px; flex: 0 0 7px; margin-left: auto; border-radius: 50%; background: #318252; }
+body #notificationPanel .customer-notification-item strong { display: block; margin: 6px 0 3px !important; color: #20342a !important; font-size: 13px !important; line-height: 1.4 !important; font-weight: 650 !important; }
+body #notificationPanel .customer-notification-item .notification-product-name { color: #14634c !important; font-size: 12px !important; }
+body #notificationPanel .customer-notification-item p { margin: 0 0 8px !important; color: #58645d !important; font-size: 12px !important; font-weight: 400 !important; line-height: 1.5 !important; overflow-wrap: anywhere; }
+body #notificationPanel .notification-row-actions { display: flex !important; flex-wrap: wrap; align-items: center; justify-content: flex-start !important; gap: 12px !important; }
+#notificationPanel .notification-action, #notificationPanel .notification-mark-read { display: inline-flex; align-items: center; gap: 5px; min-height: 28px; padding: 3px 0; border: 0; background: none; color: #315b43; font-size: 11px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+#notificationPanel .notification-row-actions svg { width: 14px; height: 14px; }
+body #notificationPanel .notification-empty { display: grid; justify-items: center; gap: 7px; padding: 28px 16px !important; border: 0 !important; border-radius: 0 !important; background: none; text-align: center; }
+#notificationPanel .notification-empty svg { width: 24px; height: 24px; margin-bottom: 3px; color: #547160; }
+#notificationPanel .notification-empty strong { color: #26352b; font-size: 13px; font-weight: 600; }
+#notificationPanel .notification-empty span { color: #6a756e; font-size: 12px; line-height: 1.4; }
+#notificationPanel .notification-empty button { padding: 6px 12px; border: 1px solid #d5ddd8; border-radius: 5px; background: #fff; color: #14634c; font-size: 12px; }
+@media (max-width: 720px) {
+  body #notificationPanel { top: auto !important; right: 10px !important; bottom: 10px !important; left: 10px !important; width: auto !important; max-height: min(78svh, 700px) !important; }
+  #notificationPanel .notification-actions button { flex: 1 1 auto; }
+}

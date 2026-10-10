@@ -15,6 +15,9 @@ async function ensureOrderCoreColumns(db) {
     ["recipient_name", "ADD COLUMN recipient_name VARCHAR(255) NULL"],
     ["delivery_contact", "ADD COLUMN delivery_contact VARCHAR(50) NULL"],
     ["delivery_address", "ADD COLUMN delivery_address TEXT NULL"],
+    ["delivery_landmark", "ADD COLUMN delivery_landmark TEXT NULL"],
+    ["delivery_latitude", "ADD COLUMN delivery_latitude DECIMAL(10,7) NULL"],
+    ["delivery_longitude", "ADD COLUMN delivery_longitude DECIMAL(10,7) NULL"],
     ["delivery_note", "ADD COLUMN delivery_note TEXT NULL"],
     ["shipping_region", "ADD COLUMN shipping_region VARCHAR(40) NULL"],
     ["shipping_fee", "ADD COLUMN shipping_fee DECIMAL(12,2) NOT NULL DEFAULT 0"],
@@ -23,6 +26,13 @@ async function ensureOrderCoreColumns(db) {
     ["payment_reference", "ADD COLUMN payment_reference VARCHAR(255) NULL"],
     ["payment_checkout_id", "ADD COLUMN payment_checkout_id VARCHAR(255) NULL"],
     ["payment_checkout_url", "ADD COLUMN payment_checkout_url TEXT NULL"],
+    ["gcash_reference", "ADD COLUMN gcash_reference VARCHAR(80) NULL"],
+    ["payment_proof_image", "ADD COLUMN payment_proof_image TEXT NULL"],
+    ["payment_submitted_at", "ADD COLUMN payment_submitted_at DATETIME NULL"],
+    ["payment_verified_at", "ADD COLUMN payment_verified_at DATETIME NULL"],
+    ["payment_verified_by", "ADD COLUMN payment_verified_by INT NULL"],
+    ["payment_verified_by_name", "ADD COLUMN payment_verified_by_name VARCHAR(255) NULL"],
+    ["payment_rejection_reason", "ADD COLUMN payment_rejection_reason TEXT NULL"],
     ["payment_error", "ADD COLUMN payment_error TEXT NULL"],
     ["payment_last_checked_at", "ADD COLUMN payment_last_checked_at DATETIME NULL"],
     ["payment_completed_at", "ADD COLUMN payment_completed_at DATETIME NULL"],
@@ -31,7 +41,12 @@ async function ensureOrderCoreColumns(db) {
     ["shipped_at", "ADD COLUMN shipped_at DATETIME NULL"],
     ["delivered_at", "ADD COLUMN delivered_at DATETIME NULL"],
     ["warranty_expires_at", "ADD COLUMN warranty_expires_at DATETIME NULL"],
-    ["stock_restored_at", "ADD COLUMN stock_restored_at DATETIME NULL"]
+    ["stock_restored_at", "ADD COLUMN stock_restored_at DATETIME NULL"],
+    ["voucher_id", "ADD COLUMN voucher_id INT NULL"],
+    ["voucher_code", "ADD COLUMN voucher_code VARCHAR(80) NULL"],
+    ["voucher_discount", "ADD COLUMN voucher_discount DECIMAL(12,2) NOT NULL DEFAULT 0"],
+    ["product_subtotal", "ADD COLUMN product_subtotal DECIMAL(12,2) NOT NULL DEFAULT 0"],
+    ["final_product_total", "ADD COLUMN final_product_total DECIMAL(12,2) NOT NULL DEFAULT 0"]
   ];
 
   for (const [name, alter] of columns) {

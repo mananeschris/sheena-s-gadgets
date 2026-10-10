@@ -1,0 +1,76 @@
+dialog.delivery-proof-dialog { width: min(640px, calc(100% - 32px)); max-height: calc(100dvh - 32px); padding: 24px; border: 1px solid #d4d4d4; border-radius: 8px; color: #171717; background: #fff; overflow: auto; }
+dialog.delivery-proof-dialog::backdrop { background: rgb(0 0 0 / 60%); }
+.delivery-proof-dialog header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.delivery-proof-dialog h2 { font-size: 20px; margin: 0; }
+.delivery-proof-dialog button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; border: 1px solid #ccc; border-radius: 4px; padding: 8px 12px; background: #fff; color: #171717; }
+.delivery-proof-dialog button svg { width: 18px; height: 18px; }
+.delivery-proof-dialog button:disabled { opacity: .5; cursor: not-allowed; }
+.delivery-proof-dialog .proof-submit { background: #111; color: #fff; border-color: #111; }
+.delivery-proof-dialog .proof-preview { width: 100%; height: 280px; object-fit: contain; background: #f5f5f5; margin: 16px 0; }
+.delivery-proof-dialog [hidden] { display: none !important; }
+.delivery-proof-dialog input[type=file] { display: block; width: 100%; margin: 10px 0; }
+.delivery-proof-dialog footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.delivery-proof-dialog .proof-error { color: #a31515; font-size: 14px; margin: 12px 0; }
+.delivery-proof-dialog .proof-help { color: #666; font-size: 13px; }
+.delivery-proof-dialog.proof-viewer { width: min(900px, calc(100% - 32px)); }
+.proof-viewer .proof-preview { height: min(65dvh, 650px); }
+@media (max-width: 480px) { dialog.delivery-proof-dialog { padding: 16px; } .delivery-proof-dialog .proof-preview { height: 230px; } .proof-viewer .proof-preview { height: 60dvh; } }
+
+dialog.rider-proof-dialog { width: min(500px, calc(100% - 32px)); padding: 0; box-shadow: 0 24px 80px rgb(0 0 0 / 18%); }
+.rider-proof-dialog header { padding: 20px; margin: 0; border-bottom: 1px solid #e7e7e7; }
+.rider-proof-dialog .proof-heading { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.rider-proof-dialog .proof-heading-icon { width: 40px; height: 40px; display: grid; place-items: center; background: #111; color: #fff; border-radius: 6px; flex-shrink: 0; }
+.rider-proof-dialog .proof-heading-icon svg { width: 20px; height: 20px; }
+.rider-proof-dialog .proof-eyebrow { margin: 0 0 3px; color: #6b6b6b; font-size: 11px; font-weight: 500; }
+.rider-proof-dialog h2 { font-size: 18px; font-weight: 650; line-height: 1.3; }
+.rider-proof-dialog .proof-close, .rider-proof-dialog .proof-remove { padding: 0; width: 36px; min-height: 36px; flex-shrink: 0; }
+.rider-proof-dialog .proof-close { border-color: transparent; background: #f5f5f5; }
+.rider-proof-dialog .proof-body { padding: 20px; }
+.rider-proof-dialog .proof-order-context { display: flex; flex-direction: column; gap: 4px; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid #eee; }
+.rider-proof-dialog .proof-product { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.rider-proof-dialog .proof-recipient { font-size: 12px; color: #666; overflow-wrap: anywhere; }
+.rider-proof-dialog .proof-field-heading { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 10px; }
+.rider-proof-dialog .proof-field-heading label { font-size: 13px; font-weight: 600; }
+.rider-proof-dialog .proof-field-heading > span { font-size: 11px; color: #666; }
+.rider-proof-dialog .proof-upload-area { height: 190px; border: 1px dashed #c3c3c3; border-radius: 6px; background: #fafafa; overflow: hidden; }
+.rider-proof-dialog .proof-upload-area.dragging { border-color: #111; background: #eee; }
+.rider-proof-dialog .proof-upload-area.has-photo { border-style: solid; }
+.rider-proof-dialog .proof-browse { width: 100%; height: 100%; flex-direction: column; border: 0; background: transparent; gap: 12px; font-size: 13px; }
+.rider-proof-dialog .proof-browse svg { width: 30px; height: 30px; color: #555; }
+.rider-proof-dialog .proof-preview { height: 100%; margin: 0; background: #f5f5f5; display: block; }
+.rider-proof-dialog .proof-photo-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.rider-proof-dialog .proof-photo-tools button { font-size: 12px; font-weight: 550; padding: 8px; }
+.rider-proof-dialog .proof-file-details { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+.rider-proof-dialog .proof-file-details > div { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.rider-proof-dialog .proof-file-name { font-size: 12px; font-weight: 550; overflow-wrap: anywhere; }
+.rider-proof-dialog .proof-file-size { font-size: 11px; color: #666; }
+.rider-proof-dialog .proof-help { margin: 10px 0 0; font-size: 11px; }
+.rider-proof-dialog .proof-error:empty { display: none; }
+.rider-proof-dialog .proof-error { margin-bottom: 0; }
+.rider-proof-dialog footer { padding: 14px 20px; margin: 0; border-top: 1px solid #e7e7e7; background: #fafafa; }
+.rider-proof-dialog footer button { font-size: 13px; font-weight: 550; min-width: 88px; }
+.rider-proof-dialog .proof-submit { min-width: 140px; }
+.rider-proof-dialog button:hover:not(:disabled) { background: #eee; }
+.rider-proof-dialog .proof-submit:hover:not(:disabled) { background: #333; }
+.rider-proof-dialog button:focus-visible { outline: 2px solid #111; outline-offset: 3px; }
+.rider-proof-dialog .proof-camera-view { padding: 20px; }
+.rider-proof-dialog .proof-camera-view video { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #111; border-radius: 6px; }
+.rider-proof-dialog .proof-camera-status { margin: 10px 0; color: #666; font-size: 12px; min-height: 18px; }
+.rider-proof-dialog .proof-camera-actions { display: flex; justify-content: space-between; gap: 8px; }
+.rider-proof-dialog .proof-camera-actions button { font-size: 12px; }
+.rider-proof-dialog .proof-auth-view { padding: 20px; }
+.rider-proof-dialog .proof-auth-view h3 { font-size: 17px; margin: 0 0 8px; }
+.rider-proof-dialog .proof-auth-view .proof-help { margin-bottom: 18px; font-size: 12px; }
+.rider-proof-dialog .proof-auth-view label { display: block; font-size: 12px; font-weight: 600; margin: 14px 0 6px; }
+.rider-proof-dialog .proof-auth-view input { width: 100%; min-height: 40px; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+.rider-proof-dialog .proof-auth-view input:read-only { background: #f5f5f5; }
+.rider-proof-dialog .proof-auth-view .proof-camera-actions { margin-top: 20px; }
+@media (max-width: 480px) {
+  .rider-proof-dialog header, .rider-proof-dialog .proof-body, .rider-proof-dialog .proof-camera-view, .rider-proof-dialog .proof-auth-view { padding: 16px; }
+  .rider-proof-dialog footer { padding: 14px 16px; }
+  .rider-proof-dialog .proof-heading { gap: 8px; }
+  .rider-proof-dialog .proof-heading-icon { width: 32px; height: 36px; }
+  .rider-proof-dialog h2 { font-size: 16px; }
+  .rider-proof-dialog .proof-upload-area { height: 170px; }
+  .rider-proof-dialog .proof-preview { height: 100%; }
+}

@@ -4,76 +4,165 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product | Sheena's Gadgets & Accessories Shop</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/sheena-mark.svg">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/customer-shop.css">
-  <style>
-    .product-page{padding:34px clamp(18px,4vw,52px);background:var(--white)}
-    .product-layout{display:grid;grid-template-columns:minmax(280px,.9fr) minmax(0,1.1fr);gap:28px;align-items:start}.product-gallery,.product-details,.review-panel{border:1px solid var(--line);border-radius:8px;background:var(--white);padding:16px}.product-gallery-main{width:100%;aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;object-fit:cover;background:var(--soft)}.product-thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.product-thumbs button{border:1px solid var(--line);border-radius:8px;background:var(--white);padding:4px}.product-thumbs img{width:64px;height:64px;object-fit:cover;border-radius:6px}.product-details h1{font-size:clamp(30px,4vw,50px);font-weight:900;margin:10px 0}.product-price{font-size:30px;font-weight:900}.product-actions-main{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.quantity-control{display:flex;align-items:center;gap:10px;margin-top:16px}.quantity-control input{width:96px;border:1px solid var(--ink);border-radius:8px;padding:9px;background:var(--white);color:var(--ink)}.review-panel,.recommend-panel{margin-top:22px}.recommend-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.mini-product{border:1px solid var(--line);border-radius:8px;background:var(--white);padding:10px;cursor:pointer}.mini-product img{width:100%;aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;object-fit:cover;background:var(--soft)}.mini-product strong{display:block;margin-top:10px}.mini-product span{display:block;color:var(--muted);font-size:13px;margin-top:4px}.mini-product .mini-price{color:var(--ink);font-weight:900;font-size:16px}.review-images{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.review-images img{width:72px;height:72px;border:1px solid var(--line);border-radius:8px;object-fit:cover}.store-header.compact{min-height:auto}.store-header.compact .store-nav{border-bottom:0}@media(max-width:820px){.product-layout{grid-template-columns:1fr}}
-  </style>
-  <link rel="stylesheet" href="/css/ui-polish.css">
-  <link rel="stylesheet" href="/css/ideal-ui.css?v=ideal-ui-20260908f">
+<link rel="stylesheet" href="/css/ui-polish.css?v=notifications-all-pages-1">
+<link rel="stylesheet" href="/css/system-fonts.css?v=font-1">
+<link rel="stylesheet" href="/css/store-footer.css?v=footer-2">
+<link rel="stylesheet" href="/css/customer-mobile.css?v=product-notifications-2">
+<link rel="stylesheet" href="/css/customer-typography.css?v=customer-suite-1">
+<link rel="stylesheet" href="/css/customer-header.css?v=header-1">
+<link rel="stylesheet" href="/css/customer-product.css?v=product-2">
+<link rel="stylesheet" href="/css/customer-cart.css?v=cart-2">
+<link rel="stylesheet" href="/css/customer-notifications.css?v=inbox-6">
 </head>
 <body class="customer-product-page">
   <header class="store-header compact">
-    <nav class="store-nav">
-      <a class="brand brand-with-logo" href="/"><img class="brand-logo" src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a>
+    <nav id="customerStoreNav" class="store-nav customer-store-nav" aria-label="Customer navigation">
+      <a class="brand brand-with-logo" href="/customer/shop.html" aria-label="Sheena's Gadgets & Accessories Shop home"><img class="brand-logo" src="/assets/sheena-mark.svg?v=sg-2" alt=""><span class="brand-copy"><strong>Sheena's</strong><small>Gadgets &amp; Accessories Shop</small></span></a>
       <div class="nav-actions">
-        <a href="/" class="nav-link">Shop</a>
-        <a id="profileLink" href="/customer/profile.html" class="nav-link d-none">Profile</a>
-        <button id="cartButton" class="btn btn-outline-light btn-sm" onclick="toggleCart()">Cart <span id="cartCount" class="badge text-bg-light">0</span></button>
-        <button id="notificationButton" class="btn btn-outline-light btn-sm d-none" onclick="toggleNotifications()">Updates <span id="notificationCount" class="badge text-bg-light d-none">0</span></button>
-        <span id="accountLabel" class="account-label"></span>
-        <a id="loginLink" href="/auth.html" class="btn btn-outline-light btn-sm">Login</a>
-        <a id="signupLink" href="/auth.html?mode=register" class="btn btn-light btn-sm">Sign Up</a>
-        <button id="logoutButton" class="btn btn-outline-light btn-sm d-none" onclick="logoutCustomer()">Logout</button>
+        <a href="/customer/shop.html#products" class="nav-link nav-icon-label"><i data-lucide="store" aria-hidden="true"></i><span>Shop</span></a>
+        <button id="cartButton" type="button" class="nav-tool d-none" aria-label="Shopping cart" data-tooltip="Cart" onclick="toggleCart()"><i data-lucide="shopping-cart" aria-hidden="true"></i><span id="cartCount" class="badge text-bg-light">0</span></button>
+        <button id="notificationButton" type="button" class="nav-tool d-none" aria-label="Notifications" data-tooltip="Notifications" onclick="toggleNotifications()"><i data-lucide="bell" aria-hidden="true"></i><span id="notificationCount" class="badge text-bg-light d-none">0</span></button>
+        <a id="profileLink" href="/customer/profile.html" class="nav-account d-none" aria-label="Profile" data-tooltip="My account"><span id="accountAvatar" class="account-avatar" aria-hidden="true"></span><span class="nav-account-copy"><span id="accountLabel" class="account-label"></span><small>My account</small></span></a>
+        <a id="loginLink" href="/auth.html" class="nav-icon-label"><i data-lucide="log-in" aria-hidden="true"></i><span>Login</span></a>
+        <a id="signupLink" href="/auth.html?mode=register" class="nav-icon-label"><i data-lucide="user-round-plus" aria-hidden="true"></i><span>Sign up</span></a>
+        <button id="logoutButton" type="button" class="nav-tool d-none" aria-label="Log out" data-tooltip="Log out" onclick="logoutCustomer()"><i data-lucide="log-out" aria-hidden="true"></i></button>
       </div>
     </nav>
-    <div id="cartPanel" class="cart-panel d-none">
-      <div class="cart-head"><strong>Cart</strong><button class="btn btn-sm btn-outline-dark" onclick="toggleCart()">Close</button></div>
-      <label class="cart-select-all"><input type="checkbox" id="cartSelectAll" onchange="toggleSelectAllCart(this.checked)"> Select all</label>
-      <div id="cartList" class="cart-list">Cart is empty.</div>
-      <div class="cart-footer"><div><small id="cartSelectedCount">0 selected</small><strong id="cartTotal">PHP 0.00</strong></div><button class="btn btn-dark btn-sm" onclick="checkoutCart()">Checkout</button></div>
-    </div>
-    <div id="notificationPanel" class="notification-panel customer-notification-panel d-none">
-      <div class="notification-head">
-        <strong>Notifications</strong>
-        <div class="notification-actions">
-          <button class="btn btn-sm btn-outline-dark" onclick="markAllNotificationsRead()">Mark all read</button>
-          <button class="btn btn-sm btn-dark" onclick="clearReadNotifications()">Clear read</button>
-        </div>
-      </div>
-      <div id="notificationList" class="notification-list">No notifications yet.</div>
-    </div>
+    <aside id="cartPanel" class="cart-panel d-none" aria-label="Shopping cart"></aside>
+    <aside id="notificationPanel" class="customer-notification-panel d-none" aria-label="Notifications"></aside>
   </header>
 
-  <main class="product-page">
-    <div id="productPageBody">Loading product...</div>
-    <section class="review-panel">
-      <div class="catalog-head"><div><p class="eyebrow dark">Customer Reviews</p><h2>Reviews</h2></div></div>
-      <div id="productReviews">Loading reviews...</div>
+  <main id="productDetailPage" class="product-page">
+    <div id="productPageBody" aria-live="polite" aria-busy="true"><div class="product-loading" role="status"><div></div><div></div><span>Loading product...</span></div></div>
+    <section id="productDescriptionSection" class="product-description-section" aria-labelledby="descriptionHeading" hidden>
+      <div class="product-section-head"><h2 id="descriptionHeading">Product Details</h2></div>
+      <p id="productDescription"></p>
     </section>
-    <section class="recommend-panel">
-      <div class="catalog-head"><div><p class="eyebrow dark">You May Also Like</p><h2>Related Products</h2></div></div>
+    <section id="productReviewsSection" class="review-panel" aria-labelledby="reviewsHeading" hidden>
+      <div class="product-section-head"><h2 id="reviewsHeading">Customer Reviews <span id="reviewCount"></span></h2><label class="review-sort">Sort by <select id="reviewSort" onchange="renderReviews()"><option value="newest">Newest</option><option value="highest">Highest rated</option><option value="lowest">Lowest rated</option></select></label></div>
+      <div id="productReviews" aria-live="polite">Loading reviews...</div>
+    </section>
+    <section id="relatedProductsSection" class="recommend-panel" aria-labelledby="relatedHeading" hidden>
+      <div class="product-section-head"><h2 id="relatedHeading">You May Also Like</h2><a href="/customer/shop.html#products">View catalog <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
       <div id="relatedProducts" class="recommend-grid"></div>
     </section>
-    <section class="recommend-panel">
-      <div class="catalog-head"><div><p class="eyebrow dark">Recently Viewed</p><h2>Continue Browsing</h2></div></div>
+    <section id="recentProductsSection" class="recommend-panel" aria-labelledby="recentHeading" hidden>
+      <div class="product-section-head"><h2 id="recentHeading">Recently Viewed</h2></div>
       <div id="recentProducts" class="recommend-grid"></div>
     </section>
   </main>
 
+  <footer class="store-footer">
+    <div class="store-footer-inner">
+      <div class="store-footer-brand"><a class="store-footer-logo" href="/customer/shop.html"><img src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a><p class="store-footer-copy">Online since December 2019. We sell gadgets, laptops, tablets, phones, printers, and tech essentials through social selling, referrals, live selling, and this website.</p><div class="store-footer-badges"><span class="store-footer-chip">Cash</span><span class="store-footer-chip">GCash</span><span class="store-footer-chip">COD</span></div></div>
+      <div class="store-footer-col"><h3 class="store-footer-title">Shop</h3><a class="store-footer-link" href="/customer/shop.html#products">All Products</a><a class="store-footer-link" href="/customer/shop.html#products">Phones</a><a class="store-footer-link" href="/customer/shop.html#products">Accessories</a><a class="store-footer-link" href="/customer/shop.html#products">New Arrivals</a></div>
+      <div class="store-footer-col"><h3 class="store-footer-title">Customer Care</h3><a class="store-footer-link" href="/customer/profile.html#orders">Track Orders</a><a class="store-footer-link" href="/customer/profile.html#addresses">Address Book</a><a class="store-footer-link" href="/customer/profile.html#repairs">Repairs & Warranty</a><a class="store-footer-link" href="/customer/profile.html#payments">Payments</a></div>
+      <div class="store-footer-col"><h3 class="store-footer-title">Company</h3><a class="store-footer-link" href="/about.html">About Us</a><a class="store-footer-link" href="/terms.html">Terms & Conditions</a><a class="store-footer-link" href="/privacy.html">Privacy Policy</a><span class="store-footer-text">Bacacay and Tabaco, Albay</span></div>
+    </div>
+    <div class="store-footer-bottom"><span>&copy; 2026 <strong>Sheena's Gadgets & Accessories Shop</strong>. All rights reserved.</span><span>Rider delivery • Service and replacement support</span></div>
+  </footer>
+
+  <div class="modal fade" id="guestAccountModal" tabindex="-1" aria-labelledby="guestAccountModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content guest-account-modal">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow dark mb-1">Account Required</p>
+            <h5 class="modal-title" id="guestAccountModalTitle">You must create an account or log in first.</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">You can continue browsing as guest, but cart and checkout are only available after signing in.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-dark" type="button" onclick="continueAsGuest()">Continue as Guest</button>
+          <button class="btn btn-dark" type="button" onclick="goToCustomerAuth('register')">Login / Create Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="layawayModal" tabindex="-1" aria-labelledby="layawayModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content guest-account-modal">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow dark mb-1">Layaway Terms</p>
+            <h5 class="modal-title" id="layawayModalTitle">Reserve after downpayment</h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="layawayTermsBody" class="d-grid gap-2"></div>
+          <label class="fw-bold mt-3" for="layawayPaymentMethod">Downpayment Method</label>
+          <select id="layawayPaymentMethod" class="form-select">
+            <option value="gcash">GCash</option>
+          </select>
+          <label class="d-flex gap-2 mt-3 fw-bold">
+            <input id="layawayAgree" type="checkbox">
+            <span id="layawayAgreementText">I agree to complete this layaway within the payment deadline.</span>
+          </label>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-dark" type="button" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-dark" type="button" onclick="submitLayawayRequest()">Continue to Downpayment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="reviewMediaModal" tabindex="-1" aria-labelledby="reviewMediaModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content review-media-modal">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reviewMediaModalTitle">Review Media</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="reviewMediaViewer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade product-image-modal" id="productImageModal" tabindex="-1" aria-labelledby="productImageModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-sm-down">
+      <div class="modal-content">
+        <div class="modal-header"><h2 id="productImageModalTitle">Product image</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close product image"></button></div>
+        <div class="product-image-toolbar">
+          <button type="button" id="previousProductImage" title="Previous image" aria-label="Previous image" onclick="stepProductImage(-1)"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
+          <span id="productImageCounter" aria-live="polite"></span>
+          <button type="button" id="nextProductImage" title="Next image" aria-label="Next image" onclick="stepProductImage(1)"><i data-lucide="chevron-right" aria-hidden="true"></i></button>
+          <div class="image-zoom-controls"><button type="button" id="zoomOutImage" title="Zoom out" aria-label="Zoom out" onclick="zoomProductImage(-0.5)"><i data-lucide="zoom-out" aria-hidden="true"></i></button><span id="productImageZoom" aria-live="polite">100%</span><button type="button" id="zoomInImage" title="Zoom in" aria-label="Zoom in" onclick="zoomProductImage(0.5)"><i data-lucide="zoom-in" aria-hidden="true"></i></button></div>
+        </div>
+        <div class="modal-body product-image-viewport"><img id="zoomedProductImage" alt=""></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/customer-header.js?v=header-1"></script>
+  <script src="/js/delivery-chat.js?v=2"></script>
   <script>var allProducts=[];</script>
-  <script src="/js/cart.js"></script>
-  <script src="/js/customer-notifications.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/cart.js?v=cart-2"></script>
+  <script src="/js/customer-notifications.js?v=notification-inbox-6"></script>
   <script>
     const productId = Number(new URLSearchParams(location.search).get("id"));
     let product = null;
     let selectedVariantIndex = "";
+    let layawayModal = null;
+    let reviewMediaModal = null;
+    let productImageModal = null;
+    let activeImageIndex = 0;
+    let imageZoom = 1;
+    let productQuantity = 1;
+    let productReviews = [];
 
-    function money(value){return `PHP ${Number(value||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`}
+    function money(value){return `₱${Number(value||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`}
     function escapeHtml(value){return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
-    function productImages(item){try{const images=item.images?JSON.parse(item.images):[];if(Array.isArray(images)&&images.length)return images}catch(e){}return item.image?[item.image]:[]}
-    function productVariants(item){try{const variants=item.variants?JSON.parse(item.variants):[];return Array.isArray(variants)?variants:[]}catch(e){return[]}}
+    function productImages(item){try{const images=Array.isArray(item.images)?item.images:JSON.parse(item.images||"[]");if(Array.isArray(images)&&images.length)return images.filter(image=>typeof image==="string"&&image)}catch(e){}return item.image?[item.image]:[]}
+    function productVariants(item){try{const variants=Array.isArray(item.variants)?item.variants:JSON.parse(item.variants||"[]");return Array.isArray(variants)?variants:[]}catch(e){return[]}}
     function productCategory(item){const category=String(item?.category||"Accessories").trim();return category||"Accessories"}
     function stockLabel(stock){const count=Number(stock||0);if(count<=0)return{text:"Unavailable",className:"out"};if(count<=5)return{text:"Limited pieces",className:"low"};return{text:"Available today",className:"ok"}}
     function ratingStars(value){const rating=Math.round(Number(value||0));return Array.from({length:5},(_,i)=>i<rating?"&#9733;":"&#9734;").join("")}
@@ -85,26 +174,190 @@
     function logoutCustomer(){localStorage.removeItem("currentUser");location.href="/"}
     function wishlistIds(){try{return JSON.parse(localStorage.getItem("wishlist")||"[]").map(Number)}catch(e){return[]}}
     function isWishlisted(id){return wishlistIds().includes(Number(id))}
-    function toggleWishlist(id){const current=wishlistIds();const productId=Number(id);const next=current.includes(productId)?current.filter(item=>item!==productId):[...current,productId];localStorage.setItem("wishlist",JSON.stringify(next));renderProduct()}
+    function toggleWishlist(id){if(!isCustomerLoggedIn()){showGuestAccountModal();return}const current=wishlistIds();const productId=Number(id);const next=current.includes(productId)?current.filter(item=>item!==productId):[...current,productId];localStorage.setItem("wishlist",JSON.stringify(next));renderProduct();document.getElementById("saveProductButton")?.focus({preventScroll:true})}
 
-    function renderAccount(){let user=null;try{user=JSON.parse(localStorage.getItem("currentUser")||"null")}catch(e){};if(user&&String(user.role||"customer").toLowerCase()==="customer"){document.getElementById("profileLink").classList.remove("d-none");document.getElementById("logoutButton").classList.remove("d-none");document.getElementById("loginLink").classList.add("d-none");document.getElementById("signupLink").classList.add("d-none");document.getElementById("accountLabel").innerText=user.name||"Customer"}}
-    function setMainImage(src){document.getElementById("mainImage").src=src}
-    function selectVariant(index){selectedVariantIndex=index;renderProduct()}
-    function selectedQuantity(){const input=document.getElementById("productQty");const qty=Math.max(Number(input?.value||1),1);return Math.min(qty, activeStock() || 1)}
-    function updateQtyMax(){const input=document.getElementById("productQty");if(!input)return;input.max=activeStock();if(Number(input.value)>activeStock())input.value=activeStock()||1;if(Number(input.value)<1)input.value=1}
-    function addSelectedToCart(){addToCart(product.id, selectedVariantIndex, selectedQuantity())}
-    function buyNow(){const quantity=selectedQuantity();localStorage.setItem("checkout",JSON.stringify({product_id:product.id,variant_index:selectedVariantIndex,quantity}));let user=null;try{user=JSON.parse(localStorage.getItem("currentUser")||"null")}catch(e){};if(!user||String(user.role||"customer").toLowerCase()!=="customer"){location.href="/auth.html?returnTo="+encodeURIComponent(`/checkout.html`);return}location.href="/checkout.html"}
+    function renderAccount(){
+      let user=null;
+      try{user=JSON.parse(localStorage.getItem("currentUser")||"null")}catch(e){}
+      const logged=Boolean(user&&String(user.role||"customer").toLowerCase()==="customer");
+      const setHidden=(element,hidden)=>{
+        if(!element)return;
+        element.classList.toggle("d-none",hidden);
+        element.toggleAttribute("hidden",hidden);
+        if(hidden)element.style.setProperty("display","none","important");
+        else element.style.removeProperty("display");
+        element.setAttribute("aria-hidden",String(hidden));
+      };
+      setHidden(document.getElementById("profileLink"),!logged);
+      setHidden(document.getElementById("cartButton"),!logged);
+      setHidden(document.getElementById("notificationButton"),!logged);
+      setHidden(document.getElementById("logoutButton"),!logged);
+      setHidden(document.getElementById("loginLink"),logged);
+      setHidden(document.getElementById("signupLink"),logged);
+      document.getElementById("cartPanel")?.classList.add("d-none");
+      window.updateCustomerHeaderAccount(logged ? user : null);
+    }
+    function setMainImage(index){
+      activeImageIndex=index;
+      const image=document.getElementById("mainImage");
+      image.parentElement.classList.remove("missing-image");
+      image.hidden=false;
+      document.getElementById("productZoomButton").disabled=false;
+      image.src=productImages(product)[index];
+      document.querySelectorAll(".product-thumbs button").forEach(thumb=>{const active=Number(thumb.dataset.imageIndex)===index;thumb.classList.toggle("active",active);thumb.setAttribute("aria-pressed",String(active))});
+    }
+    function selectVariant(index){if(Number(productVariants(product)[Number(index)]?.stock||0)<=0)return;selectedVariantIndex=String(index);productQuantity=Math.min(selectedQuantity(),activeStock());renderProduct();document.querySelector(`[data-variant-index="${index}"]`)?.focus({preventScroll:true})}
+    function selectedQuantity(){const value=Number(document.getElementById("productQty")?.value||productQuantity);return Math.min(Math.max(Number.isFinite(value)?Math.floor(value):1,1),Math.max(activeStock(),1))}
+    function updateQtyMax(){
+      const input=document.getElementById("productQty");if(!input)return;
+      productQuantity=selectedQuantity();input.value=productQuantity;
+      document.getElementById("productSubtotal").textContent=money(activePrice()*productQuantity);
+      document.getElementById("decreaseQty").disabled=productQuantity<=1||activeStock()<=0;
+      document.getElementById("increaseQty").disabled=productQuantity>=activeStock();
+    }
+    function changeProductQuantity(change){document.getElementById("productQty").value=selectedQuantity()+change;updateQtyMax()}
+    function addSelectedToCart(){if(!isCustomerLoggedIn()){showGuestAccountModal();return}if(activeStock()<=0)return;updateQtyMax();addToCart(product.id,selectedVariantIndex,productQuantity)}
+    function buyNow(){if(!isCustomerLoggedIn()){showGuestAccountModal();return}if(activeStock()<=0)return;updateQtyMax();localStorage.setItem("checkout",JSON.stringify({product_id:product.id,variant_index:selectedVariantIndex,quantity:productQuantity}));location.href="/checkout.html"}
+    function handleProductImageError(image){image.parentElement.classList.add("missing-image");if(image.id==="mainImage")document.getElementById("productZoomButton").disabled=true}
+    function openProductImage(){imageZoom=1;document.getElementById("productImageModalTitle").textContent=product.name;renderProductImageViewer();productImageModal.show()}
+    function stepProductImage(step){const index=activeImageIndex+step;if(index<0||index>=productImages(product).length)return;setMainImage(index);imageZoom=1;renderProductImageViewer()}
+    function zoomProductImage(step){imageZoom=Math.max(1,Math.min(3,imageZoom+step));renderProductImageViewer()}
+    function renderProductImageViewer(){
+      const focusedControl=document.activeElement;
+      const images=productImages(product);const image=document.getElementById("zoomedProductImage");
+      image.src=images[activeImageIndex];image.alt=product.name;
+      image.classList.toggle("is-zoomed",imageZoom>1);image.style.width=`${imageZoom*100}%`;
+      document.getElementById("productImageCounter").textContent=`${activeImageIndex+1} / ${images.length}`;
+      document.getElementById("productImageZoom").textContent=`${imageZoom*100}%`;
+      document.getElementById("previousProductImage").disabled=activeImageIndex===0;
+      document.getElementById("nextProductImage").disabled=activeImageIndex===images.length-1;
+      document.getElementById("zoomOutImage").disabled=imageZoom===1;
+      document.getElementById("zoomInImage").disabled=imageZoom===3;
+      // Keep focus in the dialog when a navigation or zoom control reaches its limit.
+      if(focusedControl instanceof HTMLButtonElement&&focusedControl.disabled&&document.getElementById("productImageModal").contains(focusedControl)){
+        document.querySelector("#productImageModal .product-image-toolbar button:not(:disabled)")?.focus();
+      }
+    }
+    function productFlag(value){return value===true||value===1||String(value||"").toLowerCase()==="true"||String(value||"")==="1"}
+    function layawayEnabled(){return productFlag(product?.allow_layaway)}
+    function layawaySettings(){const type=String(product?.layaway_downpayment_type||"percentage").toLowerCase()==="fixed"?"fixed":"percentage";const value=Number(product?.layaway_downpayment_value);const duration=Number(product?.layaway_duration_months);const maxQuantity=Number(product?.layaway_max_quantity);return{type,value:Number.isFinite(value)&&value>=0?value:(type==="percentage"?20:0),duration:Number.isInteger(duration)&&duration>0?duration:5,maxQuantity:Number.isInteger(maxQuantity)&&maxQuantity>0?maxQuantity:1}}
+    function layawayQuantity(){return Math.min(selectedQuantity(),layawaySettings().maxQuantity)}
+    function layawayDownpayment(){const settings=layawaySettings();const total=activePrice()*layawayQuantity();const amount=settings.type==="fixed"?settings.value:total*(settings.value/100);return Math.min(Math.max(amount,1),total)}
+    function layawayDueDate(){const date=new Date();date.setMonth(date.getMonth()+layawaySettings().duration);return date.toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"})}
+    function openLayaway(){if(!isCustomerLoggedIn()){showGuestAccountModal();return}if(!layawayEnabled())return alert("This product is not available for layaway.");if(activeStock()<=0)return alert("This product is not available for layaway.");const settings=layawaySettings();const requestedQty=selectedQuantity();if(requestedQty>settings.maxQuantity){document.getElementById("productQty").value=settings.maxQuantity;alert(`Layaway for this product is limited to ${settings.maxQuantity} item${settings.maxQuantity===1?"":"s"}.`)}updateQtyMax();const quantity=layawayQuantity();const total=activePrice()*quantity;document.getElementById("layawayAgree").checked=false;document.getElementById("layawayAgreementText").textContent=`I agree to complete this layaway within ${settings.duration} month${settings.duration===1?"":"s"}.`;document.getElementById("layawayTermsBody").innerHTML=`<div><strong>Total Price</strong><br>${money(total)}</div><div><strong>Required Downpayment</strong><br>${money(layawayDownpayment())} via GCash</div><div><strong>Remaining Balance</strong><br>${money(total-layawayDownpayment())}</div><div><strong>Payment Deadline</strong><br>${layawayDueDate()} (${settings.duration} month${settings.duration===1?"":"s"})</div><div><strong>Quantity Limit</strong><br>Maximum ${settings.maxQuantity} item${settings.maxQuantity===1?"":"s"} for layaway.</div><div class="text-muted">Stock is checked now, but it will only be reserved after the store checks your downpayment proof.</div><div class="text-muted">If not fully paid within the layaway duration, the layaway may be cancelled based on store policy.</div>`;layawayModal.show()}
+    async function submitLayawayRequest(){if(!document.getElementById("layawayAgree").checked)return alert("Please agree to the layaway terms first.");let user=null;try{user=JSON.parse(localStorage.getItem("currentUser")||"null")}catch(e){};if(!user||String(user.role||"customer").toLowerCase()!=="customer"){showGuestAccountModal();return}if(!layawayEnabled())return alert("This product is not available for layaway.");const method=document.getElementById("layawayPaymentMethod")?.value||"gcash";const res=await fetch("/layaways/customer",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({customer_id:user.id,product_id:product.id,variant_index:selectedVariantIndex,quantity:layawayQuantity(),payment_method:method})});const data=await res.json();if(!res.ok)return alert(data.message||"Unable to create layaway.");alert(data.message||"Layaway request created. Submit your GCash proof from your profile.")}
 
-    function renderProduct(){const images=productImages(product);const variants=productVariants(product);if(variants.length&&selectedVariantIndex===""){const first=variants.findIndex(v=>Number(v.stock||0)>0);selectedVariantIndex=String(first>=0?first:0)}const stock=stockLabel(activeStock());const category=productCategory(product);document.getElementById("productPageBody").innerHTML=`<div class="product-layout"><section class="product-gallery"><img id="mainImage" class="product-gallery-main" src="${escapeHtml(images[0]||"https://via.placeholder.com/700x700?text=Product")}" alt="${escapeHtml(product.name)}">${images.length>1?`<div class="product-thumbs">${images.slice(0,20).map(img=>`<button onclick="setMainImage('${escapeHtml(img)}')"><img src="${escapeHtml(img)}" alt="${escapeHtml(product.name)}"></button>`).join("")}</div>`:""}</section><section class="product-details"><div class="product-card-head"><span class="product-category">${escapeHtml(category)}</span><span class="stock-pill ${stock.className}">${stock.text}</span></div><h1>${escapeHtml(product.name)}</h1><div class="product-price">${money(activePrice())}</div><p class="text-muted mt-3">${escapeHtml(product.description||"No description available.")}</p><div class="product-meta mb-3"><span>${ratingStars(product.average_rating)} ${ratingSummary(product)}</span></div>${variants.length?`<h6 class="fw-bold">Variants</h6><div class="variant-options">${variants.map((variant,index)=>`<button type="button" class="variant-option ${String(index)===String(selectedVariantIndex)?"active":""}" ${Number(variant.stock||0)<=0?"disabled":""} onclick="selectVariant('${index}')"><strong>${escapeHtml(variant.name)}</strong><span>${money(variant.price)} - ${Number(variant.stock||0)<=5?"Limited pieces":"Available today"}</span></button>`).join("")}</div>`:"<p class='text-muted'>Default item only.</p>"}<div class="quantity-control"><label class="fw-bold" for="productQty">Quantity</label><input id="productQty" type="number" min="1" max="${activeStock()}" value="1" oninput="updateQtyMax()"><span class="text-muted">Choose your quantity</span></div><div class="product-actions-main"><button class="btn btn-outline-dark" onclick="toggleWishlist(product.id)">${isWishlisted(product.id)?"Saved":"Save"}</button><button class="btn btn-outline-dark" ${activeStock()<=0?"disabled":""} onclick="addSelectedToCart()">Add to Cart</button><button class="btn btn-dark" ${activeStock()<=0?"disabled":""} onclick="buyNow()">Buy Now</button></div></section></div>`;renderCart()}
+    function renderProduct(){
+      const images=productImages(product);
+      const variants=productVariants(product);
+      if(variants.length&&selectedVariantIndex===""){
+        const first=variants.findIndex(variant=>Number(variant.stock||0)>0);
+        selectedVariantIndex=String(first>=0?first:0);
+      }
+      productQuantity=Math.min(Math.max(productQuantity,1),Math.max(activeStock(),1));
+      const stock=stockLabel(activeStock());
+      const category=productCategory(product);
+      const loggedIn=isCustomerLoggedIn();
+      const cartButton=loggedIn?`<button aria-label="Add ${escapeHtml(product.name)} to cart" ${activeStock()<=0?"disabled":""} onclick="addSelectedToCart()"><i data-lucide="shopping-cart" aria-hidden="true"></i><span>Add to Cart</span></button>`:"";
+      const layawayButton=layawayEnabled()?`<button class="layaway-action" ${activeStock()<=0?"disabled":""} onclick="openLayaway()"><i data-lucide="calendar-clock" aria-hidden="true"></i><span>Request Layaway</span></button>`:"";
+      const saved=isWishlisted(product.id);
+      const imageFallback=`<span class="image-unavailable"><i data-lucide="image-off" aria-hidden="true"></i>Image unavailable</span>`;
 
-    function reviewImagesHtml(value){try{const images=value?JSON.parse(value):[];if(!Array.isArray(images)||!images.length)return"";return `<div class="review-images">${images.map(image=>`<img src="${escapeHtml(image)}" alt="Review photo">`).join("")}</div>`}catch(e){return""}}
+      document.getElementById("productPageBody").innerHTML=`
+        <nav class="product-breadcrumb" aria-label="Breadcrumb">
+          <a href="/customer/shop.html#products">Shop</a><span aria-hidden="true">/</span>
+          <span>${escapeHtml(category)}</span><span aria-hidden="true">/</span>
+          <span aria-current="page">${escapeHtml(product.name)}</span>
+        </nav>
+        <div class="product-layout">
+          <section class="product-gallery" aria-label="Product images">
+            <div class="product-gallery-stage ${images.length?"":"missing-image"}">
+              ${images.length?`<img id="mainImage" class="product-gallery-main" src="${escapeHtml(images[activeImageIndex]||images[0])}" alt="${escapeHtml(product.name)}" onerror="handleProductImageError(this)">`:""}${imageFallback}
+              <button id="productZoomButton" class="gallery-zoom" type="button" title="Zoom product image" aria-label="Zoom product image" ${images.length?"":"disabled"} onclick="openProductImage()"><i data-lucide="zoom-in" aria-hidden="true"></i></button>
+            </div>
+            ${images.length>1?`<div class="product-thumbs" aria-label="More product images">${images.slice(0,20).map((image,index)=>`<button type="button" class="${index===activeImageIndex?"active":""}" data-image-index="${index}" aria-label="View product image ${index+1}" aria-pressed="${index===activeImageIndex}" onclick="setMainImage(${index})"><img src="${escapeHtml(image)}" alt=""></button>`).join("")}</div>`:""}
+          </section>
+          <section class="product-details">
+            <div class="product-card-head"><span class="product-category">${escapeHtml(category)}</span><span class="stock-pill ${stock.className}">${stock.text}</span></div>
+            <div class="product-title-row"><h1>${escapeHtml(product.name)}</h1><button id="saveProductButton" type="button" class="wishlist-action ${saved?"is-saved":""}" aria-label="${saved?"Remove from wishlist":"Save to wishlist"}" title="${saved?"Remove from wishlist":"Save to wishlist"}" aria-pressed="${saved}" onclick="toggleWishlist(product.id)"><i data-lucide="heart" aria-hidden="true"></i></button></div>
+            <a class="product-rating-link" href="#productReviewsSection"><span class="rating-stars" aria-hidden="true">${ratingStars(product.average_rating)}</span><span>${ratingSummary(product)}</span></a>
+            <div class="product-price" aria-live="polite">${money(activePrice())}</div><small class="product-price-note">Per item &middot; Shipping calculated at checkout</small>
+            ${variants.length?`<h2 class="variant-heading" id="variantHeading">Choose a variant</h2><div class="variant-options" role="group" aria-labelledby="variantHeading">${variants.map((variant,index)=>`<button type="button" class="variant-option ${String(index)===String(selectedVariantIndex)?"active":""}" data-variant-index="${index}" aria-pressed="${String(index)===String(selectedVariantIndex)}" ${Number(variant.stock||0)<=0?"disabled":""} onclick="selectVariant('${index}')"><strong>${escapeHtml(variant.name)}</strong><span>${money(variant.price)} &middot; ${Number(variant.stock||0)<=0?"Out of stock":`${Number(variant.stock)} available`}</span></button>`).join("")}</div>`:""}
+            <div class="quantity-control"><label for="productQty">Quantity</label><div class="quantity-stepper"><button id="decreaseQty" type="button" aria-label="Decrease quantity" title="Decrease quantity" ${productQuantity<=1||activeStock()<=0?"disabled":""} onclick="changeProductQuantity(-1)"><i data-lucide="minus" aria-hidden="true"></i></button><input id="productQty" type="number" min="1" step="1" inputmode="numeric" max="${Math.max(activeStock(),1)}" value="${productQuantity}" ${activeStock()<=0?"disabled":""} onchange="updateQtyMax()"><button id="increaseQty" type="button" aria-label="Increase quantity" title="Increase quantity" ${productQuantity>=activeStock()?"disabled":""} onclick="changeProductQuantity(1)"><i data-lucide="plus" aria-hidden="true"></i></button></div><span class="stock-count">${activeStock()} available</span></div>
+            <div class="product-subtotal"><span>Subtotal</span><strong id="productSubtotal" aria-live="polite">${money(activePrice()*productQuantity)}</strong></div>
+            <div class="product-actions-main ${loggedIn?"":"guest-actions"}">
+              ${cartButton}<button class="buy-now" ${activeStock()<=0?"disabled":""} onclick="buyNow()"><i data-lucide="shopping-bag" aria-hidden="true"></i><span>Buy Now</span></button>${layawayButton}
+            </div>
+            <div class="payment-methods"><i data-lucide="wallet" aria-hidden="true"></i><span>COD &middot; GCash</span></div>
+          </section>
+        </div>`;
+      const description=String(product.description||"").trim();
+      document.getElementById("productDescription").textContent=description;
+      document.getElementById("productDescriptionSection").hidden=!description;
+      document.getElementById("productPageBody").setAttribute("aria-busy","false");
+      if(window.lucide)window.lucide.createIcons();
+      renderCart();
+    }
+
+    function parseReviewMedia(value){try{const parsed=value?JSON.parse(value):[];return Array.isArray(parsed)?parsed:[]}catch(e){return[]}}
+    function reviewImagesHtml(value){const images=parseReviewMedia(value);if(!images.length)return"";return `<div class="review-images">${images.map(image=>`<button type="button" data-review-image="${escapeHtml(image)}" aria-label="View review photo"><img src="${escapeHtml(image)}" alt="Review photo" loading="lazy"></button>`).join("")}</div>`}
+    function reviewVideosHtml(value){const videos=parseReviewMedia(value);if(!videos.length)return"";return `<div class="review-videos">${videos.map(video=>`<video controls preload="metadata" src="${escapeHtml(video)}"></video>`).join("")}</div>`}
+    function openReviewMedia(src,type){const viewer=document.getElementById("reviewMediaViewer");viewer.innerHTML=type==="video"?`<video controls autoplay src="${escapeHtml(src)}"></video>`:`<img src="${escapeHtml(src)}" alt="Review photo">`;reviewMediaModal.show()}
     function rememberProduct(){try{const ids=JSON.parse(localStorage.getItem("recentProducts")||"[]").filter(id=>Number(id)!==product.id);ids.unshift(product.id);localStorage.setItem("recentProducts",JSON.stringify(ids.slice(0,8)))}catch(e){localStorage.setItem("recentProducts",JSON.stringify([product.id]))}}
-    function miniProductCard(item){const image=productImages(item)[0]||"https://via.placeholder.com/400x400?text=Product";return `<article class="mini-product" onclick="location.href='/customer/product.html?id=${item.id}'"><img src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}"><strong>${escapeHtml(item.name)}</strong><span class="mini-price">${money(item.price)}</span><span>${ratingStars(item.average_rating)} ${ratingSummary(item)}</span></article>`}
-    function renderRelatedProducts(){const category=productCategory(product);const related=allProducts.filter(item=>Number(item.id)!==product.id).sort((a,b)=>(productCategory(b)===category)-(productCategory(a)===category)||Number(b.review_count||0)-Number(a.review_count||0)).slice(0,4);document.getElementById("relatedProducts").innerHTML=related.length?related.map(miniProductCard).join(""):"<div class='empty-state'>No related products yet.</div>"}
-    function renderRecentProducts(){let ids=[];try{ids=JSON.parse(localStorage.getItem("recentProducts")||"[]")}catch(e){}const recent=ids.map(id=>allProducts.find(item=>Number(item.id)===Number(id))).filter(item=>item&&Number(item.id)!==product.id).slice(0,4);document.getElementById("recentProducts").innerHTML=recent.length?recent.map(miniProductCard).join(""):"<div class='empty-state'>No recently viewed products yet.</div>"}
-    async function loadReviews(){const box=document.getElementById("productReviews");const res=await fetch(`/reviews/product/${productId}`);const data=await res.json();const reviews=Array.isArray(data)?data:[];if(!reviews.length){box.innerHTML="No reviews yet.";return}box.innerHTML=reviews.map(review=>`<div class="review-item"><strong>${escapeHtml(review.customer_name||"Customer")}</strong><span>${ratingStars(review.rating)} ${Number(review.rating||0)}/5</span>${review.comment?`<p>${escapeHtml(review.comment)}</p>`:""}${reviewImagesHtml(review.images)}</div>`).join("")}
-    async function loadProduct(){renderAccount();const res=await fetch("/products");allProducts=await res.json();product=allProducts.find(item=>Number(item.id)===productId);if(!product){document.getElementById("productPageBody").innerHTML="Product not found.";return}document.title=`${product.name} | Sheena's Gadgets & Accessories Shop`;rememberProduct();renderProduct();loadReviews();renderRelatedProducts();renderRecentProducts()}
+    function miniProductCard(item){
+      const image=productImages(item)[0];
+      return `<a class="mini-product" href="/customer/product.html?id=${Number(item.id)}"><span class="mini-image ${image?"":"missing-image"}">${image?`<img src="${escapeHtml(image)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="handleProductImageError(this)">`:""}<span class="image-unavailable"><i data-lucide="image-off" aria-hidden="true"></i>Image unavailable</span></span><span class="mini-category">${escapeHtml(productCategory(item))}</span><strong>${escapeHtml(item.name)}</strong><span class="mini-price">${money(item.price)}</span></a>`;
+    }
+    function renderRelatedProducts(){const category=productCategory(product);const related=allProducts.filter(item=>Number(item.id)!==Number(product.id)).sort((a,b)=>(productCategory(b)===category)-(productCategory(a)===category)||Number(b.review_count||0)-Number(a.review_count||0)).slice(0,4);document.getElementById("relatedProducts").innerHTML=related.map(miniProductCard).join("");document.getElementById("relatedProductsSection").hidden=!related.length}
+    function renderRecentProducts(){let ids=[];try{const saved=JSON.parse(localStorage.getItem("recentProducts")||"[]");if(Array.isArray(saved))ids=saved}catch(e){}const recent=ids.map(id=>allProducts.find(item=>Number(item.id)===Number(id))).filter(item=>item&&Number(item.id)!==Number(product.id)).slice(0,4);document.getElementById("recentProducts").innerHTML=recent.map(miniProductCard).join("");document.getElementById("recentProductsSection").hidden=!recent.length}
+    function renderReviews(){
+      const sort=document.getElementById("reviewSort").value;
+      const reviews=[...productReviews].sort((a,b)=>sort==="highest"?Number(b.rating)-Number(a.rating):sort==="lowest"?Number(a.rating)-Number(b.rating):(Date.parse(b.created_at)||0)-(Date.parse(a.created_at)||0));
+      const box=document.getElementById("productReviews");
+      box.innerHTML=reviews.length?reviews.map(review=>{
+        const date=new Date(review.created_at);const validDate=Number.isFinite(date.getTime());
+        return `<article class="review-item"><div class="review-author"><strong>${escapeHtml(review.customer_name||"Customer")}</strong>${validDate?`<time datetime="${date.toISOString()}">${date.toLocaleDateString("en-PH",{month:"short",day:"numeric",year:"numeric"})}</time>`:""}</div><span class="rating-stars" aria-label="${Number(review.rating)} out of 5 stars">${ratingStars(review.rating)}</span>${review.comment?`<p>${escapeHtml(review.comment)}</p>`:""}${reviewImagesHtml(review.images)}${reviewVideosHtml(review.videos)}</article>`;
+      }).join(""):`<div class="review-empty"><i data-lucide="message-square" aria-hidden="true"></i><span>No reviews yet.</span></div>`;
+      document.getElementById("reviewCount").textContent=reviews.length?`(${Number(product.review_count)||reviews.length})`:"";
+      document.getElementById("reviewSort").disabled=reviews.length<2;
+      if(window.lucide)window.lucide.createIcons();
+    }
+    async function loadReviews(){
+      const box=document.getElementById("productReviews");document.getElementById("reviewSort").disabled=true;
+      box.textContent="Loading reviews...";
+      try{const res=await fetch(`/reviews/product/${productId}`);if(!res.ok)throw new Error("Reviews unavailable");const data=await res.json();if(!Array.isArray(data))throw new Error("Invalid reviews");productReviews=data;renderReviews()}
+      catch(e){box.innerHTML=`<div class="review-empty"><span>Reviews are unavailable right now.</span><button type="button" onclick="loadReviews()"><i data-lucide="rotate-cw" aria-hidden="true"></i>Retry</button></div>`;if(window.lucide)window.lucide.createIcons()}
+    }
+    function showProductStatus(notFound){
+      document.getElementById("productPageBody").setAttribute("aria-busy","false");
+      document.getElementById("productPageBody").innerHTML=`<div class="product-status"><i data-lucide="${notFound?"package-search":"wifi-off"}" aria-hidden="true"></i><h1>${notFound?"Product not found":"Unable to load this product"}</h1>${notFound?`<a href="/customer/shop.html#products"><i data-lucide="store" aria-hidden="true"></i>Back to shop</a>`:`<button type="button" onclick="loadProduct()"><i data-lucide="rotate-cw" aria-hidden="true"></i>Try again</button>`}</div>`;
+      if(window.lucide)window.lucide.createIcons();
+    }
+    async function loadProduct(){
+      layawayModal=bootstrap.Modal.getOrCreateInstance(document.getElementById("layawayModal"));
+      reviewMediaModal=bootstrap.Modal.getOrCreateInstance(document.getElementById("reviewMediaModal"));
+      productImageModal=bootstrap.Modal.getOrCreateInstance(document.getElementById("productImageModal"));
+      renderAccount();
+      for(const id of ["productDescriptionSection","productReviewsSection","relatedProductsSection","recentProductsSection"])document.getElementById(id).hidden=true;
+      document.getElementById("productPageBody").setAttribute("aria-busy","true");
+      document.getElementById("productPageBody").innerHTML=`<div class="product-loading" role="status"><div></div><div></div><span>Loading product...</span></div>`;
+      if(!Number.isInteger(productId)||productId<=0){showProductStatus(true);return}
+      try{
+        const res=await fetch("/products");if(!res.ok)throw new Error("Product unavailable");const data=await res.json();if(!Array.isArray(data))throw new Error("Invalid catalog");allProducts=data;
+        product=allProducts.find(item=>Number(item.id)===productId);if(!product){showProductStatus(true);return}
+        document.title=`${product.name} | Sheena's Gadgets & Accessories Shop`;
+        rememberProduct();renderProduct();document.getElementById("productReviewsSection").hidden=false;
+        loadReviews();renderRelatedProducts();renderRecentProducts();if(window.lucide)window.lucide.createIcons();
+      }catch(e){showProductStatus(false)}
+    }
+    document.getElementById("productReviews").addEventListener("click",event=>{const button=event.target.closest("[data-review-image]");if(button)openReviewMedia(button.dataset.reviewImage,"image")});
+    document.getElementById("productImageModal").addEventListener("hidden.bs.modal",()=>document.getElementById("productZoomButton")?.focus({preventScroll:true}));
     document.addEventListener("DOMContentLoaded",loadProduct);
+    window.addEventListener("pageshow",event=>{renderAccount();if(event.persisted&&product)renderProduct()});
+    window.addEventListener("storage",event=>{if(event.key==="currentUser"){renderAccount();if(product)renderProduct()}if(event.key==="wishlist"&&product)renderProduct()});
   </script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>if (window.lucide) window.lucide.createIcons();</script>
+  <script src="/js/shop-assistant.js?v=1"></script>
 </body>
 </html>

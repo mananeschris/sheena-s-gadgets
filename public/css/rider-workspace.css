@@ -1,0 +1,143 @@
+body.rider-dashboard-page { background: #f7f7f7; color: #222; }
+body.rider-dashboard-page .shell { width: min(1180px, calc(100% - 32px)) !important; max-width: 1180px !important; margin: 0 auto !important; padding: 0; background: transparent !important; }
+body.rider-dashboard-page .topbar { width: 100%; max-width: none; min-height: 0; padding: 0 !important; margin: 0 !important; border: 0 !important; border-bottom: 1px solid #e4e4e4 !important; background: #fff !important; color: #222; box-shadow: none !important; border-radius: 0 !important; display: block; }
+body.rider-dashboard-page .rider-header-inner { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 16px 0; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+body.rider-dashboard-page :is(.rider-brand-area, .rider-header-tools) { display: flex; align-items: center; gap: 24px; min-width: 0; }
+body.rider-dashboard-page .rider-shop-brand { display: flex; align-items: center; gap: 10px; color: #191919; text-decoration: none; min-width: 0; }
+body.rider-dashboard-page .topbar .brand-logo { flex: 0 0 42px; width: 42px !important; height: 42px !important; padding: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; border: 0 !important; filter: grayscale(1); }
+body.rider-dashboard-page .rider-brand-copy { display: grid; gap: 2px; min-width: 0; }
+body.rider-dashboard-page .rider-brand-copy > strong { font-size: 18px; font-weight: 700; line-height: 1.3; }
+body.rider-dashboard-page .rider-brand-copy > span { font-size: 11px; font-weight: 400; color: #777; line-height: 1.5; overflow-wrap: anywhere; }
+body.rider-dashboard-page .rider-page-context { display: flex; align-items: center; gap: 8px; padding-left: 24px; border-left: 1px solid #e4e4e4; min-width: 0; }
+body.rider-dashboard-page .rider-page-context svg { width: 18px; height: 18px; color: #777; flex-shrink: 0; }
+body.rider-dashboard-page .rider-page-context strong { font-size: 14px; font-weight: 600; line-height: 1.4; }
+body.rider-dashboard-page .rider-account { display: flex; align-items: center; gap: 9px; min-width: 0; max-width: 210px; }
+body.rider-dashboard-page .rider-avatar { width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center; background: #202020; color: #fff; border-radius: 50%; font-size: 11px; font-weight: 600; }
+body.rider-dashboard-page .rider-account-copy { display: grid; gap: 2px; min-width: 0; }
+body.rider-dashboard-page #riderNameText { margin: 0 !important; color: #222 !important; font-size: 12px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+body.rider-dashboard-page .rider-account-copy > span { font-size: 10px; color: #888; }
+body.rider-dashboard-page .topbar .actions { width: auto; display: flex; gap: 6px !important; flex-wrap: nowrap !important; padding-left: 20px; border-left: 1px solid #e4e4e4; }
+body.rider-dashboard-page .topbar .actions :is(.btn, .delivery-inbox-button) { display: inline-grid !important; place-items: center; flex: 0 0 38px; width: 38px; height: 38px; min-height: 38px !important; padding: 0 !important; background: #fff !important; color: #333 !important; border: 1px solid #e4e4e4 !important; border-radius: 5px !important; }
+body.rider-dashboard-page .topbar .actions :is(.btn, .delivery-inbox-button):hover { background: #191919 !important; color: #fff !important; border-color: #191919 !important; transform: none !important; }
+body.rider-dashboard-page .topbar .actions svg { width: 17px; height: 17px; }
+body.rider-dashboard-page .btn { font-size: 12px !important; font-weight: 600 !important; border-radius: 5px !important; display: inline-flex; align-items: center; justify-content: center; gap: 6px !important; }
+body.rider-dashboard-page .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+body.rider-dashboard-page .dashboard { padding: 20px 0 40px !important; border: 0; border-radius: 0; background: transparent; overflow: visible; }
+body.rider-dashboard-page .summary { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) !important; gap: 0 !important; border: 0 !important; border-bottom: 1px solid #ddd !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important; padding: 0 0 20px; margin-bottom: 20px; }
+body.rider-dashboard-page .summary-card { display: grid; grid-template-columns: minmax(0, 1fr) 22px; align-items: center; gap: 8px; min-height: 0; border: 0 !important; border-right: 1px solid #ddd !important; border-radius: 0 !important; background: transparent !important; padding: 0 20px !important; box-shadow: none !important; }
+body.rider-dashboard-page .summary-card:first-child { padding-left: 0 !important; }
+body.rider-dashboard-page .summary-card:last-child { border: 0 !important; }
+body.rider-dashboard-page .summary-card svg { grid-column: 2; grid-row: 1 / 3; width: 21px; height: 21px; color: #666; }
+body.rider-dashboard-page .summary-card span { grid-column: 1; grid-row: 2; margin: 0; color: #777; font-size: 11px; text-transform: none; }
+body.rider-dashboard-page .summary-card strong { grid-column: 1; grid-row: 1; font-size: 26px; line-height: 1; font-weight: 650; }
+body.rider-dashboard-page .filters { padding: 0 !important; background: transparent !important; border: 0 !important; border-radius: 0 !important; margin-bottom: 20px; }
+body.rider-dashboard-page .filters { grid-template-columns: minmax(0, 1fr) 230px !important; gap: 12px !important; }
+body.rider-dashboard-page .filters :is(input, select) { width: 100%; font-size: 12px !important; min-width: 0; min-height: 42px; border-radius: 5px !important; padding-left: 38px; }
+body.rider-dashboard-page .content { padding: 0 !important; }
+body.rider-dashboard-page .delivery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 16px; }
+body.rider-dashboard-page .delivery-grid { align-items: start; }
+body.rider-dashboard-page .delivery-card { min-width: 0; padding: 0 !important; border: 1px solid #ddd; border-radius: 6px !important; background: #fff; box-shadow: none !important; overflow: hidden; }
+body.rider-dashboard-page .info-grid { gap: 16px; }
+body.rider-dashboard-page .info-box { background: transparent !important; padding: 12px 0; border: 0 !important; border-bottom: 1px solid #eee !important; border-radius: 0 !important; box-shadow: none !important; }
+body.rider-dashboard-page .info-box > span { font-size: 11px; font-weight: 500; color: #777; }
+body.rider-dashboard-page .info-box strong { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+body.rider-dashboard-page .muted { font-size: 11px; overflow-wrap: anywhere; }
+body.rider-dashboard-page .item-list { border: 0; margin: 0; padding: 16px 20px; gap: 12px; }
+body.rider-dashboard-page .item-row { grid-template-columns: 58px minmax(0, 1fr); gap: 12px; border: 0; padding: 0; background: transparent; border-radius: 0; }
+body.rider-dashboard-page .item-row strong { display: block; font-size: 14px; font-weight: 650; line-height: 1.45; overflow-wrap: anywhere; }
+body.rider-dashboard-page .item-row .muted { margin-top: 4px; }
+body.rider-dashboard-page .rider-product-photo { position: relative; width: 58px; height: 58px; border: 1px solid #eee; background: #fafafa; border-radius: 4px; display: grid; place-items: center; overflow: hidden; }
+body.rider-dashboard-page .rider-product-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; border: 0; border-radius: 0; background: #fff; }
+body.rider-dashboard-page .rider-product-photo img[hidden] { display: none; }
+body.rider-dashboard-page .rider-product-photo svg { width: 20px; height: 20px; color: #999; }
+body.rider-dashboard-page .item-quantity { display: inline-block; border-left: 1px solid #ddd; margin-left: 6px; padding-left: 8px; }
+body.rider-dashboard-page .deliveries-heading { display: flex; align-items: center; gap: 12px; margin: 28px 0 16px; }
+body.rider-dashboard-page .deliveries-heading h1 { margin: 0; font-size: 20px; font-weight: 650 !important; }
+body.rider-dashboard-page #deliveryCount { color: #777; font-size: 12px; }
+body.rider-dashboard-page :is(.rider-search, .rider-status-filter) { position: relative; min-width: 0; }
+body.rider-dashboard-page :is(.rider-search, .rider-status-filter) > svg { position: absolute; left: 12px; top: 13px; width: 16px; height: 16px; color: #777; pointer-events: none; }
+body.rider-dashboard-page .delivery-head { display: flex; padding: 14px 20px; margin: 0; border-bottom: 1px solid #eee; gap: 10px; align-items: center; }
+body.rider-dashboard-page :is(.order-id, .assigned-date) { display: flex; align-items: center; gap: 6px; }
+body.rider-dashboard-page .order-id { color: #444; font-size: 11px; font-weight: 600; }
+body.rider-dashboard-page .assigned-date { font-size: 10px; color: #888; margin-top: 4px; }
+body.rider-dashboard-page :is(.order-id, .assigned-date) svg { width: 12px; height: 12px; }
+body.rider-dashboard-page .status-badge { border: 1px solid #ddd; border-radius: 4px !important; padding: 5px 8px !important; gap: 5px; font-size: 10px !important; font-weight: 600 !important; white-space: normal; text-align: left; }
+body.rider-dashboard-page :is(.status-progress, .status-issue) { background: #202020 !important; color: #fff !important; }
+body.rider-dashboard-page .status-done { background: #f3f3f3 !important; }
+body.rider-dashboard-page .status-badge svg { width: 13px; height: 13px; flex-shrink: 0; }
+body.rider-dashboard-page :is(.delivery-destination, .delivery-contact, .delivery-payment) { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 10px; align-items: start; margin: 0 20px; padding: 14px 0; border-top: 1px solid #eee; }
+body.rider-dashboard-page :is(.delivery-destination, .delivery-contact, .delivery-payment) > svg { width: 17px; height: 17px; color: #777; margin-top: 2px; }
+body.rider-dashboard-page .delivery-destination strong { display: block; font-size: 13px; line-height: 1.5; font-weight: 600; overflow-wrap: anywhere; }
+body.rider-dashboard-page .detail-label { display: block; font-size: 10px; color: #777; margin-bottom: 4px; }
+body.rider-dashboard-page .delivery-destination .muted { margin-top: 4px; }
+body.rider-dashboard-page .delivery-note { display: flex; align-items: flex-start; gap: 5px; color: #777; font-size: 11px; overflow-wrap: anywhere; margin-top: 6px; }
+body.rider-dashboard-page .delivery-note svg { flex-shrink: 0; width: 13px; height: 13px; margin-top: 2px; }
+body.rider-dashboard-page .rider-icon-button { display: inline-grid; place-items: center; width: 36px; height: 36px; padding: 0; background: #fff; color: #222; border: 1px solid #ddd; border-radius: 5px; text-decoration: none; }
+body.rider-dashboard-page .rider-icon-button svg { width: 16px; height: 16px; }
+body.rider-dashboard-page :is(.rider-icon-button, .topbar .btn):hover { background: #eee; border-color: #aaa; }
+body.rider-dashboard-page :is(button, a, input, select):focus-visible { outline: 2px solid #333; outline-offset: 3px; }
+body.rider-dashboard-page .delivery-contact { align-items: center; }
+body.rider-dashboard-page .customer-info { display: grid; gap: 4px; }
+body.rider-dashboard-page .customer-info strong { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+body.rider-dashboard-page .customer-info span { color: #777; font-size: 11px; overflow-wrap: anywhere; }
+body.rider-dashboard-page .contact-actions { display: flex; align-items: center; gap: 6px; }
+body.rider-dashboard-page .contact-actions .btn { min-height: 36px; font-size: 11px; font-weight: 600 !important; }
+body.rider-dashboard-page .delivery-payment { align-items: center; }
+body.rider-dashboard-page .delivery-payment > div { display: grid; gap: 3px; }
+body.rider-dashboard-page .delivery-payment strong { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+body.rider-dashboard-page .delivery-payment span { color: #777; font-size: 10px; overflow-wrap: anywhere; }
+body.rider-dashboard-page .delivery-total { text-align: right; max-width: 145px; }
+body.rider-dashboard-page .delivery-total strong { font-size: 15px; }
+body.rider-dashboard-page .status-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 14px 20px; background: #fafafa; border-top: 1px solid #eee; }
+body.rider-dashboard-page .status-actions .btn { min-height: 36px; font-size: 11px; font-weight: 600 !important; border-radius: 5px; }
+body.rider-dashboard-page .status-actions .btn-dark { background: #181818; color: #fff; border-color: #181818; }
+body.rider-dashboard-page .delivery-issue { display: flex; align-items: flex-start; gap: 10px; padding: 12px 20px; background: #f5f5f5; border-top: 1px solid #eee; }
+body.rider-dashboard-page .delivery-issue svg { width: 17px; height: 17px; flex-shrink: 0; }
+body.rider-dashboard-page .delivery-issue div { display: grid; gap: 4px; font-size: 11px; overflow-wrap: anywhere; }
+body.rider-dashboard-page .delivery-issue span { color: #666; }
+body.rider-dashboard-page .delivery-finished { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; padding: 14px 20px; border-top: 1px solid #eee; }
+body.rider-dashboard-page .delivery-finished svg { width: 16px; height: 16px; }
+body.rider-dashboard-page .empty-state { display: flex; align-items: center; flex-direction: column; justify-content: center; gap: 16px; min-height: 220px; border: 0; background: transparent; }
+body.rider-dashboard-page .empty-state > svg { width: 32px; height: 32px; color: #999; }
+body.rider-dashboard-page .empty-state strong { font-size: 13px; font-weight: 500; }
+@media (min-width: 701px) and (max-width: 1000px) {
+  body.rider-dashboard-page .delivery-contact .contact-actions { grid-column: 2 / 4; }
+  body.rider-dashboard-page .rider-header-inner { gap: 16px; }
+  body.rider-dashboard-page .rider-brand-area { gap: 14px; }
+  body.rider-dashboard-page .rider-page-context { padding-left: 14px; }
+  body.rider-dashboard-page .rider-header-tools { gap: 12px; }
+  body.rider-dashboard-page .rider-account { max-width: 150px; }
+  body.rider-dashboard-page .topbar .actions { padding-left: 12px; }
+}
+@media (max-width: 700px) {
+  body.rider-dashboard-page .rider-header-inner { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 14px 0; }
+  body.rider-dashboard-page .rider-brand-area { justify-content: space-between; gap: 14px; }
+  body.rider-dashboard-page .rider-page-context { padding-left: 14px; }
+  body.rider-dashboard-page .rider-header-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding-top: 12px; border-top: 1px solid #eee; }
+  body.rider-dashboard-page .rider-account { max-width: none; }
+  body.rider-dashboard-page .topbar .actions { justify-content: flex-end; padding-left: 0; border-left: 0; }
+  body.rider-dashboard-page .summary { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 16px 0 !important; }
+  body.rider-dashboard-page .summary-card { padding: 0 12px !important; }
+  body.rider-dashboard-page .summary-card:nth-child(4) { padding-left: 0 !important; }
+  body.rider-dashboard-page .delivery-grid { grid-template-columns: 1fr !important; }
+  body.rider-dashboard-page .summary-card:nth-child(3) { border-right: 0 !important; }
+  body.rider-dashboard-page .filters { grid-template-columns: 1fr !important; gap: 8px !important; }
+}
+@media (max-width: 400px) {
+  body.rider-dashboard-page .rider-brand-area { gap: 10px; }
+  body.rider-dashboard-page .rider-brand-copy > strong { font-size: 16px; }
+  body.rider-dashboard-page .rider-brand-copy > span { font-size: 10px; }
+  body.rider-dashboard-page .rider-page-context { flex: 0 0 104px; gap: 6px; padding-left: 10px; }
+  body.rider-dashboard-page .rider-page-context strong { font-size: 12px; }
+  body.rider-dashboard-page .rider-page-context svg { width: 16px; height: 16px; }
+  body.rider-dashboard-page .rider-avatar { width: 30px; height: 30px; flex-basis: 30px; }
+  body.rider-dashboard-page #riderNameText { font-size: 11px; }
+  body.rider-dashboard-page .summary-card { grid-template-columns: minmax(0, 1fr) 16px; padding: 0 8px !important; gap: 6px; }
+  body.rider-dashboard-page .summary-card svg { width: 16px; height: 16px; }
+  body.rider-dashboard-page .summary-card span { font-size: 10px; }
+  body.rider-dashboard-page .delivery-head { align-items: flex-start; }
+  body.rider-dashboard-page .delivery-head > div { flex: 1; }
+  body.rider-dashboard-page .status-badge { max-width: 110px; }
+  body.rider-dashboard-page .delivery-contact .contact-actions { grid-column: 2 / 4; }
+  body.rider-dashboard-page .delivery-payment .delivery-total { max-width: 105px; }
+}

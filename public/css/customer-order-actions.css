@@ -1,0 +1,33 @@
+body.customer-order-page .order-action-panel{display:grid;grid-template-columns:minmax(0,1fr);gap:0;width:100%;margin-top:2px;overflow:hidden;border:1px solid #d9e4dc;border-radius:12px;background:#fff;box-shadow:0 8px 24px #173a240a}
+body.customer-order-page .order-support-spotlight{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:18px;width:100%;padding:22px 24px;background:#f0f7f2}
+body.customer-order-page .order-support-spotlight-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:12px;background:#145c42;color:#fff}
+body.customer-order-page .order-support-spotlight-icon svg{width:23px;height:23px}
+body.customer-order-page .order-action-kicker{display:block;margin-bottom:4px;color:#397458;font-size:10px;font-weight:750;letter-spacing:.08em}
+body.customer-order-page .order-support-spotlight h2{margin:0;color:#1c3025;font-size:18px;line-height:1.3;font-weight:750}
+body.customer-order-page .order-support-spotlight-copy p{margin:4px 0 0;color:#64776b;font-size:13px;line-height:1.5}
+body.customer-order-page .order-support-spotlight-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:0 16px;border:1px solid #145c42;border-radius:8px;background:#145c42;color:#fff;font-size:13px;font-weight:700;white-space:nowrap;transition:background .16s,border-color .16s,transform .16s}
+body.customer-order-page .order-support-spotlight-button svg{width:17px;height:17px}
+body.customer-order-page .order-support-spotlight-button:hover{transform:translateY(-1px);border-color:#0c4b35;background:#0c4b35}
+body.customer-order-page .order-support-arrow{margin-left:2px;opacity:.75}
+body.customer-order-page .order-tools-row{display:grid;grid-template-columns:minmax(190px,230px) minmax(0,1fr);align-items:center;gap:20px;width:100%;padding:16px 24px;border-top:1px solid #e5ebe7}
+body.customer-order-page .order-tools-heading{display:flex;align-items:center;gap:11px;min-width:0}
+body.customer-order-page .order-action-heading-icon{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border:1px solid #e0e8e2;border-radius:9px;background:#f8faf8;color:#53695b}
+body.customer-order-page .order-action-heading-icon svg{width:18px;height:18px}
+body.customer-order-page .order-tools-heading h3{margin:0;color:#25372c;font-size:13px;font-weight:700}
+body.customer-order-page .order-tools-heading p{margin:3px 0 0;color:#78867d;font-size:11px}
+body.customer-order-page #orderActions.order-actions-layout{display:flex;align-items:center;justify-content:flex-end;gap:8px;width:100%;margin:0;min-width:0}
+body.customer-order-page #orderActions .order-utility{position:relative;display:inline-grid;place-items:center;width:38px;height:38px;min-width:38px;min-height:38px;padding:0;border:1px solid #dce4de;border-radius:8px;background:#fff;color:#43584a;transition:background .15s,border-color .15s,color .15s,transform .15s}
+body.customer-order-page #orderActions .order-utility svg{width:17px;height:17px}
+body.customer-order-page #orderActions .order-utility:hover{transform:translateY(-1px);border-color:#91b29d;background:#f1f7f3;color:#145c42}
+body.customer-order-page #orderActions .order-utility:nth-child(3){margin-right:8px}
+body.customer-order-page #orderActions .order-icon-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:8px 12px;border:1px solid #dce4de;border-radius:8px;background:#fff;color:#354c3d;font-size:12px;font-weight:650;line-height:1.25;white-space:nowrap;transition:background .15s,border-color .15s,color .15s,transform .15s}
+body.customer-order-page #orderActions .order-icon-button svg{width:15px;height:15px;flex:0 0 15px}
+body.customer-order-page #orderActions .order-icon-button:hover{transform:translateY(-1px);border-color:#91b29d;background:#f1f7f3;color:#145c42}
+body.customer-order-page #orderActions [data-chat-order]{border-color:#dce4de;background:#fff;color:#354c3d}
+body.customer-order-page #orderActions [data-support-trigger]{display:none!important}
+body.customer-order-page #orderActions [onclick="requestRepair()"]{border-color:#b9d4c1;background:#f4faf5;color:#176344}
+body.customer-order-page #orderActions [onclick="requestCancellation()"]{border-color:#e3d7d6;background:#fff;color:#81504d}
+body.customer-order-page #orderActions [hidden]{display:none!important}
+@media(max-width:800px){body.customer-order-page .order-support-spotlight{grid-template-columns:auto minmax(0,1fr);gap:14px;padding:19px}body.customer-order-page .order-support-spotlight-button{grid-column:2;justify-self:start}body.customer-order-page .order-tools-row{grid-template-columns:1fr;gap:13px;padding:15px 19px}body.customer-order-page #orderActions.order-actions-layout{justify-content:flex-start;flex-wrap:wrap}}
+@media(max-width:520px){body.customer-order-page .order-action-panel{border-radius:10px}body.customer-order-page .order-support-spotlight{grid-template-columns:1fr;gap:12px;padding:17px}body.customer-order-page .order-support-spotlight-icon{width:44px;height:44px}body.customer-order-page .order-support-spotlight h2{font-size:16px}body.customer-order-page .order-support-spotlight-copy p{font-size:12px}body.customer-order-page .order-support-spotlight-button{grid-column:1;width:100%}body.customer-order-page .order-tools-row{padding:14px 17px}body.customer-order-page #orderActions.order-actions-layout{gap:7px}body.customer-order-page #orderActions .order-utility{width:36px;height:36px;min-width:36px}body.customer-order-page #orderActions .order-icon-button{flex:1 1 auto;min-width:calc(50% - 4px);white-space:normal}body.customer-order-page #orderActions .order-utility:nth-child(3){margin-right:4px}body.customer-order-page #orderActions .order-utility:nth-child(3)::after{right:-6px}}
+@media(prefers-reduced-motion:reduce){body.customer-order-page #orderActions .order-utility,body.customer-order-page #orderActions .order-icon-button,body.customer-order-page .order-support-spotlight-button{transition:none}body.customer-order-page #orderActions .order-utility:hover,body.customer-order-page #orderActions .order-icon-button:hover,body.customer-order-page .order-support-spotlight-button:hover{transform:none}}

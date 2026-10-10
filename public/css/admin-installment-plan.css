@@ -1,0 +1,72 @@
+#installmentPlanModal .modal-content { border-radius: 6px; background: #fff; color: #171717; }
+#installmentPlanModal .modal-dialog { max-width: 1000px; }
+#installmentPlanModal .modal-header { padding: 18px 22px; align-items: start; }
+.full-plan-eyebrow { display: block; color: #737373; font-size: 10px; font-weight: 600; margin-bottom: 5px; }
+#installmentPlanTitle { font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+#installmentPlanModal .modal-header > div { min-width: 0; }
+#installmentPlanModal .btn-close { flex-shrink: 0; }
+#installmentPlanBody { padding: 20px 22px; }
+#installmentPlanBody [hidden] { display: none !important; }
+#installmentPlanModal .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border-radius: 4px; font-size: 12px; min-height: 34px; }
+#installmentPlanModal .btn-dark { color: #fff; background: #171717; border-color: #171717; }
+#installmentPlanModal .btn-outline-dark { color: #404040; border-color: #dedede; background: #fff; }
+#installmentPlanModal .btn-outline-dark:hover { color: #171717; border-color: #aaa; background: #f5f5f5; }
+#installmentPlanModal svg { width: 16px; height: 16px; flex-shrink: 0; }
+.full-plan-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 11px; color: #737373; margin-bottom: 18px; }
+.full-plan-heading strong { font-size: 11px; color: #404040; font-weight: 500; }
+#installmentPlanModal .full-plan-icon { margin-left: auto; width: 34px; padding: 0; }
+.full-plan-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid #e5e5e5; padding: 18px 0; gap: 16px; }
+.full-plan-metrics > div { min-width: 0; }
+.full-plan-metrics span { display: block; color: #737373; font-size: 11px; margin-bottom: 5px; }
+.full-plan-metrics strong { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.full-plan-metrics .has-overdue strong { color: #a13d48; }
+.full-plan-progress { display: flex; align-items: center; gap: 12px; margin: 18px 0; }
+.full-plan-progress progress { width: 100%; min-width: 0; height: 5px; appearance: none; border: 0; background: #ededed; }
+.full-plan-progress progress::-webkit-progress-bar { background: #ededed; }
+.full-plan-progress progress::-webkit-progress-value { background: #171717; }
+.full-plan-progress progress::-moz-progress-bar { background: #171717; }
+.full-plan-progress span { flex-shrink: 0; color: #737373; font-size: 11px; }
+.full-plan-next { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; margin-bottom: 20px; }
+.full-plan-next span { color: #737373; }
+.full-plan-next strong { font-weight: 500; }
+.full-plan-tabs { display: flex; gap: 20px; border-bottom: 1px solid #e5e5e5; margin-bottom: 20px; }
+.full-plan-tabs button { background: transparent; border: 0; border-bottom: 2px solid transparent; border-radius: 0; padding: 10px 0; font-size: 12px; color: #737373; font-weight: 500; }
+.full-plan-tabs button[aria-selected="true"] { border-bottom-color: #171717; color: #171717; }
+.full-plan-tabs button:focus-visible { outline: 2px solid #171717; outline-offset: 2px; }
+#installmentPlanBody h6 { font-size: 13px; font-weight: 600; margin: 0 0 14px; }
+.full-plan-overview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
+.full-plan-details { display: grid; grid-template-columns: 105px minmax(0, 1fr); gap: 10px 12px; font-size: 12px; margin-bottom: 0; }
+.full-plan-details dt { color: #737373; font-weight: 400; }
+.full-plan-details dd { margin: 0; overflow-wrap: anywhere; }
+.full-plan-products, .full-plan-note, .full-plan-ledger, .full-plan-references { border-top: 1px solid #e5e5e5; padding-top: 20px; margin-top: 22px; }
+.full-plan-product { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
+.full-plan-product img { width: 56px; height: 56px; flex-shrink: 0; object-fit: contain; border: 1px solid #ededed; border-radius: 4px; }
+.full-plan-product strong { display: block; font-size: 13px; font-weight: 500; overflow-wrap: anywhere; }
+.full-plan-product span { color: #737373; font-size: 11px; overflow-wrap: anywhere; }
+.full-plan-product > div { min-width: 0; }
+.full-plan-note { font-size: 12px; overflow-wrap: anywhere; }
+.full-plan-note p { margin: 7px 0 0; color: #737373; }
+.full-plan-table-wrap { overflow-x: auto; }
+#installmentPlanBody .table { font-size: 12px; margin-bottom: 0; }
+#installmentPlanBody .table th { color: #737373; font-size: 10px; font-weight: 500; white-space: nowrap; background: #fafafa; padding: 12px 10px; }
+#installmentPlanBody .table td { padding: 12px 10px; min-width: 65px; }
+.full-plan-actions { display: flex; flex-wrap: wrap; gap: 6px; min-width: 120px; }
+.full-plan-status { font-size: 11px; color: #737373; white-space: nowrap; }
+.full-plan-status.paid { color: #14634c; }
+.full-plan-status.overdue { color: #a13d48; }
+.full-plan-status.partial, .full-plan-status.due_soon { color: #966b19; }
+.full-plan-proof { display: inline-flex; align-items: center; gap: 6px; color: #404040; font-size: 12px; white-space: nowrap; }
+.full-plan-downpayment .full-plan-proof { margin-top: 14px; }
+.full-plan-empty { display: grid; justify-items: center; align-content: center; gap: 12px; min-height: 180px; text-align: center; color: #737373; font-size: 12px; }
+.full-plan-empty strong { color: #171717; font-size: 14px; font-weight: 500; }
+.full-plan-footer { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; border-top: 1px solid #e5e5e5; padding-top: 16px; margin-top: 22px; }
+@media (max-width: 620px) {
+  #installmentPlanModal .modal-dialog { margin: 8px; }
+  #installmentPlanModal .modal-header, #installmentPlanBody { padding: 16px; }
+  .full-plan-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .full-plan-metrics strong { font-size: 18px; }
+  .full-plan-overview { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .full-plan-tabs { gap: 12px; }
+  .full-plan-tabs button { font-size: 11px; }
+  .full-plan-details { grid-template-columns: 85px minmax(0, 1fr); }
+}

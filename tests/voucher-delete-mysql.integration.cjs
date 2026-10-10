@@ -1,0 +1,60 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
+const mysql = require('mysql2');
+const express = require('express');
+const { query,issueSession } = require('../routes/chatSession');
+const { ensureVoucherTables,ensureOrderVoucherColumns } = require('../routes/voucherService');
+
+test('voucher deletion removes availability but retains historical discounts', { skip: process.env.RUN_VOUCHER_MYSQL !== '1' }, async t => {
+  const database = `voucher_delete_test_${crypto.randomBytes(8).toString('hex')}`;
+  const db = mysql.createConnection({ host: process.env.DB_HOST || '127.0.0.1',port: Number(process.env.DB_PORT || 3307),user: process.env.DB_USER || 'root',password: process.env.DB_PASSWORD || '' });
+  await query(db,`CREATE DATABASE \`${database}\``);
+  t.after(async () => { assert.match(database,/^voucher_delete_test_[a-f0-9]{16}$/); await query(db,`DROP DATABASE \`${database}\``); await new Promise(resolve => db.end(resolve)); });
+  await query(db,`USE \`${database}\``); await require('../db/schemaHealth').ensureCoreSchema(db);
+  await ensureVoucherTables(db); await ensureOrderVoucherColumns(db);
+  await query(db,"INSERT INTO users (id,name,email,password,role) VALUES (1,'Admin','admin@example.com','fixture','admin'),(2,'Staff','staff@example.com','fixture','staff')");
+  await query(db,"INSERT INTO products (id,name,stock,price) VALUES (1,'Phone',5,1000)");
+  await query(db,"INSERT INTO vouchers (id,code,normalized_code,discount_type,discount_value,is_active) VALUES (1,'USED20','USED20','fixed',20,1),(2,'UNUSED10','UNUSED10','fixed',10,1),(3,'INACTIVE','INACTIVE','fixed',10,0)");
+  await query(db,"INSERT INTO orders (id,user_id,product_id,quantity,total_price,voucher_id,voucher_code,voucher_discount) VALUES (1,2,1,1,980,1,'USED20',20)");
+  await query(db,"INSERT INTO voucher_redemptions (voucher_id,voucher_code,normalized_code,order_id,customer_id,discount_amount) VALUES (1,'USED20','USED20',1,2,20)");
+  const cookies = {};
+  for (const [id,role] of [[1,'admin'],[2,'staff']]) await issueSession({ db,headers: {} },{ clearCookie() {},cookie(name,value) { cookies[id] = `${name}=${value}`; } },{ id,role },{ adminVerified: role === 'admin' });
+  const app = express(); app.use(express.json()); app.use((req,res,next) => { req.db = db; next(); }); app.use('/vouchers',require('../routes/vouchers'));
+  const server = await new Promise(resolve => { const s = app.listen(0,'127.0.0.1',() => resolve(s)); });
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const request = (path,method='GET',body,id=1) => fetch(`http://127.0.0.1:${server.address().port}/vouchers${path}`,{ method,headers: { 'Content-Type': 'application/json',Cookie: cookies[id] || '' },body: body === undefined ? undefined : JSON.stringify(body) });
+  await t.test('only admin can delete vouchers',async () => {
+    assert.equal((await request('/1','DELETE',undefined,0)).status,401);
+    assert.equal((await request('/1','DELETE',undefined,2)).status,403);
+  });
+  await t.test('deleting a used voucher hides it from admin/customer lists and blocks validation and reactivation',async () => {
+    const res = await request('/1','DELETE'); assert.equal(res.status,200,await res.clone().text());
+    assert.equal((await res.json()).message,'Voucher deleted');
+    assert.deepEqual((await (await request('/admin/all')).json()).map(row => row.id),[3,2]);
+    assert.deepEqual((await (await request('/')).json()).map(row => row.id),[2]);
+    assert.equal((await request('/validate','POST',{ code: 'USED20',customer_id: 2,items: [{ product_id: 1,quantity: 1 }] })).status,400);
+    assert.equal((await request('/1','PUT',{ is_active: 1 })).status,404);
+    assert.equal((await request('/1','DELETE')).status,404);
+    assert.equal((await request('/999','DELETE')).status,404);
+    const voucher = (await query(db,'SELECT * FROM vouchers WHERE id=1'))[0];
+    assert.equal(voucher.is_active,0); assert.ok(voucher.deleted_at);
+    const order = (await query(db,'SELECT * FROM orders WHERE id=1'))[0];
+    assert.equal(order.voucher_code,'USED20'); assert.equal(Number(order.voucher_discount),20); assert.equal(Number(order.total_price),980);
+    assert.equal((await query(db,'SELECT * FROM voucher_redemptions WHERE voucher_id=1')).length,1);
+    const audits = await query(db,"SELECT * FROM audit_logs WHERE action='delete_voucher'");
+    assert.equal(audits.length,1); assert.equal(audits[0].actor_role,'admin');
+  });
+  await t.test('deactivation stays reversible and distinct from deletion; unused vouchers can also be deleted',async () => {
+    assert.equal((await request('/2','PUT',{ is_active: 0 })).status,200);
+    assert.equal((await request('/validate','POST',{ code: 'UNUSED10',customer_id: 2,items: [{ product_id: 1,quantity: 1 }] })).status,400);
+    assert.equal((await (await request('/admin/all')).json()).length,2);
+    assert.equal((await request('/2','PUT',{ is_active: 1 })).status,200);
+    const valid = await request('/validate','POST',{ code: 'UNUSED10',customer_id: 2,items: [{ product_id: 1,quantity: 1 }] });
+    assert.equal(valid.status,200,await valid.clone().text());
+    assert.equal((await valid.json()).discount,10);
+    assert.equal((await request('/2','DELETE')).status,200);
+    assert.deepEqual((await (await request('/admin/all')).json()).map(row => row.id),[3]);
+    assert.equal((await (await request('/')).json()).length,0);
+  });
+});

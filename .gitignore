@@ -1,9 +1,15 @@
 node_modules/
+test-results/
+playwright-report/
 .codex/
 .agents/
 .env
 .env.*
 !.env.example
+.vscode/
+tmp-products.json
+*.pem
+*.key
 
 npm-debug.log*
 yarn-debug.log*
@@ -12,6 +18,11 @@ pnpm-debug.log*
 
 server-runtime.log
 server-runtime.err
+server-primary-runtime.err
+data/delivery-proofs/
+private/
+uploads/payments/
+uploads/order-documents/
 *.log
 
 .ui-scan/

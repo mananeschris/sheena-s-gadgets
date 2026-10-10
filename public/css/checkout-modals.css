@@ -1,0 +1,139 @@
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] { width: min(520px, 100%); border: 1px solid var(--checkout-line); border-radius: 8px; color: var(--checkout-ink); }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-header { padding: 24px 24px 20px; border-bottom: 0; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-eyebrow { color: #14634c; font-size: 10px; font-weight: 600; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-title { font-size: 24px; font-weight: 700; line-height: 1.3; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-body { padding: 0 24px 20px; }
+#checkoutPage .app-dialog-preview { display: grid; gap: 12px; padding: 16px 0; border-top: 1px solid var(--checkout-line); border-bottom: 1px solid var(--checkout-line); }
+#checkoutPage .app-dialog-preview[hidden] { display: none; }
+#checkoutPage .app-dialog-preview-item { display: flex; gap: 14px; align-items: center; }
+#checkoutPage .app-dialog-preview-photo { width: 68px; height: 68px; flex: 0 0 68px; position: relative; display: grid; place-items: center; overflow: hidden; border-radius: 4px; background: #f5f5f5; }
+#checkoutPage .app-dialog-preview-photo img { position: absolute; width: 100%; height: 100%; object-fit: cover; }
+#checkoutPage .app-dialog-preview-photo [hidden] { display: none; }
+#checkoutPage .app-dialog-preview-item > div { min-width: 0; display: grid; gap: 5px; }
+#checkoutPage .app-dialog-preview-item strong { font-size: 14px; line-height: 1.5; font-weight: 600; overflow-wrap: anywhere; }
+#checkoutPage .app-dialog-preview-item span:not(.app-dialog-preview-photo) { font-size: 12px; color: #737373; overflow-wrap: anywhere; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-message { font-size: 13px; color: #737373; line-height: 1.5; margin: 16px 0 0; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-details { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; row-gap: 0; margin-top: 8px; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail { display: grid; grid-template-columns: minmax(0, 1fr); gap: 7px; padding: 14px 0; background: none; border: 0; border-bottom: 1px solid #e8e8e8; border-radius: 0; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail[data-label="Address"] { grid-column: 1 / -1; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail > span { display: flex; gap: 6px; align-items: center; font-size: 11px; color: var(--checkout-muted); font-weight: 500; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail > span svg { color: #14634c; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail strong { text-align: left; font-size: 14px; line-height: 1.5; font-weight: 600; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail:last-child { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px; background: #14634c; color: #fff; margin-top: 16px; border-bottom: 0; border-radius: 4px; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail:last-child > span { color: #e4f3eb; font-size: 13px; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail:last-child > span svg { color: #e4f3eb; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail:last-child strong { font-size: 25px; color: #fff; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] svg { width: 16px; height: 16px; flex: 0 0 16px; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-footer { padding: 16px 24px 24px; border-top: 0; gap: 10px; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-button { font-size: 13px; min-height: 44px; font-weight: 600; border-radius: 4px; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-submit { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 9px; background: #14634c; border-color: #14634c; color: #fff; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-cancel { padding-inline: 20px; border-color: #c9ddd3; color: #14634c; }
+
+#checkoutPage .checkout-result-modal .modal-dialog { max-width: 500px; }
+#checkoutPage .checkout-result-modal .modal-content { background: #fff; border: 1px solid #d9d9d9 !important; border-radius: 8px; color: #171717; }
+#checkoutPage .checkout-result-modal .modal-header { display: grid; justify-items: center; text-align: center; padding: 24px 24px 20px; gap: 12px; border-bottom: 0 !important; }
+#checkoutPage .checkout-result-icon { width: 48px; height: 48px; display: grid; place-items: center; background: #111; color: #fff; border-radius: 50%; }
+#checkoutPage .checkout-result-icon svg { width: 24px; height: 24px; }
+#checkoutPage .checkout-modal-eyebrow { font-size: 10px; text-transform: uppercase; color: #737373; margin: 0 0 5px; font-weight: 600; }
+#checkoutPage .checkout-result-modal .modal-title { color: #171717; font-size: 23px; font-weight: 700; line-height: 1.3; margin: 0; }
+#checkoutPage .checkout-result-modal .modal-body { padding: 0 24px 0; }
+#checkoutPage .checkout-receipt-reference { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px dashed #d9d9d9; border-bottom: 1px dashed #d9d9d9; padding: 12px 0; font-size: 12px; }
+#checkoutPage .checkout-receipt-reference > span { display: flex; align-items: center; gap: 7px; color: #737373; }
+#checkoutPage .checkout-receipt-reference > strong { font-family: ui-monospace, monospace; color: #171717; font-weight: 600; }
+#checkoutPage .checkout-receipt-products { display: grid; gap: 12px; padding: 16px 0; border-bottom: 1px solid #e8e8e8; }
+#checkoutPage .checkout-result-product { display: flex; align-items: center; gap: 12px; }
+#checkoutPage .checkout-result-product .checkout-photo { width: 60px; height: 60px; flex: 0 0 60px; aspect-ratio: 1; background: #f5f5f5; border-radius: 4px; }
+#checkoutPage .checkout-result-product .checkout-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+#checkoutPage .checkout-result-product > div { min-width: 0; display: grid; gap: 5px; }
+#checkoutPage .checkout-result-product strong { color: #171717; font-size: 14px; line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+#checkoutPage .checkout-result-product div > span { font-size: 12px; color: #737373; overflow-wrap: anywhere; }
+#checkoutPage .checkout-receipt-delivery { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; padding: 14px 0; }
+#checkoutPage .checkout-receipt-section-title { grid-column: 1 / -1; display: flex; gap: 7px; align-items: center; color: #737373; font-size: 11px; margin-bottom: 3px; }
+#checkoutPage .checkout-receipt-delivery > strong { font-size: 13px; font-weight: 600; color: #171717; overflow-wrap: anywhere; }
+#checkoutPage .checkout-receipt-delivery > span:not(.checkout-receipt-section-title) { color: #737373; font-size: 12px; overflow-wrap: anywhere; }
+#checkoutPage .checkout-receipt-delivery p { grid-column: 1 / -1; font-size: 12px; color: #737373; line-height: 1.5; margin: 0; overflow-wrap: anywhere; }
+#checkoutPage .checkout-receipt-payment { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid #e8e8e8; border-bottom: 1px solid #e8e8e8; padding: 12px 0; font-size: 12px; }
+#checkoutPage .checkout-receipt-payment > span { display: flex; align-items: center; gap: 7px; }
+#checkoutPage .checkout-receipt-payment > strong { flex-shrink: 0; padding: 5px 8px; background: #edf6f1; color: #236344; font-weight: 500; font-size: 11px; border-radius: 4px; }
+#checkoutPage .checkout-result-costs { padding-top: 14px; }
+#checkoutPage .checkout-result-row { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; margin-bottom: 8px; }
+#checkoutPage .checkout-result-row > span { color: #737373; }
+#checkoutPage .checkout-result-row strong { color: #171717; font-weight: 500; }
+#checkoutPage .checkout-result-total { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 14px; padding: 16px 18px; background: #111; color: #fff; border-radius: 4px; }
+#checkoutPage .checkout-result-total > span { font-size: 13px; color: #ddd; display: grid; gap: 3px; }
+#checkoutPage .checkout-result-total > strong { color: #fff; font-size: 26px; font-weight: 700; }
+#checkoutPage .checkout-result-total .checkout-total-caption { font-size: 10px; font-weight: 400; color: #aaa; }
+#checkoutPage .checkout-result-message { color: #737373; font-size: 12px; text-align: center; line-height: 1.6; margin: 14px 8px 0; }
+#checkoutPage .checkout-result-modal .modal-footer { display: flex; padding: 18px 24px 24px; gap: 10px; border-top: 0 !important; }
+#checkoutPage .checkout-result-modal .modal-footer .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font-size: 13px !important; min-height: 44px; border-radius: 4px !important; font-weight: 600; }
+#checkoutPage .checkout-result-modal .modal-footer .btn-dark { flex: 1; background: #14634c !important; border-color: #14634c !important; color: #fff !important; }
+#checkoutPage .checkout-result-modal .modal-footer .btn-outline-dark { background: #fff !important; color: #14634c !important; border-color: #c9ddd3 !important; }
+#checkoutPage .checkout-result-modal .modal-footer [hidden] { display: none !important; }
+#checkoutPage .checkout-result-modal .modal-footer svg, #checkoutPage #orderSuccessText svg { width: 16px; height: 16px; flex: 0 0 16px; }
+
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"],
+#checkoutPage #successModal.show .modal-content { animation: checkoutModalEnter .3s cubic-bezier(.2, .8, .2, 1) both !important; }
+#checkoutPage #appDialogLayer:not([hidden]) .app-dialog-panel[data-variant="checkout-review"] { animation: checkoutReviewEnter .42s cubic-bezier(.16, 1, .3, 1) both !important; }
+#checkoutPage #appDialogLayer:not([hidden]) .app-dialog-panel[data-variant="checkout-review"] .app-dialog-preview { animation: checkoutReviewContent .32s .08s ease-out both; }
+#checkoutPage #appDialogLayer:not([hidden]) .app-dialog-panel[data-variant="checkout-review"] .app-dialog-details { animation: checkoutReviewContent .32s .14s ease-out both; }
+#checkoutPage #appDialogLayer:not([hidden]) .app-dialog-panel[data-variant="checkout-review"] .app-dialog-footer { animation: checkoutReviewContent .32s .2s ease-out both; }
+#checkoutPage #appDialogLayer:not([hidden]):has(.app-dialog-panel[data-variant="checkout-review"]) { animation: checkoutReviewBackdrop .3s ease-out both; }
+#checkoutPage #successModal.show .checkout-result-icon { animation: checkoutIconEnter .4s .12s cubic-bezier(.2, .8, .2, 1) both; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-button,
+#checkoutPage .checkout-result-modal .modal-footer .btn { transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-submit:hover,
+#checkoutPage .checkout-result-modal .modal-footer .btn-dark:hover { background: #104d3b !important; border-color: #104d3b !important; box-shadow: 0 3px 9px #14634c24; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-cancel:hover,
+#checkoutPage .checkout-result-modal .modal-footer .btn-outline-dark:hover { background: #edf6f1 !important; border-color: #14634c !important; }
+#checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-button:focus-visible,
+#checkoutPage .checkout-result-modal .modal-footer .btn:focus-visible { outline: 2px solid #14634c; outline-offset: 3px; box-shadow: none; }
+@keyframes checkoutModalEnter {
+  from { opacity: 0; transform: translateY(14px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes checkoutIconEnter {
+  from { opacity: 0; transform: scale(.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes checkoutReviewEnter {
+  from { opacity: 0; transform: translateY(24px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes checkoutReviewContent {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes checkoutReviewBackdrop {
+  from { background-color: rgba(0, 0, 0, 0); }
+  to { background-color: rgba(0, 0, 0, .56); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #checkoutPage .app-dialog-panel[data-variant="checkout-review"],
+  #checkoutPage #successModal.show .modal-content,
+  #checkoutPage #successModal.show .checkout-result-icon { animation: none !important; }
+  #checkoutPage .checkout-result-modal.fade,
+  #checkoutPage .checkout-result-modal.fade .modal-dialog,
+  #checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-button,
+  #checkoutPage .checkout-result-modal .modal-footer .btn { transition: none !important; }
+  #checkoutPage #appDialogLayer:not([hidden]):has(.app-dialog-panel[data-variant="checkout-review"]),
+  #checkoutPage #appDialogLayer:not([hidden]) .app-dialog-panel[data-variant="checkout-review"],
+  #checkoutPage #appDialogLayer:not([hidden]) .app-dialog-panel[data-variant="checkout-review"] .app-dialog-preview,
+  #checkoutPage #appDialogLayer:not([hidden]) .app-dialog-panel[data-variant="checkout-review"] .app-dialog-details,
+  #checkoutPage #appDialogLayer:not([hidden]) .app-dialog-panel[data-variant="checkout-review"] .app-dialog-footer { animation: none !important; }
+}
+
+@media (max-width: 480px) {
+  #checkoutPage .checkout-result-modal .modal-dialog { margin: 12px; }
+  #checkoutPage .checkout-result-modal .modal-header { padding-top: 20px; padding-bottom: 16px; }
+  #checkoutPage .checkout-result-modal .modal-title { font-size: 21px; }
+  #checkoutPage .checkout-result-modal .modal-body, #checkoutPage .checkout-result-modal .modal-header, #checkoutPage .checkout-result-modal .modal-footer { padding-left: 18px; padding-right: 18px; }
+  #checkoutPage .checkout-receipt-delivery { grid-template-columns: 1fr; }
+  #checkoutPage .checkout-receipt-payment { flex-wrap: wrap; }
+  #checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-header { padding: 20px 18px 16px; }
+  #checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-body { padding: 0 18px 18px; }
+  #checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-title { font-size: 21px; }
+  #checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-details { column-gap: 16px; }
+  #checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail strong { font-size: 13px; }
+  #checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-detail:last-child strong { font-size: 23px; }
+  #checkoutPage .app-dialog-panel[data-variant="checkout-review"] .app-dialog-footer { padding: 0 18px 20px; }
+}

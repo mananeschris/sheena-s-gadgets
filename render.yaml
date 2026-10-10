@@ -3,9 +3,10 @@ services:
     name: sheena-s-gadgets
     env: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm ci --omit=dev
     startCommand: npm start
     autoDeploy: true
+    healthCheckPath: /healthz
     envVars:
       - key: NODE_ENV
         value: production
@@ -21,9 +22,39 @@ services:
         sync: false
       - key: DB_PORT
         sync: false
-      - key: PAYMONGO_SECRET_KEY
+      - key: DB_SSL
+        value: "true"
+      - key: DB_SSL_CA_BASE64
         sync: false
-      - key: PAYMONGO_PUBLIC_KEY
+      - key: STORAGE_PROVIDER
+        value: supabase
+      - key: SUPABASE_URL
         sync: false
-      - key: PAYMONGO_WEBHOOK_SECRET
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: shop-files
+      - key: EMAIL_PROVIDER
+        value: brevo
+      - key: BREVO_API_KEY
+        sync: false
+      - key: EMAIL_FROM_ADDRESS
+        sync: false
+      - key: EMAIL_FROM_NAME
+        value: Sheena's Gadgets & Accessories Shop
+      - key: EMAIL_VERIFICATION_SECRET
+        sync: false
+      - key: AI_PROVIDER
+        value: gemini
+      - key: AI_ASSISTANT_ENABLED
+        value: "true"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: GCASH_ACCOUNT_NAME
+        sync: false
+      - key: GCASH_ACCOUNT_NUMBER
+        sync: false
+      - key: GCASH_QR_IMAGE
         sync: false

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | Sheena's Gadgets & Accessories Shop</title>
+  <link rel="icon" type="image/svg+xml" href="/assets/sheena-mark.svg">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/system-fonts.css?v=font-1">
+<link rel="stylesheet" href="/css/store-footer.css?v=footer-2">
+  <style>
+    body.info-page {
+      margin: 0;
+      background: #eeeeee;
+      color: #080808;
+    }
+
+    .info-nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px clamp(18px, 4vw, 56px);
+      background: #ffffff;
+      border-bottom: 1px solid #d9d9d9;
+    }
+
+    .info-brand {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #080808;
+      text-decoration: none;
+      font-weight: 900;
+      line-height: 1.12;
+    }
+
+    .info-brand img {
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #ffffff;
+      border: 1px solid #d8d8d8;
+    }
+
+    .info-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .info-actions .btn {
+      min-width: 86px;
+      border-radius: 7px;
+      font-weight: 800;
+    }
+
+    .info-main {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: clamp(34px, 5vw, 70px) 0 58px;
+    }
+
+    .info-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: clamp(24px, 5vw, 58px);
+      align-items: end;
+      padding: clamp(34px, 6vw, 66px);
+      background: #ffffff;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .055);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-bottom: 14px;
+      border: 1px solid #080808;
+      border-radius: 6px;
+      padding: 6px 11px;
+      color: #080808;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .info-hero h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(38px, 5.2vw, 74px);
+      line-height: .96;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 20px 0 0;
+      color: #444444;
+      font-size: clamp(16px, 1.4vw, 20px);
+      line-height: 1.65;
+    }
+
+    .about-facts {
+      display: grid;
+      gap: 10px;
+    }
+
+    .about-fact {
+      border: 1px solid #dcdcdc;
+      border-radius: 8px;
+      padding: 18px;
+      background: #f7f7f7;
+    }
+
+    .about-fact span {
+      display: block;
+      color: #666666;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .about-fact strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .info-card {
+      min-height: 210px;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      background: #ffffff;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 18px 38px rgba(0, 0, 0, .045);
+    }
+
+    .info-card h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.12;
+      font-weight: 900;
+    }
+
+    .info-card p {
+      margin: 0;
+      color: #4d4d4d;
+      font-size: 16px;
+      line-height: 1.62;
+    }
+
+    @media (max-width: 900px) {
+      .info-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .about-facts {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .info-nav {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .info-actions {
+        width: 100%;
+      }
+
+      .info-actions .btn {
+        flex: 1;
+      }
+
+      .info-main {
+        width: min(100% - 24px, 1180px);
+        padding-top: 24px;
+      }
+
+      .info-hero {
+        padding: 26px;
+        border-radius: 14px;
+      }
+
+      .about-facts {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="/css/store-info.css?v=info-content-1">
+</head>
+<body class="info-page">
+  <nav class="info-nav">
+    <a class="info-brand" href="/customer/shop.html"><img src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a>
+    <div class="info-actions"><a class="btn btn-outline-dark" href="/customer/shop.html">Shop</a><a class="btn btn-dark" href="/auth.html">Login</a></div>
+  </nav>
+  <main class="info-main">
+    <section class="info-hero">
+      <div>
+        <div class="eyebrow">About Us</div>
+        <h1>Gadgets for everyday life, serving customers in Albay.</h1>
+        <p class="lead">Sheena's Gadgets & Accessories Shop began selling online in December 2019. The shop grew through social media, live selling, and customer referrals. This website brings product browsing, order updates, payment proofs, and customer service requests into one place.</p>
+      </div>
+      <div class="about-facts" aria-label="Business highlights">
+        <div class="about-fact"><span>Started</span><strong>December 2019</strong></div>
+        <div class="about-fact"><span>Serving</span><strong>Bacacay & Tabaco</strong></div>
+        <div class="about-fact"><span>Delivery</span><strong>Rider delivery</strong></div>
+      </div>
+    </section>
+    <section class="info-grid">
+      <article class="info-card"><h2>Gadgets & essentials</h2><p>Browse phones, tablets, laptops, printers, audio products, chargers, cases, and other accessories. Product pages show available variants, current stock, and listed prices.</p></article>
+      <article class="info-card"><h2>Online ordering</h2><p>Use the catalog to review products, place orders, choose an available payment method, and follow order updates from your customer account.</p></article>
+      <article class="info-card"><h2>Local service</h2><p>The shop is based around Bacacay and Tabaco, Albay. Delivery area, fee, and available arrangements are shown during checkout and may depend on the destination.</p></article>
+    </section>
+  </main>
+  <footer class="store-footer">
+    <div class="store-footer-inner">
+      <div class="store-footer-brand"><a class="store-footer-logo" href="/customer/shop.html"><img src="/assets/sheena-mark.svg" alt="Sheena's Gadgets & Accessories Shop logo"><span>Sheena's Gadgets & Accessories Shop</span></a><p class="store-footer-copy">Online since December 2019, serving gadget buyers through social selling, referrals, live selling, and this website.</p></div>
+      <div class="store-footer-col"><h3 class="store-footer-title">Shop</h3><a class="store-footer-link" href="/customer/shop.html#products">All Products</a><a class="store-footer-link" href="/customer/shop.html#products">Accessories</a></div>
+      <div class="store-footer-col"><h3 class="store-footer-title">Customer Care</h3><a class="store-footer-link" href="/customer/profile.html#orders">Track Orders</a><a class="store-footer-link" href="/customer/profile.html#repairs">Repairs & Warranty</a></div>
+      <div class="store-footer-col"><h3 class="store-footer-title">Company</h3><a class="store-footer-link" href="/about.html">About Us</a><a class="store-footer-link" href="/terms.html">Terms & Conditions</a><a class="store-footer-link" href="/privacy.html">Privacy Policy</a></div>
+    </div>
+    <div class="store-footer-bottom"><span>&copy; 2026 <strong>Sheena's Gadgets & Accessories Shop</strong>. All rights reserved.</span><span>Bacacay and Tabaco, Albay</span></div>
+  </footer>
+</body>
+</html>

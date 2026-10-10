@@ -1,14 +1,36 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
-    "start": "node --use-system-ca server.js"
+    "start": "node --use-system-ca server.js",
+    "build:css": "node node_modules/@tailwindcss/cli/dist/index.mjs -i ./src/styles/tailwind.css -o ./public/css/tailwind.css --minify",
+    "watch:css": "node node_modules/@tailwindcss/cli/dist/index.mjs -i ./src/styles/tailwind.css -o ./public/css/tailwind.css --watch",
+    "build": "npm run build:css",
+    "test:unit": "node --test tests/admin-full-plan-api.test.cjs tests/delivery-chat-api.test.cjs tests/order-delivery-status.test.cjs tests/shop-assistant-api.test.cjs tests/customer-access-api.test.cjs tests/request-database.test.cjs tests/production-config.test.cjs tests/upload-media.test.cjs tests/cloud-storage.test.cjs",
+    "test:ui:all": "node node_modules/@playwright/test/cli.js test --workers=1",
+    "test:ui": "node node_modules/@playwright/test/cli.js test tests/auth-ui.spec.js tests/auth-recovery-ui.spec.js tests/customer-shop-ui.spec.js tests/product-ui.spec.js tests/profile-ui.spec.js tests/order-payment-ui.spec.js tests/admin-payment-review-ui.spec.js tests/admin-ui.spec.js tests/checkout-ui.spec.js --workers=1",
+    "test:auth": "node node_modules/@playwright/test/cli.js test tests/auth-ui.spec.js tests/auth-recovery-ui.spec.js --workers=1",
+    "test:admin-security": "node node_modules/@playwright/test/cli.js test tests/admin-security-ui.spec.js --workers=1",
+    "test:payment-copy": "node node_modules/@playwright/test/cli.js test tests/payment-copy.spec.js --workers=1"
+  },
+  "overrides": {
+    "@parcel/watcher": "2.6.0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.3",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "multer": "^2.2.0",
-    "mysql2": "^3.22.2"
+    "multer": "^2.4.0",
+    "mysql2": "^3.24.5",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
   }
 }

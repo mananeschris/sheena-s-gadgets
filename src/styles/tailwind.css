@@ -1,0 +1,407 @@
+@import "tailwindcss" source(none);
+@source "../../public/checkout.html";
+@source "../../public/customer/shop.html";
+@source "../../public/customer/product.html";
+@source "../../public/customer/profile.html";
+@source "../../public/auth.html";
+@source "../../public/admin/dashboard.html";
+
+@layer base {
+  body { @apply bg-white font-sans text-neutral-900 antialiased; letter-spacing: 0; }
+  button, a, input, select, textarea { @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-500; }
+  button:disabled { @apply cursor-not-allowed opacity-50; }
+  small { @apply block text-xs leading-5 text-neutral-600; }
+}
+@layer components {
+  .checkout-header { @apply mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 border-b border-neutral-200 px-5 py-5 sm:px-8; }
+  .brand { @apply flex min-w-0 items-center gap-3 text-sm font-semibold sm:text-base; }
+  .brand span { @apply max-w-80; }
+  .brand-logo { @apply h-10 w-10 shrink-0; }
+  .checkout-shell { @apply mx-auto grid max-w-7xl items-start gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12; }
+  .checkout-main { @apply min-w-0; }
+  .page-title { @apply text-3xl font-semibold leading-tight; }
+  .page-copy { @apply mt-2 mb-8 text-sm text-neutral-600; }
+  .panel { @apply border-t border-neutral-200 py-6; }
+  .checkout-section-title { @apply mb-5 text-lg font-semibold; }
+  .panel-note { @apply -mt-3 mb-5 text-sm text-neutral-600; }
+  .product-preview { @apply grid grid-cols-[80px_minmax(0,1fr)] items-start gap-4 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-5; }
+  .product-preview img { @apply aspect-square w-full rounded-md bg-neutral-100 object-contain p-2; }
+  .product-preview h3 { @apply mb-2 text-base font-semibold; }
+  .product-preview p { @apply mb-4 text-sm leading-6 text-neutral-600; }
+  .product-preview h4 { @apply mt-4 text-lg font-semibold; }
+  .stock-pill { @apply mb-3 inline-flex rounded border border-neutral-300 px-2 py-1 text-xs; }
+  .stock-pill.low, .stock-pill.out { @apply bg-neutral-900 text-white; }
+  .variant-list { @apply grid gap-2; }
+  .variant-choice { @apply grid w-full grid-cols-1 gap-1 text-left sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3; }
+  .variant-choice strong { @apply text-sm font-semibold; }
+  .variant-choice span { @apply text-xs font-normal sm:text-right; }
+  .btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-neutral-900 transition-colors hover:bg-neutral-100; }
+  .variant-choice.btn { @apply grid justify-stretch; }
+  .btn-dark, #placeOrderBtn { @apply border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800; }
+  .btn-sm { @apply px-3 text-xs; }
+  .form-label { @apply mb-2 block text-sm font-medium; }
+  .form-control, .form-select { @apply block min-h-11 w-full min-w-0 rounded-md border border-neutral-300 bg-white px-3 py-2 text-base text-neutral-900; }
+  .form-control:disabled { @apply bg-neutral-100 text-neutral-500; }
+  textarea.form-control { @apply resize-y; }
+  .form-check-input { @apply h-4 w-4 shrink-0 accent-neutral-900; }
+  .input-group { @apply flex; }
+  .input-group input { @apply rounded-r-none; }
+  .input-group .btn { @apply shrink-0 rounded-l-none border-l-0; }
+  .row { @apply grid grid-cols-12 gap-4; }
+  .row > * { @apply col-span-12 min-w-0; }
+  @media (min-width: 640px) {
+    .row > .field-third { @apply col-span-4; }
+    .row > .field-half { @apply col-span-6; }
+    .row > .field-wide { @apply col-span-8; }
+  }
+  .saved-address-control small { @apply mt-2; }
+  .save-address-row { @apply grid items-center gap-3 sm:grid-cols-[minmax(0,1fr)_140px]; }
+  .save-address-check { @apply flex items-center gap-3 text-sm leading-6; }
+  .voucher-list { @apply grid gap-3; }
+  .voucher-card { @apply flex items-center justify-between gap-3 rounded-md border border-neutral-200 bg-neutral-50 p-3; }
+  .voucher-card strong { @apply block text-sm font-medium; }
+  .voucher-card span { @apply block text-xs leading-5 text-neutral-600; }
+  .checkout-side { @apply rounded-lg border border-neutral-200 bg-neutral-50 p-6; }
+  .side-title { @apply mb-4 text-xl font-semibold; }
+  .summary-row { @apply flex items-start justify-between gap-5 border-b border-neutral-200 py-3 text-sm leading-5; }
+  .summary-row > span { @apply shrink-0 text-neutral-600; }
+  .summary-row strong { @apply min-w-0 text-right font-medium; overflow-wrap: anywhere; }
+  .summary-total { @apply flex items-baseline justify-between gap-4 py-6 font-semibold; }
+  .summary-total strong { @apply text-2xl; }
+  .payment-box { @apply mt-3 text-sm leading-6; }
+  .payment-box .btn { @apply mt-3; }
+  .text-muted, .text-white-50 { @apply text-neutral-600; }
+  .fw-bold { @apply font-semibold; }
+  .d-block { @apply block; }
+  .checkout-full-width { @apply w-full; }
+  .d-none { display: none; }
+  .modal { @apply fixed inset-0 z-50 hidden overflow-y-auto p-4; }
+  .modal-dialog { @apply relative mx-auto my-8 w-full max-w-lg; }
+  .modal-lg { @apply max-w-3xl; }
+  .modal-content { @apply rounded-lg border border-neutral-200 bg-white text-neutral-900 shadow-xl; }
+  .modal-header { @apply flex items-center justify-between gap-4 border-b border-neutral-200 p-5; }
+  .modal-title { @apply text-lg font-semibold; }
+  .modal-body { @apply p-5; }
+  .modal-body > p { @apply mb-5 text-sm leading-6; }
+  .modal-footer { @apply flex flex-wrap justify-end gap-3 border-t border-neutral-200 p-5; }
+  .btn-close { @apply flex h-10 w-10 items-center justify-center rounded-md border border-neutral-300 text-xl; }
+  .btn-close::before { content: "\00d7"; }
+  .modal-backdrop { @apply fixed inset-0 z-40 bg-black/50; }
+  .modal-open { @apply overflow-hidden; }
+  .installment-summary { @apply rounded-md bg-neutral-100 p-4; }
+  .installment-summary-row { @apply flex justify-between gap-4 border-b border-neutral-200 py-2 text-sm; }
+  .installment-summary-row strong { @apply text-right; }
+
+  .customer-shop-page { @apply min-h-screen bg-white text-neutral-950; }
+  .customer-shop-page .store-header { @apply relative bg-white; }
+  .customer-shop-page .store-nav { @apply sticky top-0 z-40 mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-5 border-b border-neutral-200 bg-white/95 px-5 backdrop-blur sm:px-8; }
+  .customer-shop-page .nav-actions { @apply flex min-w-0 flex-wrap items-center justify-end gap-2; }
+  .customer-shop-page .nav-link { @apply inline-flex min-h-10 items-center text-sm font-semibold text-neutral-950 no-underline hover:text-neutral-600; }
+  .customer-shop-page .account-label { @apply max-w-40 truncate text-sm font-semibold text-neutral-600; }
+  .customer-shop-page .badge { @apply ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-neutral-100 px-1.5 text-xs text-neutral-950; }
+  .customer-shop-page .hero { @apply relative isolate min-h-[560px] overflow-hidden bg-neutral-950 px-5 py-16 text-white sm:px-8 lg:min-h-[640px] lg:py-24; }
+  .customer-shop-page .hero::before { content: ""; @apply absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,.88)_0%,rgba(0,0,0,.66)_42%,rgba(0,0,0,.22)_100%),url('/assets/hero-iphone-style.png')] bg-cover bg-center; }
+  .customer-shop-page .hero::after { content: "GADGETS"; @apply pointer-events-none absolute bottom-[-.22em] left-[max(1.25rem,calc((100vw-80rem)/2+2rem))] -z-10 text-[clamp(5rem,17vw,16rem)] font-black leading-none text-white/5; }
+  .customer-shop-page .hero-copy { @apply mx-auto max-w-7xl pt-8; }
+  .customer-shop-page .hero-art { @apply hidden; }
+  .customer-shop-page .hero h1 { @apply max-w-3xl text-5xl font-black leading-none text-white sm:text-6xl lg:text-7xl; }
+  .customer-shop-page .hero-text { @apply mt-5 max-w-2xl text-base leading-7 text-white/80 sm:text-lg; }
+  .customer-shop-page .hero-actions { @apply mt-8 flex flex-wrap gap-3; }
+  .customer-shop-page .hero .eyebrow { @apply mb-5 inline-flex rounded-full border border-white/60 px-3 py-1.5 text-xs font-black uppercase text-white; }
+  .customer-shop-page .hero-panel { @apply absolute bottom-8 right-[max(1.25rem,calc((100vw-80rem)/2+2rem))] hidden w-[360px] rounded-lg border border-white/20 bg-white/15 p-3 shadow-2xl backdrop-blur lg:grid lg:gap-3; }
+  .customer-shop-page .hero-panel > div { @apply flex min-h-20 items-center justify-between gap-5 rounded-md border border-white/25 bg-white/90 px-5 py-4 text-neutral-950; }
+  .customer-shop-page .panel-label { @apply text-xs font-black uppercase text-neutral-600; }
+  .customer-shop-page .hero-panel strong { @apply text-right text-xl font-black leading-tight; }
+  .customer-shop-page main { @apply bg-white; }
+  .customer-shop-page .service-strip { @apply mx-auto grid max-w-7xl border-b border-neutral-200 px-5 sm:grid-cols-3 sm:px-8; }
+  .customer-shop-page .service-strip div { @apply border-neutral-200 py-6 sm:border-r sm:px-7; }
+  .customer-shop-page .service-strip div:last-child { @apply border-r-0; }
+  .customer-shop-page .service-strip strong { @apply block text-sm font-black; }
+  .customer-shop-page .service-strip span { @apply mt-1 block text-sm leading-6 text-neutral-600; }
+  .customer-shop-page .catalog { @apply mx-auto max-w-7xl px-5 py-12 sm:px-8; }
+  .customer-shop-page .catalog-head { @apply mb-5 flex flex-wrap items-end justify-between gap-4 border-b border-neutral-950 pb-5; }
+  .customer-shop-page .catalog-head h2 { @apply text-3xl font-black leading-none sm:text-5xl; }
+  .customer-shop-page .catalog .eyebrow { @apply mb-3 block text-xs font-black uppercase text-neutral-600; }
+  .customer-shop-page .catalog-count { @apply inline-flex min-h-10 items-center rounded-full border border-neutral-200 bg-neutral-50 px-4 text-sm font-black; }
+  .customer-shop-page .category-pills { @apply mb-5 flex flex-wrap gap-2; }
+  .customer-shop-page .category-pill { @apply min-h-9 rounded-full border border-neutral-200 bg-white px-4 text-xs font-black hover:border-neutral-950; }
+  .customer-shop-page .category-pill.active { @apply border-neutral-950 bg-neutral-950 text-white; }
+  .customer-shop-page .shop-toolbar { @apply mb-7 grid gap-3 rounded-lg border border-neutral-200 bg-neutral-50 p-3 md:grid-cols-2 xl:grid-cols-[minmax(260px,1.5fr)_repeat(4,minmax(140px,1fr))]; }
+  .customer-shop-page .product-grid { @apply grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4; }
+  .customer-shop-page .product-card { @apply flex min-w-0 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white transition hover:-translate-y-1 hover:border-neutral-400 hover:shadow-xl; }
+  .customer-shop-page .product-image { @apply aspect-[4/3] w-full bg-neutral-100 object-contain p-5; }
+  .customer-shop-page .product-body { @apply flex flex-1 flex-col gap-3 p-4; }
+  .customer-shop-page .product-card-head, .customer-shop-page .product-meta { @apply flex flex-wrap items-center justify-between gap-2; }
+  .customer-shop-page .product-category, .customer-shop-page .variant-count { @apply text-xs font-black uppercase text-neutral-500; }
+  .customer-shop-page .product-title { @apply min-h-10 text-base font-black leading-5; }
+  .customer-shop-page .product-desc { @apply line-clamp-2 min-h-11 text-sm leading-6 text-neutral-600; }
+  .customer-shop-page .price { @apply text-lg font-black; }
+  .customer-shop-page .rating-text { @apply text-xs leading-5 text-neutral-600; }
+  .customer-shop-page .product-actions { @apply mt-auto grid grid-cols-3 gap-2 pt-2; }
+  .customer-shop-page .product-actions .cart-add { @apply col-span-3; }
+  .customer-shop-page .product-actions .btn:not(.cart-add) { @apply col-span-1; }
+  .customer-shop-page .product-actions .btn-dark { @apply col-span-2; }
+  .empty-state { @apply col-span-full rounded-lg border border-neutral-200 bg-neutral-50 p-10 text-center; }
+  .empty-state h4 { @apply text-xl font-black; }
+  .cart-panel, .notification-panel { @apply fixed right-4 top-24 z-50 hidden max-h-[calc(100vh-7rem)] w-[min(420px,calc(100vw-2rem))] overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-2xl; }
+  .cart-panel:not(.d-none), .notification-panel:not(.d-none) { @apply block; }
+  .cart-head, .notification-head { @apply flex items-center justify-between gap-3 border-b border-neutral-200 p-4; }
+  .cart-select-all { @apply flex items-center gap-2 border-b border-neutral-200 px-4 py-3 text-sm font-semibold; }
+  .cart-list, .notification-list { @apply max-h-[46vh] overflow-y-auto p-4 text-sm; }
+  .cart-item { @apply grid grid-cols-[auto_minmax(0,1fr)_70px_auto] items-center gap-3 border-b border-neutral-100 py-3; }
+  .cart-item-info { @apply grid gap-1; }
+  .cart-item-info strong { @apply text-sm font-black leading-5; }
+  .cart-item-info span { @apply text-xs text-neutral-600; }
+  .cart-qty { @apply h-10 w-full rounded-md border border-neutral-300 px-2 text-center text-sm; }
+  .cart-footer { @apply flex items-center justify-between gap-4 border-t border-neutral-200 bg-neutral-50 p-4; }
+  .cart-footer strong { @apply block text-lg font-black; }
+  .notification-actions { @apply flex gap-2; }
+  .notification-item { @apply border-b border-neutral-100 py-3; }
+  .notification-item strong { @apply block font-black; }
+  .notification-item p { @apply my-1 text-sm leading-6 text-neutral-600; }
+  .notification-item.unread { @apply bg-neutral-50 px-3; }
+
+  .customer-product-page { @apply min-h-screen bg-white text-neutral-950; }
+  .customer-product-page .store-header { @apply relative bg-white; }
+  .customer-product-page .store-nav { @apply sticky top-0 z-40 mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-5 border-b border-neutral-200 bg-white/95 px-5 backdrop-blur sm:px-8; }
+  .customer-product-page .nav-actions { @apply flex min-w-0 flex-wrap items-center justify-end gap-2; }
+  .customer-product-page .nav-link { @apply inline-flex min-h-10 items-center text-sm font-semibold text-neutral-950 no-underline hover:text-neutral-600; }
+  .customer-product-page .account-label { @apply max-w-40 truncate text-sm font-semibold text-neutral-600; }
+  .customer-product-page .badge { @apply ml-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-neutral-100 px-1.5 text-xs text-neutral-950; }
+  .product-page { @apply mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:py-12; }
+  .product-layout { @apply grid items-start gap-8 lg:grid-cols-[minmax(0,.95fr)_minmax(360px,1.05fr)]; }
+  .product-gallery { @apply min-w-0 rounded-lg border border-neutral-200 bg-neutral-50 p-3; }
+  .product-gallery-main { @apply aspect-square w-full rounded-md bg-white object-contain p-5; }
+  .product-thumbs { @apply mt-3 grid grid-cols-5 gap-2 sm:grid-cols-6; }
+  .product-thumbs button { @apply aspect-square rounded-md border border-neutral-200 bg-white p-1 hover:border-neutral-950; }
+  .product-thumbs img { @apply h-full w-full rounded object-cover; }
+  .product-details { @apply min-w-0 rounded-lg border border-neutral-200 bg-white p-5 shadow-sm sm:p-7 lg:sticky lg:top-24; }
+  .product-details h1 { @apply mt-3 text-3xl font-black leading-none sm:text-5xl; }
+  .product-price { @apply mt-5 text-3xl font-black; }
+  .product-details > p { @apply text-sm leading-7 text-neutral-600 sm:text-base; }
+  .customer-product-page .variant-options { @apply mt-3 grid gap-2; }
+  .customer-product-page .variant-option { @apply grid w-full gap-1 rounded-md border border-neutral-300 bg-white p-3 text-left hover:border-neutral-950 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center; }
+  .customer-product-page .variant-option.active { @apply border-neutral-950 bg-neutral-950 text-white; }
+  .customer-product-page .variant-option strong { @apply text-sm font-black; }
+  .customer-product-page .variant-option span { @apply text-xs text-neutral-600 sm:text-right; }
+  .customer-product-page .variant-option.active span { @apply text-white/75; }
+  .quantity-control { @apply mt-5 grid gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-4 sm:grid-cols-[auto_96px_minmax(0,1fr)] sm:items-center; }
+  .quantity-control input { @apply h-11 rounded-md border border-neutral-300 bg-white px-3 text-center text-sm; }
+  .product-actions-main { @apply mt-5 grid gap-3 sm:grid-cols-3; }
+  .review-panel, .recommend-panel { @apply mt-10 border-t border-neutral-200 pt-8; }
+  .customer-product-page .catalog-head { @apply mb-5 flex flex-wrap items-end justify-between gap-4 border-b border-neutral-950 pb-5; }
+  .customer-product-page .catalog-head h2 { @apply text-2xl font-black leading-none sm:text-4xl; }
+  .customer-product-page .eyebrow { @apply mb-3 block text-xs font-black uppercase text-neutral-600; }
+  #productReviews { @apply grid gap-3; }
+  .review-item { @apply rounded-lg border border-neutral-200 bg-neutral-50 p-4; }
+  .review-item strong { @apply block text-sm font-black; }
+  .review-item span { @apply mt-1 block text-xs text-neutral-600; }
+  .review-item p { @apply mt-3 text-sm leading-6 text-neutral-700; }
+  .review-images { @apply mt-3 flex flex-wrap gap-2; }
+  .review-images img { @apply h-20 w-20 rounded-md border border-neutral-200 bg-white object-cover; }
+  .recommend-grid { @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-4; }
+  .mini-product { @apply cursor-pointer rounded-lg border border-neutral-200 bg-white p-3 transition hover:-translate-y-1 hover:border-neutral-400 hover:shadow-xl; }
+  .mini-product img { @apply aspect-square w-full rounded-md bg-neutral-100 object-contain p-4; }
+  .mini-product strong { @apply mt-3 block text-sm font-black leading-5; }
+  .mini-product span { @apply mt-1 block text-xs leading-5 text-neutral-600; }
+  .mini-product .mini-price { @apply text-base font-black text-neutral-950; }
+
+  .auth-page-shell { @apply min-h-screen bg-neutral-100 text-neutral-950; }
+  .auth-page { @apply grid min-h-screen grid-rows-[auto_1fr] gap-4 p-4 sm:p-6; }
+  .auth-page .topbar { @apply mx-auto flex min-h-16 w-full max-w-7xl min-w-0 flex-wrap items-center justify-between gap-4 rounded-lg border border-neutral-200 bg-white px-4 shadow-sm sm:px-6; }
+  .auth-page .brand { @apply min-w-0; }
+  .auth-page .brand span { @apply max-w-[190px] sm:max-w-80; }
+  .auth-page .shop-link { @apply inline-flex min-h-10 items-center justify-center rounded-md border border-neutral-950 bg-white px-4 text-sm font-black text-neutral-950 no-underline hover:bg-neutral-100; }
+  .auth-stage { @apply mx-auto grid w-full max-w-7xl min-w-0 gap-4 overflow-hidden lg:grid-cols-[minmax(0,1fr)_430px]; }
+  .auth-stage .intro { @apply relative isolate flex min-h-[520px] min-w-0 flex-col justify-end overflow-hidden rounded-lg bg-neutral-950 p-6 text-white shadow-xl sm:p-10 lg:min-h-[calc(100vh-7.5rem)] lg:p-14; }
+  .auth-stage .intro::before { content: ""; @apply absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,.86)_0%,rgba(0,0,0,.58)_48%,rgba(0,0,0,.16)_100%),url('/assets/hero-iphone-style.png')] bg-cover bg-center; }
+  .auth-stage .intro::after { content: "TECH"; @apply pointer-events-none absolute bottom-[-.18em] left-6 -z-10 text-[clamp(5rem,18vw,15rem)] font-black leading-none text-white/7 sm:left-10; }
+  .auth-stage .intro .eyebrow { @apply mb-5 inline-flex w-max rounded-full border border-white/70 px-3 py-1.5 text-xs font-black uppercase text-white; }
+  .auth-stage .intro h1 { @apply max-w-3xl text-5xl font-black leading-none text-white sm:text-6xl lg:text-7xl; }
+  .auth-stage .intro p { @apply mt-5 max-w-2xl text-base leading-7 text-white/80 sm:text-lg; }
+  .access-grid { @apply mt-8 grid max-w-3xl gap-3 sm:grid-cols-3; }
+  .access-card { @apply min-h-28 rounded-lg border border-white/20 bg-white/10 p-4 backdrop-blur; }
+  .access-card span { @apply block text-xs font-black uppercase text-white/60; }
+  .access-card strong { @apply mt-3 block text-sm font-black leading-5 text-white; }
+  .promo-panel { @apply mt-6 max-w-3xl overflow-hidden rounded-lg border border-white/25 bg-white/90 text-neutral-950 shadow-2xl; }
+  .promo-row { @apply grid gap-2 border-b border-neutral-200 p-4 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-5; }
+  .promo-row:last-child { @apply border-b-0; }
+  .promo-kicker { @apply text-xs font-black uppercase text-neutral-500; }
+  .promo-row strong { @apply block text-base font-black leading-5; }
+  .promo-row span:last-child { @apply text-sm leading-6 text-neutral-600; }
+  .auth-card { @apply flex min-h-[520px] min-w-0 flex-col rounded-lg border border-neutral-200 bg-white p-5 shadow-xl sm:p-7 lg:min-h-[calc(100vh-7.5rem)]; }
+  .auth-card::before { content: ""; @apply mb-6 block h-1.5 w-full rounded-full bg-neutral-950; }
+  .card-head { @apply mb-5 flex min-w-0 flex-wrap items-start justify-between gap-4; }
+  .card-head h2 { @apply text-3xl font-black leading-none; }
+  .card-head p { @apply mt-2 text-sm text-neutral-600; }
+  .portal-badge { @apply shrink-0 rounded-full bg-neutral-950 px-3 py-2 text-xs font-black uppercase text-white; }
+  .auth-tabs { @apply mb-4 grid grid-cols-2 gap-1 rounded-lg border border-neutral-200 bg-neutral-100 p-1; }
+  .auth-tab { @apply min-h-11 rounded-md text-sm font-black text-neutral-950; }
+  .auth-tab.active { @apply bg-neutral-950 text-white shadow-sm; }
+  .auth-note, .helper { @apply mb-4 rounded-md border border-neutral-200 bg-neutral-50 p-3 text-sm leading-6 text-neutral-600; }
+  .helper { @apply mt-4 mb-0; }
+  .form-section { @apply mt-5 border-t border-neutral-200 pt-5; }
+  .section-label { @apply mb-3 text-xs font-black uppercase text-neutral-500; }
+  .password-field { @apply relative; }
+  .password-field .form-control { @apply pr-20; }
+  .password-toggle { @apply absolute right-2 top-1/2 min-h-8 -translate-y-1/2 rounded-md border border-neutral-300 bg-neutral-950 px-3 text-xs font-black text-white; }
+  .register-only, .register-grid { @apply hidden; }
+  .register-grid { @apply grid-cols-1 gap-3 sm:grid-cols-2; }
+  .register-mode .register-only { @apply block; }
+  .register-mode .register-grid { @apply grid; }
+  .full-span { @apply sm:col-span-2; }
+  .message { @apply min-h-6 pt-3 text-sm font-black; }
+  .message.error { @apply text-red-700; }
+  .w-100 { @apply w-full; }
+  @media (max-width: 1023px) {
+    .auth-stage .intro, .auth-card { @apply min-h-0; }
+  }
+
+  .customer-profile-page { @apply min-h-screen bg-neutral-100 text-neutral-950; }
+  .customer-profile-page .profile-shell { @apply grid min-h-screen lg:grid-cols-[300px_minmax(0,1fr)]; }
+  .customer-profile-page .side { @apply static h-auto bg-neutral-950 p-5 text-white lg:sticky lg:top-0 lg:h-screen lg:p-6; }
+  .customer-profile-page .side .brand { @apply mb-6 flex items-center text-white no-underline; }
+  .customer-profile-page .side .brand span { @apply max-w-[220px] text-sm font-black leading-tight text-white; }
+  .customer-profile-page .customer-card { @apply mb-4 rounded-lg border border-white/15 bg-white/10 p-4; }
+  .customer-profile-page .customer-card h2 { @apply text-xl font-black leading-tight text-white; }
+  .customer-profile-page .customer-card p { @apply mt-1 break-words text-sm leading-6 text-white/65; }
+  .profile-navigation { @apply mb-5 grid gap-1; }
+  .profile-navigation a { @apply rounded-md px-3 py-3 text-sm font-black text-white/70 no-underline hover:bg-white/10 hover:text-white; }
+  .profile-navigation a[aria-current="page"] { @apply bg-white text-neutral-950; }
+  .customer-profile-page .side-actions { @apply grid gap-2; }
+  .customer-profile-page .side-actions .btn { @apply w-full; }
+  .customer-profile-page .main { @apply mx-auto w-full max-w-7xl px-5 py-7 sm:px-8 lg:py-10; }
+  .customer-profile-page .page-head { @apply mb-5 flex flex-wrap items-end justify-between gap-4; }
+  .customer-profile-page .page-head h1 { @apply text-3xl font-black leading-none sm:text-5xl; }
+  .customer-profile-page .page-head h1[style] { @apply text-2xl sm:text-3xl; }
+  .customer-profile-page .page-head p { @apply mt-2 text-sm leading-6 text-neutral-600; }
+  .customer-profile-page .summary-grid { @apply mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4; }
+  .customer-profile-page .summary { @apply rounded-lg border border-neutral-200 bg-white p-5 shadow-sm; }
+  .customer-profile-page .summary span { @apply text-xs font-black uppercase text-neutral-500; }
+  .customer-profile-page .summary strong { @apply mt-2 block text-3xl font-black leading-none; }
+  .customer-profile-page section { @apply min-w-0; }
+  .customer-profile-page .account-settings-grid, .customer-profile-page .address-book-grid { @apply mb-6 grid gap-4 xl:grid-cols-2; }
+  .account-panel, .address-form-panel, .address-list-panel, .installment-panel, .orders-section { @apply rounded-lg border border-neutral-200 bg-white p-5 shadow-sm; }
+  .account-panel h2, .address-form-panel h2, .address-list-panel h2, .installment-head h2, .orders-section-head h2 { @apply text-xl font-black leading-tight; }
+  .account-form-grid, .address-form-grid, .application-grid { @apply grid gap-3 sm:grid-cols-2; }
+  .account-form-grid .full, .address-form-grid .full, .application-grid .full { @apply sm:col-span-2; }
+  .account-form-grid label, .address-form-grid label, .section-label { @apply text-xs font-black uppercase text-neutral-500; }
+  .profile-password-field { @apply grid grid-cols-[minmax(0,1fr)_auto] gap-2; }
+  .account-actions, .address-actions, .address-card-actions, .installment-actions, .order-actions { @apply mt-3 flex flex-wrap justify-end gap-2; }
+  .account-status { @apply mt-3 min-h-5 text-sm font-semibold text-neutral-600; }
+  .account-status.error { @apply text-red-700; }
+  .address-list, .repair-list, .installment-list, .orders-list, .notification-list { @apply grid gap-3; }
+  .address-card, .repair-card, .installment-row, .order-card, .notification-card, .application-card { @apply rounded-lg border border-neutral-200 bg-white p-4 shadow-sm; }
+  .address-card.default { @apply border-neutral-950; }
+  .address-card-head, .installment-head, .orders-section-head, .order-title-row { @apply flex flex-wrap items-start justify-between gap-3; }
+  .address-card h3, .repair-card h3, .installment-row h3, .order-card h3 { @apply text-base font-black leading-tight; }
+  .address-card p, .order-meta, .installment-payment-note { @apply text-sm leading-6 text-neutral-600; }
+  .address-badge, .application-status, .status-pill { @apply inline-flex rounded-full border border-neutral-950 px-3 py-1.5 text-xs font-black uppercase; }
+  .tabs { @apply mb-4 grid overflow-hidden rounded-lg border border-neutral-950 bg-white sm:grid-cols-2 lg:grid-cols-6; }
+  .tab { @apply min-h-11 border-b border-neutral-950 px-3 text-sm font-black last:border-b-0 sm:border-r sm:last:border-r-0 lg:border-b-0; }
+  .tab.active { @apply bg-neutral-950 text-white; }
+  .orders-toolbar { @apply mb-5 grid gap-3 rounded-lg border border-neutral-200 bg-white p-3 lg:grid-cols-[minmax(0,1fr)_auto]; }
+  .orders-toolbar-actions { @apply flex flex-wrap items-center justify-end gap-2; }
+  .orders-result-count { @apply text-xs font-black uppercase text-neutral-500; }
+  .order-card.has-image, .repair-card { @apply grid gap-4 sm:grid-cols-[90px_minmax(0,1fr)_auto]; }
+  .order-image, .repair-card img { @apply h-[90px] w-[90px] rounded-md border border-neutral-200 bg-neutral-100 object-cover; }
+  .order-items-preview { @apply mt-3 grid gap-2; }
+  .order-item-mini { @apply flex items-center gap-3 text-sm text-neutral-600; }
+  .order-item-mini img { @apply h-12 w-12 rounded-md border border-neutral-200 object-cover; }
+  .tracking-timeline { @apply mt-4 grid gap-2 border-t border-neutral-200 pt-4 sm:grid-cols-2 xl:grid-cols-4; }
+  .tracking-step { @apply rounded-md border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-600; }
+  .tracking-step.done { @apply border-neutral-950 bg-white text-neutral-950; }
+  .tracking-step.current { @apply border-neutral-950 bg-neutral-950 text-white; }
+  .order-modal-backdrop { @apply fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4; }
+  .order-modal-backdrop.show { @apply flex; }
+  .order-modal { @apply max-h-[90vh] w-full max-w-3xl overflow-auto rounded-lg border border-neutral-950 bg-white p-5; }
+  .order-detail-item { @apply grid gap-3 rounded-lg border border-neutral-200 bg-neutral-50 p-3 sm:grid-cols-[64px_minmax(0,1fr)_auto]; }
+  .order-detail-item img { @apply h-16 w-16 rounded-md object-cover; }
+  .notification-filter { @apply min-h-9 rounded-full border border-neutral-200 bg-white px-4 text-xs font-black; }
+  .notification-filter.active { @apply border-neutral-950 bg-neutral-950 text-white; }
+  @media (max-width: 639px) {
+    .customer-profile-page .profile-shell { @apply block; }
+    .customer-profile-page .side { @apply rounded-b-lg; }
+    .customer-profile-page .page-head h1 { @apply text-3xl; }
+    .customer-profile-page .order-card.has-image, .customer-profile-page .repair-card, .installment-row { @apply grid-cols-1; }
+  }
+
+  .admin-dashboard-page { @apply min-h-screen bg-neutral-100 text-neutral-950; }
+  .admin-dashboard-page .app-shell { @apply grid min-h-screen lg:grid-cols-[280px_minmax(0,1fr)]; }
+  .admin-dashboard-page .sidebar { @apply static h-auto bg-neutral-950 p-5 text-white lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:p-6; }
+  .sidebar-brand-block { @apply mb-6 flex items-center gap-3; }
+  .brand-logo-dashboard { @apply h-11 w-11 rounded-lg bg-white object-contain p-1; }
+  .admin-dashboard-page .brand { @apply text-lg font-black leading-tight text-white; }
+  .brand-subtitle, .sidebar-user-line { @apply mt-1 text-sm leading-5 text-white/60; }
+  .sidebar-group-title { @apply mb-2 mt-5 text-xs font-black uppercase text-white/45; }
+  .sidebar-nav { @apply grid gap-1; }
+  .admin-dashboard-page .nav-button { @apply flex min-h-11 w-full items-center justify-between gap-3 rounded-md border border-white/10 bg-transparent px-3 py-2.5 text-left text-sm font-black text-white/70 hover:bg-white/10 hover:text-white; }
+  .admin-dashboard-page .nav-button.active { @apply border-white bg-white text-neutral-950; }
+  .admin-dashboard-page .nav-badge { @apply inline-flex min-h-6 min-w-6 items-center justify-center rounded-full bg-white/10 px-2 text-xs font-black text-white; }
+  .admin-dashboard-page .nav-button.active .nav-badge { @apply bg-neutral-950 text-white; }
+  .sidebar-footer { @apply mt-6 grid gap-2 border-t border-white/10 pt-5; }
+  .sidebar-link, .sidebar-link-button { @apply inline-flex min-h-10 w-full items-center justify-center rounded-md border border-white/20 bg-transparent px-3 text-sm font-black text-white no-underline hover:bg-white hover:text-neutral-950; }
+  .admin-dashboard-page .main { @apply mx-auto w-full max-w-[1500px] min-w-0 px-5 py-7 sm:px-8 lg:py-9; }
+  .admin-dashboard-page .page-head { @apply mb-6 flex flex-wrap items-start justify-between gap-4; }
+  .admin-dashboard-page .page-title { @apply text-3xl font-black leading-none sm:text-5xl; }
+  .admin-dashboard-page .page-caption { @apply mt-2 max-w-3xl text-sm leading-6 text-neutral-600; }
+  .admin-dashboard-page .top-actions { @apply flex flex-wrap items-center justify-end gap-2; }
+  .admin-dashboard-page .section { @apply hidden min-w-0; }
+  .admin-dashboard-page .section.active { @apply block; }
+  .admin-dashboard-page .panel { @apply mb-5 rounded-lg border border-neutral-200 bg-white p-5 shadow-sm; }
+  .admin-dashboard-page .metric-grid, .admin-dashboard-page .task-summary-grid, .admin-dashboard-page .pos-summary-grid, .admin-dashboard-page .order-status-grid { @apply mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4; }
+  .admin-dashboard-page .metric, .task-summary-card, .pos-summary-card, .order-status-card, .inventory-insight-card, .analytics-card, .repair-queue-card { @apply rounded-lg border border-neutral-200 bg-white p-4 shadow-sm; }
+  .metric-label, .task-summary-card span, .pos-summary-card span, .order-status-card span { @apply text-xs font-black uppercase text-neutral-500; }
+  .metric-value, .task-summary-card strong, .pos-summary-card strong, .order-status-card strong { @apply mt-2 block text-2xl font-black leading-tight; }
+  .analytics-toolbar, .toolbar { @apply mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-neutral-200 bg-white p-3 shadow-sm; }
+  .analytics-grid, .inventory-insight-grid, .repair-queue { @apply mb-5 grid gap-4 xl:grid-cols-2; }
+  .bar-chart { @apply flex h-44 items-end gap-2 border-b border-l border-neutral-200 px-2 pt-3; }
+  .bar-fill, .mini-row-fill { @apply rounded-t bg-neutral-950; }
+  .bar-label { @apply truncate text-center text-xs text-neutral-500; }
+  .mini-row-chart { @apply grid gap-3; }
+  .mini-row-head { @apply flex justify-between gap-3 text-sm font-semibold; }
+  .mini-row-track { @apply h-2 overflow-hidden rounded-full border border-neutral-200 bg-neutral-100; }
+  .admin-dashboard-page .table-responsive { @apply overflow-auto rounded-lg border border-neutral-200 bg-white shadow-sm; }
+  .admin-dashboard-page .table { @apply w-full border-collapse text-sm; }
+  .admin-dashboard-page .table th { @apply whitespace-nowrap border-b border-neutral-200 bg-neutral-50 px-3 py-3 text-left text-xs font-black uppercase text-neutral-500; }
+  .admin-dashboard-page .table td { @apply border-b border-neutral-100 px-3 py-3 align-middle; }
+  .admin-dashboard-page .form-control, .admin-dashboard-page .form-select { @apply min-h-11 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-950; }
+  .admin-dashboard-page textarea.form-control { @apply min-h-24; }
+  .admin-dashboard-page .btn { @apply min-h-10 rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-black text-neutral-950 hover:bg-neutral-100; }
+  .admin-dashboard-page .btn-dark { @apply border-neutral-950 bg-neutral-950 text-white hover:bg-neutral-800; }
+  .admin-dashboard-page .btn-outline-light, .admin-dashboard-page .btn-light { @apply border-white bg-white text-neutral-950; }
+  .role-chip, .stock-pill, .status-badge, .mini-chip, .task-priority { @apply inline-flex min-h-7 items-center justify-center rounded-full border border-neutral-300 bg-white px-3 py-1 text-xs font-black uppercase text-neutral-700; }
+  .status-badge.delivered, .status-badge.cancelled, .stock-low, .task-priority.high, .task-priority.urgent { @apply border-neutral-950 bg-neutral-950 text-white; }
+  .product-img, .order-product-thumb { @apply h-14 w-14 rounded-md border border-neutral-200 bg-neutral-100 object-cover; }
+  .order-product-cell { @apply grid min-w-64 grid-cols-[56px_minmax(0,1fr)] items-center gap-3; }
+  .detail-grid { @apply grid gap-3 sm:grid-cols-2; }
+  .detail-box, .delivery-mini, .verification-card { @apply rounded-lg border border-neutral-200 bg-neutral-50 p-3; }
+  .detail-box span, .delivery-meta { @apply text-xs font-semibold text-neutral-500; }
+  .tracking-timeline { @apply my-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-4; }
+  .tracking-step { @apply rounded-md border border-neutral-200 bg-neutral-50 p-3 text-sm text-neutral-600; }
+  .tracking-step.done { @apply border-neutral-950 bg-white text-neutral-950; }
+  .tracking-step.current { @apply border-neutral-950 bg-neutral-950 text-white; }
+  .pos-grid { @apply grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px]; }
+  .pos-products { @apply grid max-h-[70vh] gap-3 overflow-auto pr-1 sm:grid-cols-2; }
+  .pos-item, .pos-side, .receipt-box, .pos-receipt-row { @apply rounded-lg border border-neutral-200 bg-white p-4 shadow-sm; }
+  .pos-variant-list { @apply mt-3 grid gap-2; }
+  .pos-variant-button { @apply rounded-md border border-neutral-300 bg-neutral-50 p-3 text-left text-sm font-semibold hover:border-neutral-950; }
+  .receipt-box { @apply bg-neutral-950 text-white; }
+  .notification-panel { @apply absolute right-0 top-12 z-50 hidden w-[min(380px,calc(100vw-2rem))] rounded-lg border border-neutral-200 bg-white p-3 text-neutral-950 shadow-2xl; }
+  .notification-panel.show { @apply grid gap-3; }
+  .notification-mini-list { @apply grid max-h-80 gap-2 overflow-auto; }
+  .notification-mini-item, .action-item { @apply rounded-lg border border-neutral-200 bg-white p-3; }
+  .action-item.critical, .notification-mini-item.urgent { @apply border-neutral-950 shadow-[inset_4px_0_0_#0a0a0a]; }
+  @media (max-width: 1023px) {
+    .admin-dashboard-page .app-shell { @apply block; }
+    .admin-dashboard-page .sidebar { @apply rounded-b-lg; }
+    .admin-dashboard-page .sidebar-nav { @apply grid-cols-2; }
+    .admin-dashboard-page .page-title { @apply text-3xl; }
+    .analytics-grid, .inventory-insight-grid, .repair-queue, .pos-grid { @apply grid-cols-1; }
+  }
+  @media (max-width: 639px) {
+    .admin-dashboard-page .sidebar-nav { @apply grid-cols-1; }
+    .admin-dashboard-page .main { @apply px-4; }
+    .admin-dashboard-page .metric-grid, .admin-dashboard-page .task-summary-grid, .admin-dashboard-page .pos-summary-grid, .admin-dashboard-page .order-status-grid { @apply grid-cols-1; }
+  }
+}

@@ -44,7 +44,7 @@ router.get("/", requireAdmin, (req, res) => {
       (SELECT COUNT(*) FROM users) AS total_users,
       (SELECT COUNT(*) FROM orders) AS total_orders,
       COALESCE((SELECT SUM(total_price) FROM orders WHERE payment_status = 'paid'), 0) AS paid_sales,
-      COALESCE((SELECT SUM(total_price) FROM orders WHERE payment_status = 'pending_verification'), 0) AS pending_online_amount,
+      COALESCE((SELECT SUM(total_price) FROM orders WHERE payment_provider='manual_gcash' AND payment_status = 'for_verification' AND gcash_reference IS NOT NULL AND payment_proof_image IS NOT NULL), 0) AS pending_online_amount,
       COALESCE((SELECT SUM(total_price) FROM orders WHERE payment_status = 'to_collect'), 0) AS cod_to_collect_amount,
       COALESCE((SELECT SUM(total_price) FROM orders WHERE payment_status = 'installment_active'), 0) AS installment_active_amount,
       COALESCE((SELECT SUM(amount_due - amount_paid) FROM installment_schedules WHERE status != 'paid'), 0) AS installment_unpaid_amount,

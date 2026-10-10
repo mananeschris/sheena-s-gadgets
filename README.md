@@ -1,20 +1,25 @@
 # Sheena's Gadgets & Accessories Shop
 
-Fintech-integrated ecommerce capstone project for a gadget and accessories shop. The system includes customer shopping, checkout, admin management, POS, inventory, installment, layaway, rider delivery workflow, repair requests, notifications, and payment testing support.
+Fintech-integrated ecommerce capstone project for a gadget and accessories shop. The system supports customer browsing, cart checkout, order tracking, admin operations, POS, inventory monitoring, installment applications, layaway, repair requests, rider delivery workflow, vouchers, notifications, and finance/reporting tools.
 
 ## Features
 
-- Customer product catalog with product details, cart, checkout, reviews, profile, and order tracking
-- Admin dashboard for products, inventory, orders, POS, analytics, staff, riders, installments, layaway, repairs, vouchers, and finance reports
-- Rider dashboard for delivery assignments and delivery status updates
-- MySQL-backed Express server
-- PayMongo test payment flow support through environment variables
+- Customer shop with catalog, product details, variants, reviews, cart, checkout, profile, saved addresses, and order tracking.
+- Customer account registration with Gmail verification code support.
+- Email-based password recovery with expiring, single-use links.
+- Manual GCash payment proof workflow for customer payments.
+- Cash, COD, POS cash sales, installment, and layaway workflows.
+- Admin dashboard for products, inventory, orders, POS, analytics, staff, riders, installments, layaway, repairs, vouchers, audit logs, and finance reports.
+- Rider dashboard for assigned deliveries and delivery status updates.
+- MySQL-backed Express server with startup schema health checks.
 
 ## Requirements
 
 - Node.js
 - MySQL / MySQL Workbench
-- PayMongo sandbox keys for test online payments
+- Optional email provider account for real verification emails:
+  - Brevo Transactional Email API, recommended
+  - Resend API, optional alternative
 
 ## Setup
 
@@ -24,17 +29,56 @@ Fintech-integrated ecommerce capstone project for a gadget and accessories shop.
 npm install
 ```
 
-2. Copy `.env.example` to `.env`, then update the database and PayMongo values.
+2. Copy `.env.example` to `.env`.
 
-3. Make sure MySQL is running and the database credentials are correct.
+3. Update database settings in `.env`:
 
-4. Start the system:
+```text
+DB_HOST=127.0.0.1
+DB_USER=root
+DB_PASSWORD=your_mysql_password_here
+DB_NAME=fintech_db
+DB_PORT=3307
+```
+
+4. Update store payment display values for GCash proof upload:
+
+```text
+GCASH_ACCOUNT_NAME=Sheena's Gadgets & Accessories Shop
+GCASH_ACCOUNT_NUMBER=09XXXXXXXXX
+GCASH_QR_IMAGE=/assets/gcash-store-qr-code.png
+```
+
+5. Configure email delivery with Brevo. This is required for admin sign-in; customer email sign-in codes remain optional.
+
+   1. Create a Brevo account and generate an API key from the Brevo account settings.
+   2. Add and verify the sender email address in Brevo. Use that exact address for `EMAIL_FROM_ADDRESS`.
+   3. Set the following values in `.env` for local development, or in the deployment service's environment settings:
+
+   ```text
+   EMAIL_PROVIDER=brevo
+   BREVO_API_KEY=your_brevo_api_key
+   EMAIL_FROM_NAME=Sheena's Gadgets & Accessories Shop
+   EMAIL_FROM_ADDRESS=your_verified_sender_email@example.com
+   ```
+
+   Keep the API key private and never commit `.env`. `EMAIL_VERIFICATION_SECRET` should also be a long random secret.
+
+   If no Brevo API key is configured during development, the app logs a testing code locally instead. In production, real email delivery is required before email sign-in verification can be enabled.
+
+   Password recovery uses the same email provider. Set `APP_BASE_URL` to the app's public origin (for example, `http://localhost:3000` locally or the HTTPS deployment URL in production). Restart the server after changing environment values. Reset links expire after 15 minutes; requesting another link has a 60-second cooldown. In development without a provider, reset links appear only in the local server log.
+
+   "Remember my email" saves only the email address on that browser after successful sign-in. It does not save passwords or extend the signed-in session.
+
+6. Make sure MySQL is running and the database credentials are correct.
+
+7. Start the system:
 
 ```bash
 npm start
 ```
 
-5. Open the app:
+8. Open the app:
 
 ```text
 http://localhost:3000
@@ -42,9 +86,84 @@ http://localhost:3000
 
 ## Notes
 
+### Admin Security
+
+- Admin login requires both the password and an emailed security code. Codes expire in 10 minutes, allow at most 5 attempts, and are bound to the browser that requested them. Admin codes are never returned as `dev_code`; missing or failed email delivery cannot grant access.
+- Admin permissions are verified against an HttpOnly session cookie and the account's current database role. Browser account data and `actor_id` cannot authenticate a request. Existing admin sessions must sign in again after this update.
+- Admin sessions expire after 15 minutes without user activity, with a warning 2 minutes beforehand, and have an 8-hour maximum lifetime. Background data polling does not renew idle time.
+- Five incorrect password attempts for an email/IP pair trigger a cooldown within the 15-minute attempt window. A separate IP request cap limits repeated sign-in/code requests, and each admin account can request at most 12 security emails per 15 minutes across IPs. Limits persist in MySQL across restarts.
+- Password changes, signing out other sessions, and staff/rider account creation or deletion require password plus email-code confirmation when the last verification is older than 5 minutes.
+- Open **Security** in the admin sidebar for password changes and session revocation. Security events appear in **Audit Logs**; admin sign-ins and account security changes also send email notices. Audit records are generated by the server and do not contain passwords, codes or tokens.
+- Password recovery expires existing sessions and pending admin challenges. New staff and rider accounts require invitation activation before sign-in.
+- Use HTTPS and `NODE_ENV=production` when deployed so authentication cookies are Secure. GCash receiving details remain deployment environment settings, not editable public API settings.
+
+### Operations
+
+- Staff use `/staff/dashboard.html` for an operational overview, order preparation, approved repair progress, product lookup, stock adjustments, POS, and their own account settings. The workspace shares the admin theme and respects reduced-motion preferences.
+- Payment decisions, cancellation and warranty/repair approvals, delivery completion, rider assignment, product pricing/variant definitions, and account administration remain admin-only. These restrictions are checked on the server as well as in the UI.
+- Staff stock adjustments require a reason. Variant quantities must add up to the product's total stock; staff cannot change variant prices or names. Password changes revoke the staff account's previous sessions.
+- Run `node node_modules/@playwright/test/cli.js test tests/staff-workspace-ui.spec.js --workers=1` for staff UI checks. Run `RUN_STAFF_MYSQL=1 node --env-file=.env --test tests/staff-workspace-mysql.integration.cjs` for isolated database tests (set the environment variable using your shell's syntax).
+
+### Staff And Rider Invitations
+
+- Admin invites staff and riders by name/email (riders also need a contact number). No temporary password is collected. The invitee verifies email ownership and sets their own password at `/activate-account.html`.
+- New accounts stay `pending_activation` until activation. Existing accounts remain active. Pending/disabled accounts cannot authenticate, recover a password, use previous sessions, or be selected for rider assignment.
+- Activation links expire in 24 hours and are single-use. Only SHA-256 token hashes are stored; raw tokens are not returned to admin or written to logs. Resend rotates the link, with a 60-second cooldown and 5 invitations per account/hour.
+- Account creation/resend/disable/enable require an admin with recent verification. Disabling revokes sessions and invitations; enabling an unverified account does not activate it. Active deliveries must be reassigned or closed before disabling a rider.
+- Brevo/Resend delivery must be configured; no console-code bypass is allowed. Email failure leaves the account pending, with a visible resend action. Set `APP_BASE_URL` to the actual public HTTPS origin when deployed; localhost links are only usable on the development machine.
+- Run `RUN_EMPLOYEE_MYSQL=1 node --env-file=.env --test tests/employee-activation-mysql.integration.cjs` for isolated invitation tests with mocked email delivery. UI checks: `node node_modules/@playwright/test/cli.js test tests/employee-activation-ui.spec.js --workers=1`.
+
 - Do not upload `.env` because it contains private keys and local credentials.
-- Use PayMongo sandbox keys while testing payments.
+- Customer GCash payments use proof upload: the customer submits a reference number and payment screenshot, then admin checks it.
+- Installment and layaway payment steps also use the current GCash proof upload flow unless a real payment provider is added later.
 - The database schema is checked and repaired by the server-side schema health logic when the app runs.
+- Temporary screenshots, release folders, and upload backups should not be kept in the root project folder.
+
+## Checks
+
+Build the CSS output:
+
+```bash
+npm run build
+```
+
+Run the main browser UI checks:
+
+```bash
+npm run test:ui
+```
+
+Run the payment wording regression check:
+
+```bash
+npm run test:payment-copy
+```
+
+Run the account UI checks (email and login requests are mocked):
+
+```bash
+npm run test:auth
+```
+
+Run the admin security UI checks:
+
+```bash
+npm run test:admin-security
+```
+
+Run the admin security database checks in PowerShell. The email provider is mocked, and the test creates and removes its own temporary database:
+
+```powershell
+$env:RUN_ADMIN_SECURITY_MYSQL='1'
+node --env-file=.env --test tests/admin-security-mysql.integration.cjs
+```
+
+Run the password recovery database check in PowerShell. This creates and removes an isolated temporary database and uses a mock email sender; it never resets an existing account:
+
+```powershell
+$env:RUN_RECOVERY_MYSQL='1'
+node --env-file=.env --test tests/password-recovery-mysql.integration.cjs
+```
 
 ## Render Deployment
 
@@ -60,9 +179,24 @@ DB_USER=your_online_mysql_user
 DB_PASSWORD=your_online_mysql_password
 DB_NAME=your_online_mysql_database
 DB_PORT=your_online_mysql_port
-PAYMONGO_SECRET_KEY=your_paymongo_test_secret_key
-PAYMONGO_PUBLIC_KEY=your_paymongo_test_public_key
-PAYMONGO_WEBHOOK_SECRET=your_paymongo_webhook_secret_if_used
+GCASH_ACCOUNT_NAME=Sheena's Gadgets & Accessories Shop
+GCASH_ACCOUNT_NUMBER=09XXXXXXXXX
+GCASH_QR_IMAGE=/assets/gcash-store-qr-code.png
+EMAIL_PROVIDER=brevo
+BREVO_API_KEY=your_brevo_api_key_here
+EMAIL_FROM_NAME=Sheena's Gadgets & Accessories Shop
+EMAIL_FROM_ADDRESS=your_verified_sender_email@example.com
+EMAIL_VERIFICATION_SECRET=change_this_to_a_long_random_secret
 ```
 
+In Brevo, the sender address must be verified before the application can send customer verification or sign-in emails. Keep `BREVO_API_KEY` secret; add it only in Render's environment settings, never in source control.
+
 Use an online MySQL database for deployment. A local MySQL database from your PC cannot be reached by Render.
+
+## Delivery Photo Proof
+
+Riders must submit a valid JPG, PNG, or WEBP photo (maximum 5 MB) before completing a delivery. The photo and delivery status are saved together; failed database updates roll back the status and remove the uploaded file. Admin notifications refresh every 15 seconds, with a proof viewer also available in delivery records.
+
+Photos are normalized to JPEG, stripped of metadata, and stored outside public assets in `data/delivery-proofs/`. Set `DELIVERY_PROOF_DIR` to an absolute private persistent directory when deploying. Back up this directory together with MySQL; ephemeral hosting storage will lose photos on redeployment. The free Render configuration does not provide persistent photo storage. Proof endpoints require the signed-in account session, so existing browser sessions may need a fresh sign-in.
+
+Run proof UI tests with `npx playwright test tests/delivery-proof-ui.spec.js`. Run the isolated MySQL integration test with `RUN_DELIVERY_MYSQL=1 node --env-file=.env --test tests/order-delivery-mysql.integration.cjs` (set the environment variable using your shell's syntax). It creates and removes only a uniquely named test database.

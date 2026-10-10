@@ -1,0 +1,157 @@
+.store-nav#customerStoreNav {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 20px !important;
+  min-height: 84px !important;
+  padding: 16px 32px !important;
+  background: #fff !important;
+  border-bottom: 1px solid #e1e8e4 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+#customerStoreNav .brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  width: fit-content !important;
+  color: #15271f !important;
+  text-decoration: none !important;
+}
+#customerStoreNav .brand-logo {
+  width: 44px !important;
+  height: 44px !important;
+  flex: 0 0 44px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+#customerStoreNav .brand-copy { display: grid !important; gap: 2px; min-width: 0; }
+#customerStoreNav .brand-copy strong { font-size: 22px; line-height: 1.15; font-weight: 750; }
+#customerStoreNav .brand-copy small { font-size: 12px; line-height: 1.4; font-weight: 500; color: #56645e; }
+#customerStoreNav .nav-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+#customerStoreNav .nav-actions > a,
+#customerStoreNav .nav-actions > button {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  gap: 8px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 12px !important;
+  margin: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: #263b31 !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  transition: background-color 160ms ease, border-color 160ms ease !important;
+}
+#customerStoreNav .nav-actions > .nav-tool { width: 44px !important; padding: 0 !important; }
+#customerStoreNav .nav-actions > .nav-account { gap: 10px !important; padding: 0 10px !important; margin-left: 8px !important; border-left-color: #e1e8e4 !important; border-radius: 0 !important; }
+#customerStoreNav .nav-actions > :hover { background: #eff6f2 !important; transform: none !important; box-shadow: none !important; }
+#customerStoreNav .nav-actions > :focus-visible { outline: 2px solid #14634c !important; outline-offset: 3px; }
+#customerStoreNav .nav-actions > #signupLink { color: #fff !important; background: #14634c !important; }
+#customerStoreNav .nav-actions > #signupLink:hover { background: #104f3d !important; }
+#customerStoreNav .nav-actions > #loginLink { border-color: #d7e1db !important; }
+#customerStoreNav .nav-actions svg { width: 19px !important; height: 19px !important; flex-shrink: 0; }
+#customerStoreNav .badge {
+  position: absolute !important;
+  top: 1px !important;
+  right: 0 !important;
+  min-width: 17px !important;
+  height: 17px !important;
+  padding: 2px 4px !important;
+  background: #eaf2ed !important;
+  color: #14634c !important;
+  border: 1px solid #fff;
+  border-radius: 10px !important;
+  font-size: 10px !important;
+  line-height: 11px !important;
+}
+#customerStoreNav #notificationCount { background: #14634c !important; color: #fff !important; }
+#customerStoreNav .account-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 50%;
+  background: #eaf2ed;
+  color: #14634c;
+  font-size: 11px;
+  font-weight: 750;
+}
+#customerStoreNav .nav-account-copy { display: grid; gap: 2px; text-align: left; min-width: 0; }
+#customerStoreNav #accountLabel { display: block !important; max-width: 175px !important; margin: 0 !important; color: #263b31 !important; font-size: 12px !important; line-height: 16px !important; overflow: hidden; text-overflow: ellipsis; }
+#customerStoreNav .nav-account-copy small { color: #6b7c73; font-size: 11px; line-height: 14px; font-weight: 500; }
+#customerStoreNav [data-tooltip]::after {
+  content: attr(data-tooltip) !important;
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: max-content !important;
+  max-width: 260px;
+  height: auto !important;
+  padding: 6px 9px;
+  border-radius: 4px;
+  background: #1f3329 !important;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: normal;
+  opacity: 0 !important;
+  visibility: hidden;
+  transform: translateX(-50%) !important;
+  pointer-events: none;
+  z-index: 1100;
+}
+#customerStoreNav [data-tooltip]:hover::after,
+#customerStoreNav [data-tooltip]:focus-visible::after { opacity: 1 !important; visibility: visible; }
+#customerStoreNav #logoutButton::after,
+#customerStoreNav #profileLink::after { left: auto !important; right: 0 !important; transform: none !important; }
+#customerStoreNav .nav-actions > [hidden],
+#customerStoreNav .nav-actions > .d-none { display: none !important; }
+@media (max-width: 850px) {
+  #customerStoreNav .nav-account-copy { display: none; }
+  #customerStoreNav .nav-actions > .nav-account { width: 44px !important; padding: 0 !important; margin-left: 0 !important; border-left-color: transparent !important; }
+}
+@media (max-width: 600px) {
+  .store-nav#customerStoreNav { grid-template-columns: minmax(0, 1fr) !important; gap: 8px !important; padding: 12px 16px 8px !important; }
+  #customerStoreNav .brand-logo { width: 36px !important; height: 36px !important; flex-basis: 36px !important; }
+  #customerStoreNav .brand { gap: 10px !important; }
+  #customerStoreNav .brand-copy strong { font-size: 19px; }
+  #customerStoreNav .brand-copy small { font-size: 11px; }
+  #customerStoreNav .nav-actions { justify-content: space-between !important; gap: 4px !important; width: 100% !important; }
+  #customerStoreNav .nav-actions > a,
+  #customerStoreNav .nav-actions > button { height: 40px !important; min-height: 40px !important; padding: 0 10px !important; }
+  #customerStoreNav .nav-actions > .nav-tool,
+  #customerStoreNav .nav-actions > .nav-account { width: 40px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #customerStoreNav .nav-actions > a,
+  #customerStoreNav .nav-actions > button { transition: none !important; }
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Activate Account | Sheena's Gadgets</title>
+  <link rel="stylesheet" href="/css/account-activation.css">
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+  <script src="/js/account-activation.js" defer></script>
+</head>
+<body>
+  <header class="activation-header"><a href="/customer/shop.html"><img src="/assets/sheena-mark.svg" alt="Sheena's Gadgets logo"><span>Sheena's Gadgets <small>&amp; Accessories Shop</small></span></a><span><i data-lucide="shield-check" aria-hidden="true"></i>Account Activation</span></header>
+  <main>
+    <div class="activation-title"><span class="activation-symbol"><i data-lucide="user-check" aria-hidden="true"></i></span><p>YOUR SHOP ACCOUNT</p><h1 id="activationTitle">Activate Account</h1></div>
+    <p id="activationStatus" role="status" aria-live="polite">Checking invitation...</p>
+    <button id="activationRetry" class="secondary" type="button" hidden><i data-lucide="refresh-cw" aria-hidden="true"></i>Retry</button>
+    <section id="activationIdentity" class="identity" hidden aria-label="Invited account"><span id="activationRole"></span><strong id="activationName"></strong><span id="activationEmail"></span></section>
+    <form id="activationForm" hidden>
+      <label for="activationPassword">New Password</label>
+      <div class="password-control"><input id="activationPassword" type="password" autocomplete="new-password" required minlength="8" aria-describedby="passwordRequirements"><button type="button" data-toggle="activationPassword" title="Show password" aria-label="Show password"><i data-lucide="eye" aria-hidden="true"></i></button></div>
+      <small id="passwordRequirements">At least 8 characters, an uppercase letter, a number, and a symbol (@$!%*?&).</small>
+      <label for="activationConfirm">Confirm Password</label>
+      <div class="password-control"><input id="activationConfirm" type="password" autocomplete="new-password" required minlength="8"><button type="button" data-toggle="activationConfirm" title="Show confirm password" aria-label="Show confirm password"><i data-lucide="eye" aria-hidden="true"></i></button></div>
+      <p id="activationError" class="error" role="alert"></p>
+      <button id="activationSubmit" type="submit"><i data-lucide="shield-check" aria-hidden="true"></i><span>Activate Account</span></button>
+    </form>
+    <a id="activationSignin" class="secondary" href="/auth.html"><i data-lucide="log-in" aria-hidden="true"></i>Back to Sign In</a>
+  </main>
+</body>
+</html>

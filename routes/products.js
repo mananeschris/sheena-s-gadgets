@@ -5,21 +5,39 @@ const path = require("path");
 const { logAudit, auditActor } = require("./auditLogs");
 const { requireAdmin, requireAdminOrStaff, verifiedActor } = require("./roleGuard");
 const { logInventoryMovement } = require("./inventoryMovements");
+const { productWarranty } = require("./productWarranty");
+const { router: categoryRouter, requireActiveCategory } = require('./productCategories');
+router.use('/categories', categoryRouter);
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
+  destination: (req, file, cb) => cb(null, require('../services/uploadStorage').publicUploads),
   filename: (req, file, cb) =>
     cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`)
 });
 
 const upload = multer({
   storage,
-  limits: { files: 20 }
+  limits: { files: 20, fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, callback) => {
+    if (req.actorUser?.role !== 'admin') return callback(null, false);
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype) || !/\.(jpe?g|png|webp)$/i.test(file.originalname)) return callback(new Error('Product images must be JPG, PNG, or WEBP.'));
+    callback(null, true);
+  }
 });
 
 function ensureProductColumns(db, callback) {
   const columns = [
-    ["category", "ADD COLUMN category VARCHAR(80) NULL"]
+    ["category", "ADD COLUMN category VARCHAR(80) NULL"],
+    ["allow_layaway", "ADD COLUMN allow_layaway TINYINT(1) NOT NULL DEFAULT 0"],
+    ["layaway_downpayment_type", "ADD COLUMN layaway_downpayment_type VARCHAR(20) NOT NULL DEFAULT 'percentage'"],
+    ["layaway_downpayment_value", "ADD COLUMN layaway_downpayment_value DECIMAL(12,2) NOT NULL DEFAULT 20"],
+    ["layaway_duration_months", "ADD COLUMN layaway_duration_months INT NOT NULL DEFAULT 5"],
+    ["layaway_max_quantity", "ADD COLUMN layaway_max_quantity INT NOT NULL DEFAULT 1"],
+    ["allow_installment", "ADD COLUMN allow_installment TINYINT(1) NOT NULL DEFAULT 0"],
+    ["warranty_eligible", "ADD COLUMN warranty_eligible TINYINT(1) NOT NULL DEFAULT 0"],
+    ["warranty_duration_months", "ADD COLUMN warranty_duration_months INT NOT NULL DEFAULT 0"],
+    ["warranty_coverage", "ADD COLUMN warranty_coverage TEXT NULL"],
+    ["warranty_exclusions", "ADD COLUMN warranty_exclusions TEXT NULL"]
   ];
 
   let index = 0;
@@ -51,6 +69,8 @@ function ensureReviewsTable(db, callback) {
       user_id INT NOT NULL,
       rating INT NOT NULL,
       comment TEXT NULL,
+      images TEXT NULL,
+      videos TEXT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       UNIQUE KEY unique_order_review (order_id),
@@ -87,13 +107,49 @@ function cleanCategory(value) {
   return category || "Accessories";
 }
 
+function boolFlag(value) {
+  return ["1", "true", "yes", "on"].includes(String(value || "").trim().toLowerCase()) ? 1 : 0;
+}
+
+function cleanLayawayType(value) {
+  return String(value || "percentage").toLowerCase() === "fixed" ? "fixed" : "percentage";
+}
+
+function cleanMoneyValue(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : fallback;
+}
+
+function cleanPositiveInt(value, fallback = 1) {
+  const number = Number(value);
+  return Number.isInteger(number) && number > 0 ? number : fallback;
+}
+
+function productSellingOptions(body) {
+  const downpaymentType = cleanLayawayType(body.layaway_downpayment_type);
+  const downpaymentValue = cleanMoneyValue(body.layaway_downpayment_value, downpaymentType === "percentage" ? 20 : 0);
+  return {
+    allow_layaway: boolFlag(body.allow_layaway),
+    layaway_downpayment_type: downpaymentType,
+    layaway_downpayment_value: downpaymentType === "percentage" ? Math.min(downpaymentValue, 100) : downpaymentValue,
+    layaway_duration_months: cleanPositiveInt(Number(body.layaway_duration_months), 5),
+    layaway_max_quantity: cleanPositiveInt(Number(body.layaway_max_quantity), 1),
+    allow_installment: boolFlag(body.allow_installment)
+  };
+}
+
 function isInventoryUpdate(req) {
   return String(req.body.inventory_update || "").toLowerCase() === "1";
 }
 
 function requireProductUpdatePermission(req, res, next) {
   if (req.actorUser?.role === "admin") return next();
-  if (req.actorUser?.role === "staff" && isInventoryUpdate(req)) return next();
+  if (req.actorUser?.role === "staff" && isInventoryUpdate(req)) {
+    const reason = String(req.body.stock_reason || '').trim();
+    if (!reason || reason.length > 500) return res.status(400).json({ message: 'Enter a stock adjustment reason (maximum 500 characters).' });
+    if (!Number.isInteger(Number(req.body.stock)) || Number(req.body.stock) < 0) return res.status(400).json({ message: 'Stock must be a non-negative whole number.' });
+    return next();
+  }
   return res.status(403).json({ message: "Only admin can edit products. Staff can update inventory stock only." });
 }
 
@@ -211,7 +267,7 @@ function validateProduct(req, res, next) {
   next();
 }
 
-router.post("/", upload.array("images", 20), requireAdmin, validateProduct, (req, res) => {
+router.post("/", requireAdmin, upload.array("images", 20), require('../services/uploadStorage').validateUploadedMedia, validateProduct, requireActiveCategory, (req, res) => {
   const name = req.body.name;
   const description = req.body.description || "";
   const category = cleanCategory(req.body.category);
@@ -220,14 +276,18 @@ router.post("/", upload.array("images", 20), requireAdmin, validateProduct, (req
   const variants = parseJsonArray(req.body.variants);
   const images = uploadedImagePaths(req);
   const image = images[0] || null;
+  const sellingOptions = productSellingOptions(req.body);
+  let warranty;
+  try { warranty = productWarranty(req.body); }
+  catch (error) { return res.status(400).json({ message: error.message }); }
 
   ensureProductColumns(req.db, (columnErr) => {
     if (columnErr) return res.status(500).json({ message: columnErr.message });
 
     const sql = `
       INSERT INTO products
-      (name, description, category, price, stock, image, images, variants)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      (name, description, category, price, stock, image, images, variants, allow_layaway, layaway_downpayment_type, layaway_downpayment_value, layaway_duration_months, layaway_max_quantity, allow_installment, warranty_eligible, warranty_duration_months, warranty_coverage, warranty_exclusions)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     req.db.query(
@@ -240,7 +300,17 @@ router.post("/", upload.array("images", 20), requireAdmin, validateProduct, (req
         stock,
         image,
         JSON.stringify(images),
-        JSON.stringify(variants)
+        JSON.stringify(variants),
+        sellingOptions.allow_layaway,
+        sellingOptions.layaway_downpayment_type,
+        sellingOptions.layaway_downpayment_value,
+        sellingOptions.layaway_duration_months,
+        sellingOptions.layaway_max_quantity,
+        sellingOptions.allow_installment,
+        warranty.warranty_eligible,
+        warranty.warranty_duration_months,
+        warranty.warranty_coverage,
+        warranty.warranty_exclusions
       ],
       (err, result) => {
         if (err) return res.status(500).json(err);
@@ -268,7 +338,7 @@ router.post("/", upload.array("images", 20), requireAdmin, validateProduct, (req
             action: "create_product",
             entity_type: "product",
             entity_id: result.insertId,
-            details: `${name} | ${category} | stock ${stock} | price ${price}`
+            details: `${name} | ${category} | stock ${stock} | price ${price} | warranty ${warranty.warranty_eligible ? `${warranty.warranty_duration_months} months` : "not eligible"}`
           });
           res.json({
             message: "Product added successfully",
@@ -302,7 +372,7 @@ router.get("/", (req, res) => {
   });
 });
 
-router.put("/:id", upload.array("images", 20), requireAdminOrStaff, requireProductUpdatePermission, validateProduct, (req, res) => {
+router.put("/:id", requireAdminOrStaff, upload.array("images", 20), require('../services/uploadStorage').validateUploadedMedia, requireProductUpdatePermission, validateProduct, requireActiveCategory, (req, res) => {
   const { id } = req.params;
   const name = req.body.name;
   const description = req.body.description || "";
@@ -314,6 +384,7 @@ router.put("/:id", upload.array("images", 20), requireAdminOrStaff, requireProdu
   const newImages = uploadedImagePaths(req);
   const images = [...existingImages, ...newImages].slice(0, 20);
   const image = images[0] || req.body.image || null;
+  const sellingOptions = productSellingOptions(req.body);
 
   ensureProductColumns(req.db, (columnErr) => {
     if (columnErr) return res.status(500).json({ message: columnErr.message });
@@ -323,10 +394,26 @@ router.put("/:id", upload.array("images", 20), requireAdminOrStaff, requireProdu
       if (!rows.length) return res.status(404).json({ message: "Product not found" });
 
       const beforeProduct = rows[0];
+      if (req.actorUser.role === 'staff') {
+        const savedVariants = parseJsonArray(beforeProduct.variants);
+        if (savedVariants.length !== variants.length) return res.status(403).json({ message: 'Only admin can add or remove product variants.' });
+        for (let index = 0; index < variants.length; index++) {
+          if (!variants[index] || typeof variants[index] !== 'object' || Array.isArray(variants[index]) || variants[index].stock === undefined) return res.status(400).json({ message: 'Enter a quantity for each variant.' });
+          const quantity = Number(variants[index].stock);
+          if (!Number.isInteger(quantity) || quantity < 0) return res.status(400).json({ message: 'Variant stock must be a non-negative whole number.' });
+          variants[index] = { ...savedVariants[index], stock: quantity };
+        }
+        if (variants.length && variants.reduce((sum, item) => sum + item.stock, 0) !== Number(stock)) return res.status(400).json({ message: 'Total stock must match the variant quantities.' });
+      }
+      let warranty;
+      if (req.actorUser?.role === "admin") {
+        try { warranty = productWarranty(req.body, beforeProduct); }
+        catch (error) { return res.status(400).json({ message: error.message }); }
+      }
       const actor = productAuditActor(req);
       const afterProduct = {
         id,
-        name,
+        name: req.actorUser.role === 'staff' ? beforeProduct.name : name,
         stock,
         variants: JSON.stringify(variants)
       };
@@ -335,7 +422,7 @@ router.put("/:id", upload.array("images", 20), requireAdminOrStaff, requireProdu
         afterProduct,
         actor,
         req.actorUser?.role === "staff" ? "staff_inventory_update" : "product_update",
-        req.actorUser?.role === "staff" ? "Staff inventory stock update." : "Product stock updated."
+        req.actorUser?.role === "staff" ? String(req.body.stock_reason).trim() : "Product stock updated."
       );
 
       if (req.actorUser?.role === "staff") {
@@ -351,7 +438,7 @@ router.put("/:id", upload.array("images", 20), requireAdminOrStaff, requireProdu
                 action: "update_inventory_stock",
                 entity_type: "product",
                 entity_id: id,
-                details: `${name} | stock ${stock}`
+                details: `${beforeProduct.name} | stock ${stock}`
               });
               res.json({ message: "Inventory stock updated" });
             });
@@ -361,8 +448,33 @@ router.put("/:id", upload.array("images", 20), requireAdminOrStaff, requireProdu
       }
 
       req.db.query(
-        `UPDATE products SET name=?, description=?, category=?, price=?, stock=?, image=?, images=?, variants=? WHERE id=?`,
-        [name, description, category, price, stock, image, JSON.stringify(images), JSON.stringify(variants), id],
+        `UPDATE products
+         SET name=?, description=?, category=?, price=?, stock=?, image=?, images=?, variants=?,
+             allow_layaway=?, layaway_downpayment_type=?, layaway_downpayment_value=?,
+             layaway_duration_months=?, layaway_max_quantity=?, allow_installment=?,
+             warranty_eligible=?, warranty_duration_months=?, warranty_coverage=?, warranty_exclusions=?
+         WHERE id=?`,
+        [
+          name,
+          description,
+          category,
+          price,
+          stock,
+          image,
+          JSON.stringify(images),
+          JSON.stringify(variants),
+          sellingOptions.allow_layaway,
+          sellingOptions.layaway_downpayment_type,
+          sellingOptions.layaway_downpayment_value,
+          sellingOptions.layaway_duration_months,
+          sellingOptions.layaway_max_quantity,
+          sellingOptions.allow_installment,
+          warranty.warranty_eligible,
+          warranty.warranty_duration_months,
+          warranty.warranty_coverage,
+          warranty.warranty_exclusions,
+          id
+        ],
         (err) => {
           if (err) return res.status(500).json(err);
           recordStockMovements(req.db, movements, (movementErr) => {
@@ -372,7 +484,7 @@ router.put("/:id", upload.array("images", 20), requireAdminOrStaff, requireProdu
               action: "update_product",
               entity_type: "product",
               entity_id: id,
-              details: `${name} | ${category} | stock ${stock} | price ${price}`
+              details: `${name} | ${category} | stock ${stock} | price ${price} | warranty ${warranty.warranty_eligible ? `${warranty.warranty_duration_months} months` : "not eligible"}`
             });
             res.json({ message: "Product updated" });
           });

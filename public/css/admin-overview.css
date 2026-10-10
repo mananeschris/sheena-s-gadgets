@@ -1,0 +1,153 @@
+/* Overview only; other admin workspaces keep their existing styles. */
+body.admin-dashboard-page:has(#overview.active) { background: #fff; }
+body.admin-dashboard-page:has(#overview.active) .main { --workspace-ink: #171717; --workspace-muted: #737373; --workspace-line: #e5e5e5; }
+body.admin-dashboard-page:has(#overview.active) .page-head { border-color: #e5e5e5; }
+body.admin-dashboard-page:has(#overview.active) .page-title { color: #171717; }
+body.admin-dashboard-page:has(#overview.active) .workspace-section-label { color: #737373; border-color: #e5e5e5; }
+body.admin-dashboard-page:has(#overview.active) .overview-kpis { border-color: #e5e5e5; margin-bottom: 26px; }
+body.admin-dashboard-page:has(#overview.active) .overview-kpis .overview-metric { border-color: #e5e5e5; }
+body.admin-dashboard-page:has(#overview.active) .overview-kpis .metric-label { color: #737373; }
+body.admin-dashboard-page:has(#overview.active) .overview-kpis .metric-value { color: #171717; font-size: 24px; font-variant-numeric: tabular-nums; }
+body.admin-dashboard-page #overview {
+  --workspace-ink: #171717;
+  --workspace-muted: #737373;
+  --workspace-line: #e5e5e5;
+  color: var(--workspace-ink);
+}
+body.admin-dashboard-page #overview > .overview-shell { padding: 0; background: #fff; }
+body.admin-dashboard-page #overview .overview-heading { min-height: 36px; margin: 0 0 24px; padding: 0 0 18px; border: 0; border-bottom: 1px solid #e5e5e5; }
+body.admin-dashboard-page #overview .overview-heading h4 { font-size: 20px; color: #171717; }
+body.admin-dashboard-page #overview .overview-heading-date { font-size: 11px; font-weight: 500; color: #737373; padding: 6px 9px; border: 1px solid #ededed; border-radius: 4px; }
+body.admin-dashboard-page #overview h6 { color: #171717; font-size: 13px; font-weight: 650; line-height: 1.5; }
+body.admin-dashboard-page #overview .overview-block { min-height: 0; padding: 0; border: 0; border-radius: 0; background: transparent; }
+body.admin-dashboard-page #overview .overview-work-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr); gap: 32px; align-items: start; }
+body.admin-dashboard-page #overview .overview-side { min-width: 0; border-left: 1px solid #e5e5e5; padding-left: 28px; display: grid; gap: 26px; }
+body.admin-dashboard-page #overview .overview-block-heading { min-height: 30px; margin-bottom: 12px; }
+body.admin-dashboard-page #overview .overview-block-heading h6 { display: flex; align-items: center; gap: 8px; }
+body.admin-dashboard-page #overview .overview-block-heading h6 svg { width: 16px; height: 16px; color: #a47222; }
+body.admin-dashboard-page #overview .btn { color: #242424; border-color: #dedede; background: #fff; }
+body.admin-dashboard-page #overview .btn:hover { border-color: #a3a3a3; background: #f5f5f5; }
+body.admin-dashboard-page #overview .btn-dark { color: #fff; border-color: #171717; background: #171717; }
+body.admin-dashboard-page #overview .btn-dark:hover { background: #333; border-color: #333; }
+body.admin-dashboard-page #overview .btn:focus-visible { outline-color: #171717; }
+body.admin-dashboard-page #overview .overview-icon-control { display: inline-grid; place-items: center; width: 30px; min-width: 30px; height: 30px; min-height: 30px; padding: 0; }
+body.admin-dashboard-page #overview .overview-icon-control svg { width: 15px; height: 15px; }
+body.admin-dashboard-page #overview .overview-actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px !important; }
+body.admin-dashboard-page #overview .overview-actions-grid .btn { min-height: 40px; padding: 9px 10px; font-size: 11px; }
+body.admin-dashboard-page #overview .overview-actions-grid .btn:nth-child(n+3) { border: 0; border-bottom: 1px solid #ededed; border-radius: 0; padding: 10px 0; }
+body.admin-dashboard-page #overview .overview-actions-grid .btn svg { color: #737373; }
+body.admin-dashboard-page #overview .overview-actions-grid .btn-dark svg { color: #fff; }
+body.admin-dashboard-page #overview .overview-alert-list { margin: 0; min-height: 60px; max-height: 148px; font-size: 12px; gap: 0; }
+body.admin-dashboard-page #overview .overview-alert-list .border-bottom { align-items: center; gap: 10px; }
+body.admin-dashboard-page #overview .overview-alert-list strong { white-space: nowrap; font-size: 11px; color: #a47222; font-weight: 600; }
+body.admin-dashboard-page #overview .overview-stock-name { display: flex; align-items: center; min-width: 0; gap: 8px; }
+body.admin-dashboard-page #overview .overview-stock-name img { width: 40px; height: 40px; flex: 0 0 40px; object-fit: contain; background: #fafafa; border-radius: 4px; }
+body.admin-dashboard-page #overview .overview-stock-name span { color: #404040; }
+body.admin-dashboard-page #overview .task-center-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; }
+body.admin-dashboard-page #overview .task-center-count { font-size: 10px; line-height: 1.5; color: #737373; background: #f3f3f3; border-radius: 4px; padding: 3px 6px; }
+body.admin-dashboard-page #overview .task-filter-bar { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; margin: 0 0 10px; padding: 4px; border: 1px solid #e5e5e5; border-radius: 6px; background: #f7f7f7; }
+body.admin-dashboard-page #overview .task-filter-bar:has(.role-hidden) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+body.admin-dashboard-page #overview .task-filter-bar .btn { display: flex; flex-direction: column; justify-content: center; gap: 3px; height: 62px; min-height: 62px; min-width: 0; padding: 6px 3px; border: 0; border-radius: 3px; font-size: 10px; font-weight: 500; color: #737373; background: transparent; }
+body.admin-dashboard-page #overview .task-filter-bar .btn:hover { background: #ededed; color: #171717; }
+body.admin-dashboard-page #overview .task-filter-metric { display: flex; align-items: center; justify-content: center; gap: 6px; }
+body.admin-dashboard-page #overview .task-filter-metric svg { width: 16px; height: 16px; flex: 0 0 16px; stroke-width: 1.8; }
+body.admin-dashboard-page #overview .task-filter-bar .task-filter-count { font-size: 19px; line-height: 1.2; font-weight: 600; color: #262626; }
+body.admin-dashboard-page #overview .task-filter-bar .btn.active { color: #fff; background: #171717; }
+body.admin-dashboard-page #overview .task-filter-bar .btn.active .task-filter-count { color: #fff; }
+body.admin-dashboard-page #overview .action-list { max-height: 300px; overflow: auto; padding: 0 4px 0 0; gap: 0; scroll-margin-top: 20px; }
+body.admin-dashboard-page #overview .action-item.task-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px; align-items: center; min-height: 96px; padding: 18px 0; border: 0; border-bottom: 1px solid #ededed; border-radius: 0; gap: 14px; box-shadow: none; background: #fff; transition: background-color .15s; }
+body.admin-dashboard-page #overview .action-item.task-row:hover { background: #fafafa; }
+body.admin-dashboard-page #overview .task-row:last-child { border-bottom: 0; }
+body.admin-dashboard-page #overview .task-row-icon { display: grid; place-items: center; align-self: start; width: 32px; height: 32px; border: 1px solid #e5e5e5; border-radius: 5px; color: #404040; background: #fff; }
+body.admin-dashboard-page #overview .task-row-icon svg { width: 16px; height: 16px; }
+body.admin-dashboard-page #overview .task-row-icon.urgent { color: #a13d48; }
+body.admin-dashboard-page #overview .task-row-icon.high { color: #a47222; }
+body.admin-dashboard-page #overview .task-row-copy { min-width: 0; }
+body.admin-dashboard-page #overview .task-row-copy strong { display: block; font-size: 12px; font-weight: 600; color: #171717; overflow-wrap: anywhere; line-height: 1.5; }
+body.admin-dashboard-page #overview .task-row-detail { color: #737373; font-size: 11px; line-height: 1.55; margin-top: 3px; overflow-wrap: anywhere; }
+body.admin-dashboard-page #overview .task-row-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; margin-top: 7px; color: #8a8a8a; font-size: 10px; line-height: 1.5; }
+body.admin-dashboard-page #overview .task-row-meta .task-row-priority.urgent { color: #a13d48; }
+body.admin-dashboard-page #overview .task-row-meta .task-row-priority.high { color: #a47222; }
+body.admin-dashboard-page #overview .task-row-meta .task-row-amount { color: #404040; font-weight: 600; }
+body.admin-dashboard-page #overview .task-open-button { display: inline-grid; place-items: center; width: 32px; height: 32px; min-height: 32px; padding: 0; border: 1px solid #dedede; border-radius: 5px; background: #fff; color: #171717; }
+body.admin-dashboard-page #overview .task-open-button svg { width: 16px; height: 16px; }
+body.admin-dashboard-page #overview .task-open-button:hover { border-color: #171717; background: #171717; color: #fff; }
+body.admin-dashboard-page #overview .overview-queue-empty { min-height: 146px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 20px; color: #737373; text-align: center; }
+body.admin-dashboard-page #overview .overview-queue-empty svg { width: 24px; height: 24px; color: #14634c; }
+body.admin-dashboard-page #overview .overview-queue-empty strong { color: #404040; font-size: 12px; font-weight: 500; }
+body.admin-dashboard-page #overview .overview-performance { margin-top: 32px; border-top: 1px solid #e5e5e5; padding-top: 24px; }
+body.admin-dashboard-page #overview .analytics-toolbar { margin: 0 0 18px; padding: 0; min-height: 32px; border: 0; align-items: center; }
+body.admin-dashboard-page #overview .analytics-toolbar h6 { margin: 0; font-size: 14px; }
+body.admin-dashboard-page #overview .analytics-controls { gap: 8px; min-width: 0; }
+body.admin-dashboard-page #overview .analytics-controls .form-select { width: 132px; min-height: 32px; padding-top: 5px; padding-bottom: 5px; border-color: #dedede; color: #404040; font-size: 11px; }
+body.admin-dashboard-page #overview .analytics-controls .form-select:focus { border-color: #737373; box-shadow: 0 0 0 2px #ededed; }
+body.admin-dashboard-page #overview .overview-insight-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 0 0 28px; padding: 20px 0; border-top: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5; }
+body.admin-dashboard-page #overview .overview-insight-grid .metric { min-width: 0; min-height: 52px; padding: 0 18px; border: 0; border-left: 1px solid #e5e5e5; border-radius: 0; background: none; box-shadow: none; }
+body.admin-dashboard-page #overview .overview-insight-grid .metric:first-child { padding-left: 0; border-left: 0; }
+body.admin-dashboard-page #overview .overview-insight-grid .metric-value { color: #171717; font-size: 22px; line-height: 1.4; margin-top: 8px; font-variant-numeric: tabular-nums; }
+body.admin-dashboard-page #overview .overview-insight-grid .metric-label { display: flex; align-items: center; gap: 6px; }
+body.admin-dashboard-page #overview .overview-insight-grid .metric-label svg { width: 14px; height: 14px; flex: 0 0 14px; color: #737373; }
+body.admin-dashboard-page #overview #analyticsBestSeller { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 12px; line-height: 1.5; }
+body.admin-dashboard-page #overview .overview-insight-grid .metric-value.is-long-value { font-size: 16px; }
+body.admin-dashboard-page #overview #analyticsBestPayment { font-size: 16px; }
+body.admin-dashboard-page #overview .analytics-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); grid-template-areas: "sales products" "orders payments"; grid-template-rows: auto; gap: 28px 32px; margin: 0; }
+body.admin-dashboard-page #overview .analytics-card { min-height: 0; padding: 0; border: 0; background: transparent; border-radius: 0; }
+body.admin-dashboard-page #overview .analytics-card h6 { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; font-size: 12px; color: #404040; }
+body.admin-dashboard-page #overview .analytics-card h6 svg { width: 15px; height: 15px; color: #737373; flex: 0 0 15px; }
+body.admin-dashboard-page #overview .analytics-card--products { border-left: 1px solid #e5e5e5; padding-left: 24px; }
+body.admin-dashboard-page #overview .analytics-card--orders, body.admin-dashboard-page #overview .analytics-card--payments { border-top: 1px solid #e5e5e5; padding-top: 20px; }
+body.admin-dashboard-page #overview .overview-chart-heading { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
+body.admin-dashboard-page #overview .overview-chart-unit { font-size: 10px; color: #737373; }
+body.admin-dashboard-page #overview .overview-chart-summary { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin: 0 0 18px; }
+body.admin-dashboard-page #overview .overview-chart-summary span { color: #737373; font-size: 10px; line-height: 1.5; }
+body.admin-dashboard-page #overview .overview-chart-summary strong { display: block; color: #171717; font-size: 24px; line-height: 1.4; font-weight: 650; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+body.admin-dashboard-page #overview .overview-chart-summary > div { min-width: 0; }
+body.admin-dashboard-page #overview #analyticsPeriodOrders { flex-shrink: 0; padding-bottom: 4px; }
+body.admin-dashboard-page #overview .analytics-card--sales .bar-chart { flex: none; height: 200px; min-height: 200px; padding: 8px 8px 0; border-color: #e5e5e5; overflow-x: auto; overflow-y: hidden; background: repeating-linear-gradient(to top, transparent 0, transparent 46px, #f2f2f2 47px, transparent 48px); }
+body.admin-dashboard-page #overview .bar-item { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; min-width: 14px; flex: 1 0 14px; }
+body.admin-dashboard-page #overview .bar-fill { width: 100%; max-width: 36px; max-height: calc(100% - 50px); flex-shrink: 0; min-height: 3px; border-radius: 3px 3px 0 0; background: #242424; }
+body.admin-dashboard-page #overview .bar-item[data-zero="true"] .bar-fill { min-height: 0; }
+body.admin-dashboard-page #overview .bar-value { max-width: 100%; overflow: hidden; text-overflow: ellipsis; height: 18px; line-height: 18px; flex: 0 0 18px; font-size: 9px; color: #404040; white-space: nowrap; }
+body.admin-dashboard-page #overview .bar-item:has(~ .bar-item:nth-child(8)) .bar-value, body.admin-dashboard-page #overview .bar-item:nth-child(n+8) .bar-value { visibility: hidden; }
+body.admin-dashboard-page #overview .bar-label { height: 16px; flex: 0 0 16px; width: 100%; font-size: 9px; color: #737373; }
+body.admin-dashboard-page #overview .mini-row-chart { gap: 14px; }
+body.admin-dashboard-page #overview .mini-row-head { font-size: 11px; font-weight: 500; color: #404040; align-items: start; }
+body.admin-dashboard-page #overview .mini-row-head > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+body.admin-dashboard-page #overview .mini-row-head > span:last-child { flex-shrink: 0; color: #171717; font-weight: 600; }
+body.admin-dashboard-page #overview .mini-row-track { height: 5px; border: 0; border-radius: 2px; background: #ededed; margin-top: 5px; }
+body.admin-dashboard-page #overview .mini-row-fill, body.admin-dashboard-page #overview .analytics-card--orders .mini-row-fill, body.admin-dashboard-page #overview .analytics-card--payments .mini-row-fill { background: #404040; }
+body.admin-dashboard-page #overview .analytics-card--sales .bar-chart.is-empty { background: #fafafa; border: 0; border-radius: 0; }
+body.admin-dashboard-page #overview .mini-row-chart.is-empty { min-height: 120px; background: #fafafa; }
+body.admin-dashboard-page #overview .overview-product-ranking { display: grid; gap: 0; }
+body.admin-dashboard-page #overview .overview-ranked-product { display: grid; grid-template-columns: 14px 42px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 14px 0; border-bottom: 1px solid #ededed; }
+body.admin-dashboard-page #overview .overview-ranked-product:first-child { padding-top: 4px; }
+body.admin-dashboard-page #overview .overview-ranked-product:last-child { border-bottom: 0; }
+body.admin-dashboard-page #overview .overview-product-rank { font-size: 10px; color: #8a8a8a; font-variant-numeric: tabular-nums; }
+body.admin-dashboard-page #overview .overview-ranked-product img { width: 42px; height: 42px; border: 1px solid #ededed; border-radius: 4px; object-fit: contain; background: #fafafa; }
+body.admin-dashboard-page #overview .overview-product-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-width: 0; overflow-wrap: anywhere; color: #404040; font-size: 11px; line-height: 1.5; font-weight: 500; }
+body.admin-dashboard-page #overview .overview-ranked-product strong { font-size: 15px; line-height: 1.4; color: #171717; text-align: right; font-weight: 600; }
+body.admin-dashboard-page #overview .overview-ranked-product strong span { display: block; color: #8a8a8a; font-size: 9px; font-weight: 400; }
+body.admin-dashboard-page #overview .overview-product-ranking.is-empty { min-height: 180px; align-content: center; background: #fafafa; }
+body.admin-dashboard-page #overview .analytics-empty-state { font-size: 11px; }
+@media (max-width: 1000px) {
+  body.admin-dashboard-page #overview .overview-work-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  body.admin-dashboard-page #overview .overview-side { grid-template-columns: repeat(2, minmax(0, 1fr)); border-left: 0; border-top: 1px solid #e5e5e5; padding: 20px 0 0; gap: 24px; }
+}
+@media (max-width: 620px) {
+  body.admin-dashboard-page #overview > .overview-shell { padding: 0; }
+  body.admin-dashboard-page #overview .overview-heading { gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  body.admin-dashboard-page #overview .overview-heading h4 { font-size: 18px; }
+  body.admin-dashboard-page #overview .overview-side { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  body.admin-dashboard-page #overview .task-filter-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body.admin-dashboard-page #overview .task-filter-bar:has(.role-hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.admin-dashboard-page #overview .action-list { max-height: 330px; }
+  body.admin-dashboard-page #overview .action-item.task-row { gap: 9px; padding: 14px 0; }
+  body.admin-dashboard-page #overview .overview-insight-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 0; }
+  body.admin-dashboard-page #overview .overview-insight-grid .metric { padding: 0 10px; }
+  body.admin-dashboard-page #overview .overview-insight-grid .metric:nth-child(3) { padding-left: 0; border-left: 0; }
+  body.admin-dashboard-page #overview .overview-insight-grid .metric-value { font-size: 18px; }
+  body.admin-dashboard-page #overview .analytics-toolbar { flex-wrap: wrap; gap: 10px; }
+  body.admin-dashboard-page #overview .analytics-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "sales" "products" "orders" "payments"; gap: 22px; }
+  body.admin-dashboard-page #overview .analytics-card--products { padding: 20px 0 0; border-top: 1px solid #e5e5e5; border-left: 0; }
+  body.admin-dashboard-page #overview .analytics-controls .form-select { width: 120px; }
+}

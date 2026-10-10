@@ -69,10 +69,33 @@ async function ensureOrderAlertColumns(db) {
   `);
 }
 
-router.get("/", async (req, res) => {
+router.get("/", require('./roleGuard').requireAdminOrStaff, async (req, res) => {
   try {
-    await ensureInstallmentScheduleTable(req.db);
     await ensureOrderAlertColumns(req.db);
+    if (req.actorUser.role === 'staff') {
+      const eligible = `(LOWER(COALESCE(payment_method,'')) IN ('cash','cod') AND LOWER(COALESCE(payment_status,'')) IN ('to_collect','paid')
+        OR LOWER(COALESCE(payment_status,'')) IN ('paid','installment_downpayment_paid','installment_active','installment_completed'))`;
+      const [counts, work, repairs, stock] = await Promise.all([
+        runQuery(req.db, `SELECT
+          (SELECT COUNT(*) FROM orders WHERE status IN ('pending','processing') AND ${eligible} AND COALESCE(cancellation_request_status,'')<>'pending') AS pending_orders,
+          (SELECT COUNT(*) FROM orders WHERE repair_request_status='approved' AND COALESCE(repair_service_status,'approved')<>'completed') AS repair_requests,
+          (SELECT COUNT(*) FROM products WHERE stock>0 AND stock<=5) AS low_stock_products,
+          (SELECT COUNT(*) FROM products WHERE stock<=0) AS out_of_stock_products`),
+        runQuery(req.db, `SELECT id,(SELECT name FROM products WHERE id=orders.product_id) AS product_name,created_at,status FROM orders WHERE status IN ('pending','processing')
+          AND ${eligible} AND COALESCE(cancellation_request_status,'')<>'pending' ORDER BY created_at ASC LIMIT 12`),
+        runQuery(req.db, `SELECT id,(SELECT name FROM products WHERE id=orders.product_id) AS product_name,repair_reviewed_at FROM orders WHERE repair_request_status='approved'
+          AND COALESCE(repair_service_status,'approved')<>'completed' ORDER BY repair_reviewed_at ASC LIMIT 8`),
+        runQuery(req.db, 'SELECT id,name,stock FROM products WHERE stock<=5 ORDER BY stock ASC,id DESC LIMIT 8')
+      ]);
+      const summary = counts[0] || {};
+      const total = Object.values(summary).reduce((sum, value) => sum + Number(value || 0), 0);
+      return res.json({ staff_scope: true, summary: { ...summary, total }, items: [
+        ...work.map(item => ({ type: 'order', title: item.status === 'processing' ? 'Prepare order for handoff' : 'Order ready to process', detail: item.product_name || orderLabel(item.id), order_id: item.id, section: 'orders', created_at: item.created_at })),
+        ...repairs.map(item => ({ type: 'repair', title: 'Approved repair in progress', detail: item.product_name || orderLabel(item.id), order_id: item.id, section: 'repairs', created_at: item.repair_reviewed_at })),
+        ...stock.map(item => ({ type: item.stock <= 0 ? 'out_stock' : 'low_stock', title: item.stock <= 0 ? 'Product out of stock' : 'Low stock product', detail: `${item.name}: ${item.stock} left`, product_id: item.id, section: 'inventory', created_at: new Date().toISOString() }))
+      ] });
+    }
+    await ensureInstallmentScheduleTable(req.db);
 
     const [
       summaryRows,
@@ -87,7 +110,12 @@ router.get("/", async (req, res) => {
     ] = await Promise.all([
       runQuery(req.db, `
         SELECT
-          COALESCE((SELECT COUNT(*) FROM orders WHERE status = 'pending'), 0) AS pending_orders,
+          COALESCE((SELECT COUNT(*) FROM orders WHERE status = 'pending' AND NOT (
+            LOWER(COALESCE(payment_method, '')) = 'gcash'
+            AND LOWER(COALESCE(payment_provider, '')) = 'manual_gcash'
+            AND LOWER(COALESCE(payment_status, '')) = 'pending_payment'
+            AND (payment_proof_image IS NULL OR payment_proof_image = '')
+          )), 0) AS pending_orders,
           COALESCE((SELECT COUNT(*) FROM orders WHERE cancellation_request_status = 'pending'), 0) AS cancellation_requests,
           COALESCE((SELECT COUNT(*) FROM orders WHERE repair_request_status = 'pending'), 0) AS repair_requests,
           COALESCE((SELECT COUNT(*) FROM installment_applications WHERE status = 'pending'), 0) AS pending_installments,
@@ -109,6 +137,12 @@ router.get("/", async (req, res) => {
         FROM orders o
         LEFT JOIN users u ON o.user_id = u.id
         WHERE o.status = 'pending'
+          AND NOT (
+            LOWER(COALESCE(o.payment_method, '')) = 'gcash'
+            AND LOWER(COALESCE(o.payment_provider, '')) = 'manual_gcash'
+            AND LOWER(COALESCE(o.payment_status, '')) = 'pending_payment'
+            AND (o.payment_proof_image IS NULL OR o.payment_proof_image = '')
+          )
         ORDER BY o.created_at DESC
         LIMIT 5
       `),
@@ -224,8 +258,8 @@ router.get("/", async (req, res) => {
         })),
         ...gatewayIssues.map(item => ({
           type: "gateway",
-          title: "Payment gateway issue",
-          detail: `${orderLabel(item.id)} has a failed online payment setup.`,
+          title: "GCash proof setup issue",
+          detail: `${orderLabel(item.id)} needs GCash proof setup review.`,
           amount: item.total_price,
           order_id: item.id,
           section: "orders",

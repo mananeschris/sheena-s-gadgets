@@ -1,0 +1,61 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+:root {
+  --customer-font-body: "DM Sans", "Inter", Arial, Helvetica, sans-serif;
+  --customer-font-heading: "Space Grotesk", "Manrope", Arial, Helvetica, sans-serif;
+}
+
+body.entry-page,
+body.customer-shop-page,
+body.customer-product-page,
+body.customer-profile-page,
+body.customer-order-page,
+body.customer-review-page,
+body.checkout-dark-page,
+body.auth-page-shell,
+body.payment-result-page {
+  font-family: var(--customer-font-body) !important;
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body.entry-page :is(input, select, textarea, button, table, th, td, .btn, .form-control, .form-select),
+body.customer-shop-page :is(input, select, textarea, button, table, th, td, .btn, .form-control, .form-select),
+body.customer-product-page :is(input, select, textarea, button, table, th, td, .btn, .form-control, .form-select),
+body.customer-profile-page :is(input, select, textarea, button, table, th, td, .btn, .form-control, .form-select),
+body.customer-order-page :is(input, select, textarea, button, table, th, td, .btn, .form-control, .form-select),
+body.customer-review-page :is(input, select, textarea, button, table, th, td, .btn, .form-control, .form-select),
+body.checkout-dark-page :is(input, select, textarea, button, table, th, td, .btn, .form-control, .form-select),
+body.auth-page-shell :is(input, select, textarea, button, table, th, td, .btn, .form-control, .form-select),
+body.payment-result-page :is(input, select, textarea, button, table, th, td, .btn, .form-control, .form-select) {
+  font-family: var(--customer-font-body) !important;
+  letter-spacing: 0;
+}
+
+body.entry-page :is(h1, h2, h3, h4, h5, h6, .page-title, .hero-title, .section-title, .catalog-title, .brand),
+body.customer-shop-page :is(h1, h2, h3, h4, h5, h6, .page-title, .hero-title, .section-title, .catalog-title, .brand),
+body.customer-product-page :is(h1, h2, h3, h4, h5, h6, .page-title, .hero-title, .section-title, .catalog-title, .brand),
+body.customer-profile-page :is(h1, h2, h3, h4, h5, h6, .page-title, .hero-title, .section-title, .catalog-title, .brand),
+body.customer-order-page :is(h1, h2, h3, h4, h5, h6, .page-title, .hero-title, .section-title, .catalog-title, .brand),
+body.customer-review-page :is(h1, h2, h3, h4, h5, h6, .page-title, .hero-title, .section-title, .catalog-title, .brand),
+body.checkout-dark-page :is(h1, h2, h3, h4, h5, h6, .page-title, .hero-title, .section-title, .catalog-title, .brand),
+body.auth-page-shell :is(h1, h2, h3, h4, h5, h6, .page-title, .hero-title, .section-title, .catalog-title, .brand),
+body.payment-result-page :is(h1, h2, h3, h4, h5, h6, .page-title, .hero-title, .section-title, .catalog-title, .brand) {
+  font-family: var(--customer-font-heading) !important;
+  font-optical-sizing: auto;
+  letter-spacing: 0;
+}
+
+body.entry-page :is(.price, .product-price, .mini-price, .metric-value, .summary-total strong, .order-total),
+body.customer-shop-page :is(.price, .product-price, .mini-price, .metric-value, .summary-total strong, .order-total),
+body.customer-product-page :is(.price, .product-price, .mini-price, .metric-value, .summary-total strong, .order-total),
+body.customer-profile-page :is(.price, .product-price, .mini-price, .metric-value, .summary-total strong, .order-total),
+body.customer-order-page :is(.price, .product-price, .mini-price, .metric-value, .summary-total strong, .order-total),
+body.customer-review-page :is(.price, .product-price, .mini-price, .metric-value, .summary-total strong, .order-total),
+body.checkout-dark-page :is(.price, .product-price, .mini-price, .metric-value, .summary-total strong, .order-total),
+body.auth-page-shell :is(.price, .product-price, .mini-price, .metric-value, .summary-total strong, .order-total),
+body.payment-result-page :is(.price, .product-price, .mini-price, .metric-value, .summary-total strong, .order-total) {
+  font-variant-numeric: tabular-nums;
+}
